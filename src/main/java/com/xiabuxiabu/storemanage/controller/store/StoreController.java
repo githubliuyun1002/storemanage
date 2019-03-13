@@ -44,6 +44,8 @@ public class StoreController {
     private ServicePersonService servicePersonService;
     @Autowired
     private AccessMethodService accessMethodService;
+    @Autowired
+    private PayMethodService payMethodService;
     /**
      * 初始化转换日期类，将输入框中String类型的值，转化为Date类型的值。
      * 并设置相应的日期类型
@@ -111,9 +113,11 @@ public class StoreController {
         return  typeService.findById(typeId);
     }
     @RequestMapping("/saveStore")
-    public String saveStore(Store store, WidthBand widthBand){
+    public String saveStore(Store store, WidthBand widthBand,PayMethod payMethod,AccessMethod accessMethod){
         System.out.println("store---->"+store);
         System.out.println("widthBand---->"+widthBand);
+        System.out.println("pay--->"+payMethod);
+        System.out.println("access--->"+accessMethod);
         return "redirect:/store/home";
     }
     @RequestMapping("/marketList")
@@ -136,7 +140,10 @@ public class StoreController {
     public List<AccessMethod> accessMethodList(){
         return accessMethodService.findAll();
     }
-
-
+    @RequestMapping("/payMethodList")
+    @ResponseBody
+    public List<PayMethod> payMethodList(){
+        return  payMethodService.findAll();
+    }
 
 }

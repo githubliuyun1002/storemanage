@@ -173,18 +173,19 @@
         //加载付款方式  payMethod
         $(function () {
            $.ajax({
-               url:"/store/accessMethodList",
+               url:"/store/payMethodList",
                dataType:"JSON",
                type:"GET",
                success:function (data) {
                    for (var i = 0; i <data.length ; i++) {
                        $("select#payMethod").append(
-                           '<option id="'+data[i].access+'" value="'+data[i].id+'">'+data[i].access+'</option>'
+                           '<option id="'+data[i].method+'" value="'+data[i].id+'">'+data[i].method+'</option>'
                        );
                    }
                }
            });
         });
+
     </script>
 </head>
 <body>
