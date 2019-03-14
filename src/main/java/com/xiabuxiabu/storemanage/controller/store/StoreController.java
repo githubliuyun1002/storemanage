@@ -113,11 +113,9 @@ public class StoreController {
         return  typeService.findById(typeId);
     }
     @RequestMapping("/saveStore")
-    public String saveStore(Store store, WidthBand widthBand,PayMethod payMethod,AccessMethod accessMethod){
+    public String saveStore(Store store){
         System.out.println("store---->"+store);
-        System.out.println("widthBand---->"+widthBand);
-        System.out.println("pay--->"+payMethod);
-        System.out.println("access--->"+accessMethod);
+        storeService.save(store);
         return "redirect:/store/home";
     }
     @RequestMapping("/marketList")
