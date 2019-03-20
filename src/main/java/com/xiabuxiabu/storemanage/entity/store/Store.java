@@ -1,8 +1,10 @@
 package com.xiabuxiabu.storemanage.entity.store;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.xiabuxiabu.storemanage.entity.equip.EquipEntity;
 import com.xiabuxiabu.storemanage.entity.publicutil.MarketEntity;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -36,7 +38,8 @@ public class Store{
     @Temporal(TemporalType.DATE)
     private Date startDate;
     //闭店日期
-    @Temporal(TemporalType.DATE)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date closeDate;
     public int getId() {
         return id;

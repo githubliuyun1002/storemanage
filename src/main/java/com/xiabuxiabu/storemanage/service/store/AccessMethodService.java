@@ -12,6 +12,10 @@ public class AccessMethodService {
     @Autowired
     private AccessMethodRepository accessMethodRepository;
     public List<AccessMethod> findAll(){
+
         return  accessMethodRepository.findAll();
+    }
+    public AccessMethod findById(int id){
+        return accessMethodRepository.findById(id).get();
     }
 }

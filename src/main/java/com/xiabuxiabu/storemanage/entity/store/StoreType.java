@@ -6,7 +6,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 /**
- * 门店选择设备实体，以及设备数量
+ * 门店选择设备型号实体，以及设备数量
  */
 @Entity
 public class StoreType {

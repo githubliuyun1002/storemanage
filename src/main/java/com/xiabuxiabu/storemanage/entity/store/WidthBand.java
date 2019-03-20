@@ -1,5 +1,9 @@
 package com.xiabuxiabu.storemanage.entity.store;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.Date;
 /**
  * 宽带实体类对象
@@ -30,8 +34,9 @@ public class WidthBand {
     //付款金额
     private double payMoney;
     //到期日期
-    @Temporal(TemporalType.DATE)
-    private Date endDate;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    private LocalDate endDate;
 
     public int getId() {
         return id;
@@ -97,11 +102,11 @@ public class WidthBand {
         this.payMoney = payMoney;
     }
 
-    public Date getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 

@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import javax.persistence.criteria.CriteriaBuilder;
 
-public interface AccessMethodRepository extends JpaRepository<AccessMethod, CriteriaBuilder.In> {
+public interface AccessMethodRepository extends JpaRepository<AccessMethod, Integer> {
 }

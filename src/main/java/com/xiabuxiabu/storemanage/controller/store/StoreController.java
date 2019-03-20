@@ -24,6 +24,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -46,6 +47,8 @@ public class StoreController {
     private AccessMethodService accessMethodService;
     @Autowired
     private PayMethodService payMethodService;
+    @Autowired
+    private WidthBandService widthBandService;
     /**
      * 初始化转换日期类，将输入框中String类型的值，转化为Date类型的值。
      * 并设置相应的日期类型
@@ -86,14 +89,17 @@ public class StoreController {
     @RequestMapping("/findById")
     @ResponseBody
     public Store findById(@RequestParam("id") int id){
+
         return storeService.findById(id);
     }
     @RequestMapping("/addEquip")
     public ModelAndView addEquip(ModelAndView modelAndView, StoreType storeType,int store_status){
-        System.out.println("store_status---->"+store_status);
         if(storeType!=null){
             int storeId = storeType.getStoreId();
             Store store = storeService.findById(storeId);
+            StoreStatus storeStatus = storeStatusService.findById(store_status);
+            store.setStoreStatus(storeStatus);
+            System.out.println("store--->"+store);
             JSONObject storeObj = JSONObject.fromObject(store.toString());
             modelAndView.addObject("StoreMsg",storeObj);
             modelAndView.addObject("StoreId",store.getId());
@@ -114,34 +120,55 @@ public class StoreController {
     }
     @RequestMapping("/saveStore")
     public String saveStore(Store store){
-        System.out.println("store---->"+store);
+        System.out.println("store--->"+store);
         storeService.save(store);
         return "redirect:/store/home";
     }
     @RequestMapping("/marketList")
     @ResponseBody
     public List<MarketEntity> marketList(){
+
         return marketService.findAll();
     }
     @RequestMapping("/storeStatusList")
     @ResponseBody
     public List<StoreStatus> storeStatusList(){
+
         return  storeStatusService.findAll();
     }
     @RequestMapping("/servicePersonList")
     @ResponseBody
     public List<ServicePerson> servicePersonList(){
+
         return servicePersonService.findAll();
     }
     @RequestMapping("/accessMethodList")
     @ResponseBody
     public List<AccessMethod> accessMethodList(){
+
         return accessMethodService.findAll();
     }
     @RequestMapping("/payMethodList")
     @ResponseBody
     public List<PayMethod> payMethodList(){
+
         return  payMethodService.findAll();
+    }
+
+    @RequestMapping("/storeWidth")
+    public ModelAndView storeWidth(ModelAndView modelAndView,WidthBand widthBand,int storeId)  {
+        Store store = storeService.findById(storeId);
+        widthBandService.save(widthBand);
+        store.setWidthBand(widthBand);
+        store = storeService.save(store);
+        JSONObject storeObj = JSONObject.fromObject(store.toString());
+        System.out.println("store--->"+storeObj);
+        modelAndView.addObject("StoreMsg",storeObj);
+        modelAndView.addObject("StoreId",store.getId());
+        modelAndView.setViewName("/store/store_equip");
+        return modelAndView;
+
+
     }
 
 }

@@ -22,16 +22,53 @@
                         '<td>'+objJson.manager+'</td>'+
                         '<td>'+objJson.startDate+'</td>'+
                         '<td>'+objJson.marketEntity.name+'</td>'+
-                        '<td>'+objJson.marketIT+'</td>'+
-                       '<td>'+objJson.widthBand.servicePerson.serviceName+'</td>' +
-                       '<td>'+objJson.widthBand.accessMethod.access+'</td>' +
-                       '<td>'+objJson.widthBand.identity+'</td>' +
-                       '<td>'+objJson.widthBand.password+'</td>' +
-                       '<td>'+objJson.widthBand.payMethod.method+'</td>' +
-                       '<td>'+objJson.widthBand.payMoney+'</td>' +
-                       '<td>'+objJson.widthBand.endDate+'</td>' +
+                        '<td id="thData">'+objJson.marketIT+'</td>'+
                 '</tr>'
             );
+            if(objJson.widthBand!=null){
+                $("#trWidth").html("");
+                $("#trWidth").append(
+                    '<tr>' +
+                    '<th>门店名称</th>'+
+                    '<th>门店编码</th>'+
+                    '<th>门店地址</th>'+
+                    '<th>门店经理</th>'+
+                    '<th>开店时间</th>'+
+                    '<th>所属市场</th>'+
+                    '<th>市场IT</th>'+
+                    '<th>运营商</th>'+
+                    '<th>接入方式</th>'+
+                    '<th>宽带账号</th>'+
+                    '<th>密码</th>'+
+                    '<th>带宽</th>'+
+                    '<th>付款方式</th>'+
+                    '<th>付款金额</th>'+
+                    '<th>到期日期</th>'+
+                    '</tr>'
+                    );
+                 $("#showTbody").html("");
+                 $("#showTbody").append('' +
+                    '<tr>' +
+                    '<td>'+objJson.name+'</td>'+
+                    '<td>'+objJson.code+'</td>'+
+                    '<td>'+objJson.address+'</td>'+
+                    '<td>'+objJson.manager+'</td>'+
+                    '<td>'+objJson.startDate+'</td>'+
+                    '<td>'+objJson.marketEntity.name+'</td>'+
+                    '<td>'+objJson.marketIT+'</td>'+
+                    '<td>'+objJson.widthBand.servicePerson.serviceName+'</td>'+
+                    '<td>'+objJson.widthBand.accessMethod.access+'</td>'+
+                    '<td>'+objJson.widthBand.identity+'</td>'+
+                    '<td>'+objJson.widthBand.password+'</td>'+
+                    '<td>'+objJson.widthBand.tapeWidth+'</td>'+
+                    '<td>'+objJson.widthBand.payMethod.method+'</td>'+
+                    '<td>'+objJson.widthBand.payMoney+'</td>'+
+                    '<td>'+objJson.widthBand.endDate+'</td>'+
+                    '</tr>'
+                );
+
+
+            }
         });
         //填充门店设备,型号
         $(function () {
@@ -117,7 +154,69 @@
            $.ajax({
                url:"/store/home"
            });
-       })
+       });
+        //加载餐厅状态
+        $(function () {
+            $.ajax({
+                url:"/store/storeStatusList",
+                dataType:"JSON",
+                type:"GET",
+                success:function (data) {
+                    for (var i = 0; i <data.length ; i++) {
+                        $("select#storeStatus").append(
+                            '<option id="'+data[i].name+'" value="'+data[i].id+'">'+data[i].name+'</option>'
+                        );
+                    }
+                }
+            });
+        });
+        //加载运行商  servicePersonList
+        $(function () {
+            $.ajax({
+                url:"/store/servicePersonList",
+                dataType:"JSON",
+                type:"GET",
+                success:function (data) {
+                    for (var i = 0; i <data.length ; i++) {
+                        $("select#servicePerson").append(
+                            '<option id="'+data[i].serviceName+'" value="'+data[i].id+'">'+data[i].serviceName+'</option>'
+                        );
+                    }
+                }
+            });
+        });
+        //加载接入方式  accessMethodList
+        $(function () {
+            $.ajax({
+                url:"/store/accessMethodList",
+                dataType:"JSON",
+                type:"GET",
+                success:function (data) {
+                    for (var i = 0; i <data.length ; i++) {
+                        $("select#accessMethod").append(
+                            '<option id="'+data[i].access+'" value="'+data[i].id+'">'+data[i].access+'</option>'
+                        );
+                    }
+                }
+            });
+        });
+        //加载付款方式  payMethod
+        $(function () {
+            $.ajax({
+                url:"/store/payMethodList",
+                dataType:"JSON",
+                type:"GET",
+                success:function (data) {
+                    for (var i = 0; i <data.length ; i++) {
+                        $("select#payMethod").append(
+                            '<option id="'+data[i].method+'" value="'+data[i].id+'">'+data[i].method+'</option>'
+                        );
+                    }
+                }
+            });
+        });
+
+
     </script>
 </head>
 <body>
@@ -130,23 +229,16 @@
              <a th:href="@{/store/home}"><span class="glyphicon glyphicon-home" aria-hidden="true"></span>返回门店列表页</a>
          </div>
          <caption>餐厅设备展示</caption>
-         <thead>
-            <tr>
-                <th>门店名称</th>
-                <th>门店编码</th>
-                <th>门店地址</th>
-                <th>门店经理</th>
-                <th>开店时间</th>
-                <th>所属市场</th>
-                <th>市场IT</th>
-                <th>宽带运营商</th>
-                <th>接入方式</th>
-                <th>宽带账号</th>
-                <th>宽带密码</th>
-                <th>付款方式</th>
-                <th>付款金额</th>
-                <th>宽带到期日期</th>
-            </tr>
+         <thead id="trWidth">
+                <tr>
+                    <th>门店名称</th>
+                    <th>门店编码</th>
+                    <th>门店地址</th>
+                    <th>门店经理</th>
+                    <th>开店时间</th>
+                    <th>所属市场</th>
+                    <th>市场IT</th>
+                </tr>
          </thead>
          <tbody id="showTbody"></tbody>
      </table>
@@ -156,12 +248,14 @@
          <button type="button" class="btn btn-default" id="addTypes" data-toggle="modal" data-target="#myModal">
              <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>添加设备
          </button>
+         <button type="button" class="btn btn-default" id="widthAdd" data-toggle="modal" data-target="#widthModal">
+             <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>设置宽带
+         </button>
      </div>
      <!--加载设备以及型号-->
      <div>
          <table class="table table-striped">
              <thead id="showHeader">
-
              </thead>
              <tbody id="show">
              </tbody>
@@ -204,12 +298,46 @@
                           </table>
                       </div>
                       <div class="modal-footer">
-                          <button type="submit" class="btn btn-primary" data-dismiss="modal">关闭</button>
+                          <button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
                           <button type="submit" class="btn btn-primary">提交</button>
                       </div>
                   </div>
               </div>
           </form>
+     </div>
+     <div class="modal fade" id="widthModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+         <form method="post" th:action="@{/store/storeWidth}">
+             <div class="modal-dialog">
+                 <div class="modal-content">
+                     <div class="modal-header">
+                         <h4 class="modal-title">设置宽带</h4>
+                     </div>
+                     <div class="modal-body">
+                         <input class="form-control"  name="storeId"  type="hidden" th:value="${StoreId}">
+                         <label for="servicePerson">宽带运行商</label>
+                         <select class="form-control" name="servicePerson" id="servicePerson"></select>
+                         <label for="accessMethod">接入方式</label>
+                         <select class="form-control" name="accessMethod" id="accessMethod"></select>
+                         <label for="identity">账号</label>
+                         <input class="form-control" type="text" placeholder="账号" name="identity" id="identity" required="true"/>
+                         <label for="password">密码</label>
+                         <input class="form-control" type="text" placeholder="密码" name="password" id="password" required="true"/>
+                         <label for="tapeWidth">带宽</label>
+                         <input class="form-control" type="text" placeholder="带宽" name="tapeWidth" id="tapeWidth" required="true"/>
+                         <label for="payMethod">付款方式</label>
+                         <select class="form-control" id="payMethod" name="payMethod"></select>
+                         <label for="payMoney">付款金额</label>
+                         <input class="form-control" type="text" placeholder="付款金额" name="payMoney" id="payMoney" required="true"/>
+                         <label for="endDate">到期日期</label>
+                         <input type="date" class="form-control"  pattern="yyyy-MM-dd" placeholder="到期日期" name="endDate" id="endDate" required="true"/>
+                     </div>
+                     <div class="modal-footer">
+                         <button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
+                         <button type="submit" class="btn btn-primary">提交</button>
+                     </div>
+                 </div>
+             </div>
+         </form>
      </div>
  </div>
 </body>

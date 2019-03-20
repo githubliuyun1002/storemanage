@@ -14,4 +14,7 @@ public class ServicePersonService {
     public List<ServicePerson> findAll(){
         return servicePersonRepository.findAll();
     }
+    public ServicePerson findById(int id){
+        return servicePersonRepository.findById(id).get();
+    }
 }

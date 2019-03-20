@@ -14,4 +14,7 @@ public class PayMethodService {
     public List<PayMethod> findAll(){
         return payMethodRepository.findAll();
     }
+    public PayMethod findById(int id){
+        return payMethodRepository.findById(id).get();
+    }
 }
