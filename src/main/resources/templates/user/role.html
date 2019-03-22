@@ -9,22 +9,350 @@
     <link th:href="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css}" rel="stylesheet"/>
     <script th:src="@{https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js}"></script>
     <script th:src="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+    <style>
+        #page {
+            margin-top: 10px;
+        }
+
+        #page .curr-page {
+            background-color: #009d8e;
+            color: white;
+        }
+
+        #page .page-btn:hover, #page .prev:hover, #page .next:hover {
+            background-color: #009d8e;
+            color: white;
+        }
+    </style>
     <script>
+        var page = {
+            currPage: 1,
+            totalPage: 0,
+            pageLength: 4,
+            startPage: 1,
+            endPage: 4,
+            pageSize: 7
+        };
         $(function () {
            $.ajax({
-               url:"",
-               data:{},
+               url:"/role/roleList",
+               data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": ""},
                type:"GET",
                dataType:"JSON",
                success:function (data) {
-                   //得到数据后进行页面的填充
-                   $("tbody").append();
+                   page.totalPage = data.totalPages;
+                   if (data.totalPages > page.pageLength) {
+                       addButtons(page.startPage, page.pageLength);
+                   } else {
+                       addButtons(page.startPage, data.totalPages);
+                   }
+                   pageIteration(page.currPage);
+                   isDisabled(page.currPage, data.totalPages);
+                   for (var i = 0; i <data.content.length ; i++) {
+                       $("tbody").append(
+                           '<tr>' +
+                           '<td>'+data.content[i].name+'</td>' +
+                           '<td>'+data.content[i].publicStatus.name+'</td>' +
+                           '<td id="td'+i+'"></td>' +
+                           '<td><button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].id + ')" ' +
+                           'data-target="#myModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button></td>'+
+                           '</tr>'
+                       );
+                       for (var j = 0; j <data.content[i].permissions.length ; j++) {
+                           $("#td"+i).append(data.content[i].permissions[j].name+",  ");
+                       }
+                   }
+
                },
                error:function () {
                    alert("页面列表加载失败");
                }
            });
         });
+        //对权限进行填充
+        $(function () {
+            $.ajax({
+                url:"/role/findPermis",
+                type:"GET",
+                dataType:"JSON",
+                success:function (data) {
+                    $("#modalBody").append('<label>角色权限</label><br/>');
+                    $("#modalBody").append('<div id="PERMISSION"></div>');
+                    for(i=0;i<data.length;i++){
+                        $("#PERMISSION").append('<input type="checkbox" name="permissions"  value="'+data[i].id+'"  id="ck'+i+'">'+data[i].name);
+                    }
+                },
+                error:function () {
+
+                }
+            });
+        });
+        <!--角色状态-->
+        $(function () {
+            $.ajax({
+                url: "/person/statusList",
+                type: "GET",
+                dataType: "json",
+                success: function (data) {
+                    for (i = 0; i < data.length; i++) {
+                        $("select#publicStatus").append(
+                            '<option id="' + data[i].name + '" value="' + data[i].id + '">' + data[i].name + '</option>'
+                        );
+                    }
+                },
+                error: function () {
+                    alert("状态列表加载失败");
+                }
+            });
+        });
+        //新增角色
+        $(function () {
+            $("#add").click(function () {
+                $("#RID").html("");
+                $("#name").val("");
+                $("#description").val("");
+                $("#footer").html("");
+                $("#footer").append('<button type="submit" class="btn btn-primary">提交</button>');
+                $("#footer").append('<button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>');
+                var chks=$("input:checkbox[name='permissions']");
+                for(j=0;j<chks.length;j++){
+                    chks[j].checked=false;
+                }
+            });
+        });
+        //修改角色
+        function updateBtn(id) {
+            $.ajax({
+                url:"/role/findById",
+                data:{"id":id},
+                dataType:"JSON",
+                type:"GET",
+                success:function (data) {
+                    $("#RID").html("");
+                    $("#footer").html("");
+                    $("#modalBody").append('<div id="RID"></div>');
+                    $("#RID").append('<input  class="form-control" name="id" id="roleId" type="hidden" value="' + data.id + '"/>');
+                    $("#footer").append('<button type="submit" class="btn btn-primary">提交</button>');
+                    $("#footer").append('<button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>');
+                    $("#name").val(data.name);
+                    $("#description").val(data.description);
+                    var publicStatusName = data.publicStatus.name;
+                    if (publicStatusName == "启用") {
+                        $("#publicStatus").find("option:contains('启用')").attr("selected", true);
+                    } else if (publicStatusName == "禁用") {
+                        $("#publicStatus").find("option:contains('禁用')").attr("selected", true);
+                    }
+                    var chks=$("input:checkbox[name='permissions']");
+                    for(p=0;p<chks.length;p++){
+                        chks[p].checked=false;
+                    }
+                    for (j=0;j<data.permissions.length;j++) {
+                        var chks=$("input:checkbox[name='permissions']");
+                        for(k=0;k<chks.length;k++){
+                            if(data.permissions[j].id==chks[k].value){
+                                chks[k].checked=true;
+                            }
+                        }
+                    }
+                },
+                error:function () {
+                    alert("角色信息加载失败")
+                }
+            });
+        }
+        <!--搜索按钮实现功能-->
+        $(document).on("click", "#searchButton", function () {
+            page.currPage=1;
+            page.startPage=1;
+            page.endPage=4;
+            var searchName = $('#search').val();
+            $("tbody").html("");
+            $.ajax({
+                url: "/role/roleList",
+                type: "GET",
+                dataType: "JSON",
+                data: {"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
+                success: function (data) {
+                    //初始化按钮，即第一次网页面上添加按钮
+                    if (data.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, data.totalPages);
+                    }
+                    //  $("#page .page-btn").first().addClass("curr-page");
+                    pageIteration(page.currPage);
+                    //禁用"上一页"按钮，因为默认是第一页，第一页没有上一页
+                    isDisabled(page.currPage, data.totalPages);
+                    for (i=0;i<data.content.length;i++) {
+                        $("tbody").append('<tr>' +
+                            '<td>'+data.content[i].name+'</td>' +
+                            '<td>'+data.content[i].publicStatus.name+'</td>' +
+                            '<td id="td'+i+'"></td>' +
+                            '<td><button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].id + ')" data-target="#myModal">修改</button></td>'+
+                            '</tr>');
+                        for(j=0;j<data.content[i].permissions.length;j++){
+                            $("#td"+i).append(data.content[i].permissions[j].name+",  ");
+                        }
+                    }
+
+                },
+                error: function () {
+                    alert("没有找到相应的记录,请重新输入...")
+                }
+            });
+        });
+        <!--对上一页按钮，添加点击事件-->
+        $(document).on("click", "#page .prev", function () {
+            searchName = $('#search').val();
+            page.currPage = parseInt(page.currPage) - 1;
+            curr_page = page.currPage;
+            $("tbody").html("");
+            pageIteration(page.currPage);
+            isDisabled(page.currPage, page.totalPage);
+            $.ajax({
+                url: "/role/roleList",
+                type: "GET",
+                data: {"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
+                datatype: "JSON",
+                success: function (data) {
+                    <!--页面展示的数据-->
+                    page.totalPage = data.totalPages;
+                    //迭代页面的展示数据
+                    for (i=0;i<data.content.length;i++) {
+                        $("tbody").append('<tr>' +
+                            '<td>'+data.content[i].name+'</td>' +
+                            '<td>'+data.content[i].publicStatus.name+'</td>' +
+                            '<td id="td'+i+'"></td>' +
+                            '<td><button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].id + ')" ' +
+                            'data-target="#myModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button></td>'+
+                            '</tr>');
+                        for(j=0;j<data.content[i].permissions.length;j++){
+                            $("#td"+i).append(data.content[i].permissions[j].name+",  ");
+                        }
+                    }
+                },
+                error: function () {
+                    alert("角色列表失败");
+                }
+            });
+        });
+        <!--对下一页按钮，添加点击事件-->
+        $(document).on("click", "#page .next", function () {
+            searchName = $('#search').val();
+            page.currPage = parseInt(page.currPage) + 1;
+            $("tbody").html("");
+            curr_page = page.currPage;
+            pageIteration(page.currPage);
+            isDisabled(page.currPage, page.totalPage);
+            $.ajax({
+                url: "/role/roleList",
+                type: "GET",
+                data: {"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
+                datatype: "JSON",
+                success: function (data) {
+                    var show = data.content;
+                    <!--页面展示的数据-->
+                    page.totalPage = data.totalPages;
+                    //迭代页面的展示数据
+                    for (i=0;i<data.content.length;i++) {
+                        $("tbody").append('<tr>' +
+                            '<td>'+data.content[i].name+'</td>' +
+                            '<td>'+data.content[i].publicStatus.name+'</td>' +
+                            '<td id="td'+i+'"></td>' +
+                            '<td><button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].id + ')" ' +
+                            'data-target="#myModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button></td>'+
+                            '</tr>');
+                        for(j=0;j<data.content[i].permissions.length;j++){
+                            $("#td"+i).append(data.content[i].permissions[j].name+",  ");
+                        }
+                    }
+                },
+                error: function () {
+                    alert("角色列表失败");
+                }
+            });
+        });
+        <!--对页码添加点击事件-->
+        $(document).on("click", ".page-btn", function () {
+            searchName = $('#search').val();
+            $this = $(this);
+            $("tbody").html("");
+            page.currPage = parseInt($this.text());
+            curr_page = page.currPage;
+            pageIteration(page.currPage);
+            isDisabled(page.currPage, page.totalPage);
+            $.ajax({
+                url: "/role/roleList",
+                type: "GET",
+                data: {"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
+                datatype: "JSON",
+                success: function (data) {
+                    var show = data.content;
+                    <!--页面展示的数据-->
+                    page.totalPage = data.totalPages;
+                    //迭代页面的展示数据
+                    for (i=0;i<data.content.length;i++) {
+                        $("tbody").append('<tr>' +
+                            '<td>'+data.content[i].name+'</td>' +
+                            '<td>'+data.content[i].publicStatus.name+'</td>' +
+                            '<td id="td'+i+'"></td>' +
+                            '<td><button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].id + ')" ' +
+                            'data-target="#myModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button></td>'+
+                            '</tr>');
+                        for(j=0;j<data.content[i].permissions.length;j++){
+                            $("#td"+i).append(data.content[i].permissions[j].name+",  ");
+                        }
+                    }
+                },
+                error: function () {
+                    alert("角色列表失败");
+                }
+            });
+        });
+        //添加分页插件，根据总页数来添加按钮
+        function addButtons(startPage, pageLength) {
+            // alert(pageLength);
+            $("#page").html(" ");
+            var _html = "<center><button class='btn btn-default prev' ><<上一页</button> ";
+            for (var i = startPage; i < startPage + pageLength; i++) {
+                _html += "<button class='btn btn-default page-btn' data-pageno=" + i + ">" + i + "</button> ";
+            }
+            _html += " <button class='btn btn-default next'>下一页>></button></center>";
+            $("#page").html(_html);
+        }
+
+        //分页按钮迭代(最要是对"上一页"和”下一页“是否禁用的判断)
+        function isDisabled(pagenum, totalpage) {
+            if (totalpage == 0 || totalpage == 1) {
+                $("#page .prev").attr("disabled", true);
+                $("#page .next").attr("disabled", true);
+            } else if (pagenum == 1) {
+                $("#page .prev").attr("disabled", true);
+                $("#page .next").removeAttr("disabled");
+            } else if (pagenum == totalpage) {
+                $("#page .next").attr("disabled", true);
+                $("#page .prev").removeAttr("disabled");
+            } else {
+                $("#page .next").removeAttr("disabled");
+                $("#page .prev").removeAttr("disabled");
+            }
+        }
+
+        //按钮迭代器
+        function pageIteration(currPage) {
+            if (page.currPage != 1 && page.currPage == page.startPage) {
+                page.startPage = page.currPage - page.pageLength / 2;
+                page.endPage = page.currPage + page.pageLength / 2 - 1;
+                addButtons(page.startPage, page.pageLength);
+                $("#page .page-btn").eq(page.pageLength / 2).addClass("curr-page");
+            } else if (page.currPage != page.totalPage && page.currPage == page.endPage) {
+                page.startPage = page.currPage - page.pageLength / 2 + 1;
+                page.endPage = (page.currPage + page.pageLength / 2) >= page.totalPage ? page.totalPage : (page.currPage + page.pageLength / 2);
+                addButtons(page.startPage, page.pageLength / 2 + (page.endPage == page.totalPage ? (page.endPage - page.currPage) : page.pageLength / 2));
+                $("#page .page-btn").eq(page.pageLength / 2 - 1).addClass("curr-page");
+            }
+            $("#page .page-btn").removeClass("curr-page").parent().find("[data-pageno=" + currPage + "]").addClass("curr-page");
+        }
     </script>
 </head>
 <body>
@@ -48,7 +376,6 @@
         <thead>
         <tr>
             <th>角色名</th>
-            <th>角色描述</th>
             <th>状态</th>
             <th>角色权限</th>
             <th>操作</th>
@@ -57,6 +384,32 @@
         <tbody>
         </tbody>
     </table>
+    <div id="page"></div>
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <form th:action="@{/role/save}" method="post" id="formData">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="myModalLabel">角色操作</h4>
+                    </div>
+                    <div class="modal-body" id="modalBody">
+                        <label for="name">角色名</label>
+                        <input class="form-control" type="text" placeholder="角色名" name="name" id="name"
+                               required="true"/>
+                        <label for="description">角色描述</label>
+                        <input class="form-control" type="text" placeholder="角色描述" name="description" id="description"
+                               required="true"/>
+                        <label>角色状态</label>
+                        <select class="form-control" id="publicStatus" name="publicStatus">
+                        </select>
+                    </div>
+                    <div class="modal-footer"id="footer">
+                    </div>
+                </div>
+            </div>
+        </form>
+
+    </div>
 </div>
 </body>
 </html>
