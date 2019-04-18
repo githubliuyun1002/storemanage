@@ -57,55 +57,15 @@
                             '<td>' + data.content[i].name + '</td>' +
                             '<td>' + data.content[i].roles[0].name + '</td>' +
                             '<td>' + data.content[i].publicStatus.name + '</td>' +
+                            '<td>'+data.content[i].marketEntity.name+'</td>'+
                             '<td><button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].id + ')" ' +
                             'data-target="#myModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button></td>' +
                             '</tr>');
-
                     }
 
                 },
                 error:function () {
                     alert("人员列表加载失败");
-                }
-            });
-        });
-
-        <!--加载角色列表-->
-        $(function () {
-            $.ajax({
-                url:"/person/roleList",
-                type:"GET",
-                dataType:"JSON",
-                success:function (data) {
-                     //console.log(data);
-                     for(i=0;i<data.length;i++){
-                         $("select#roleTypeSelect").append(
-                             '<option id="' + data[i].name + '" value="' + data[i].id + '">' + data[i].name + '</option>'
-                         );
-                     }
-                },
-                error:function () {
-                   alert("角色列表加载失败");
-                }
-            });
-        });
-
-        <!--加载公共状态列表-->
-        $(function () {
-            $.ajax({
-                url:"/person/statusList",
-                type:"GET",
-                dataType:"JSON",
-                success:function (data) {
-                    //console.log(data);
-                    for(i=0;i<data.length;i++){
-                        $("select#publicStatus").append(
-                            '<option id="' + data[i].name + '" value="' + data[i].id + '">' + data[i].name + '</option>'
-                        );
-                    }
-                },
-                error:function () {
-                    alert("状态列表加载失败");
                 }
             });
         });
@@ -120,7 +80,6 @@
             _html += " <button class='btn btn-default next'>下一页>></button></center>";
             $("#page").html(_html);
         }
-
         //分页按钮迭代(最要是对"上一页"和”下一页“是否禁用的判断)
         function isDisabled(pagenum, totalpage) {
             if (totalpage == 0 || totalpage == 1) {
@@ -186,6 +145,7 @@
                 dataType:"JSON",
                 success:function (data) {
                     $("#PID").html("");
+                    $("#hiddenshow").html("");
                     $("#footer").append(
                         '<button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>'+
                         '<button type="button" class="btn btn-primary" id="updateBtn">提交</button>'
@@ -193,6 +153,71 @@
                     $("#modalBody").append('<div id="PID"></div>');
                     <!--加载页面id,做成隐藏域-->
                     $("#PID").append('<input  class="form-control" name="id" id="personId" type="hidden" value="' + data.id + '"/>');
+                    $("#hiddenshow").append('<div id="hiddenshow"></div>');
+                    $("#hiddenshow").append('<label>状态</label>'+
+                                            '<select class="form-control" id="publicStatus" name="publicStatus"></select>'+
+                                            '<label for="marketEntity">所属市场</label>'+
+                                            '<select class="form-control" id="marketEntity" name="marketEntity"></select>'+
+                                            '<label>角色类型</label>'+
+                                            '<select class="form-control" id="roleTypeSelect" name="roles"></select>'
+
+                    );
+                    <!--加载角色列表-->
+                    $(function () {
+                        $.ajax({
+                            url:"/person/roleList",
+                            type:"GET",
+                            dataType:"JSON",
+                            success:function (data) {
+                                //console.log(data);
+                                for(i=0;i<data.length;i++){
+                                    $("select#roleTypeSelect").append(
+                                        '<option id="' + data[i].name + '" value="' + data[i].id + '">' + data[i].name + '</option>'
+                                    );
+                                }
+                            },
+                            error:function () {
+                                alert("角色列表加载失败");
+                            }
+                        });
+                    });
+                    <!--加载公共状态列表-->
+                    $(function () {
+                        $.ajax({
+                            url:"/person/statusList",
+                            type:"GET",
+                            dataType:"JSON",
+                            success:function (data) {
+                                //console.log(data);
+                                for(i=0;i<data.length;i++){
+                                    $("select#publicStatus").append(
+                                        '<option id="' + data[i].name + '" value="' + data[i].id + '">' + data[i].name + '</option>'
+                                    );
+                                }
+                            },
+                            error:function () {
+                                alert("状态列表加载失败");
+                            }
+                        });
+                    });
+                    //加载所属市场
+                    $(function () {
+                        $.ajax({
+                            url:"/store/marketList",
+                            type:"GET",
+                            dataType:"JSON",
+                            success:function (data) {
+                                for (var i = 0; i < data.length; i++) {
+                                    $("select#marketEntity").append(
+                                        '<option id="' + data[i].name + '" value="' + data[i].id + '">' + data[i].name + '</option>'
+                                    )
+                                }
+                            },
+                            error:function () {
+                                alert("市场加载失败");
+                            }
+                        });
+                    });
                     <!--页面数据回显-->
                     $("#username").val(data.username);
                     $("#name").val(data.name);
@@ -202,6 +227,8 @@
                     var publicStatusName=data.publicStatus.name;
                     //角色类型
                     var roleTypeName=data.roles[0].name;
+                    //所属市场名
+                    var marketName = data.marketEntity.name;
                     <!--对下拉框的数据进行回显-->
                     if (publicStatusName == "启用") {
                         $("#publicStatus").find("option:contains('启用')").attr("selected", true);
@@ -225,6 +252,20 @@
                              alert("角色类型回显失败");
                         }
                     });
+                    //回显市场
+                    $.ajax({
+                        url:"/store/marketList",
+                        type:"GET",
+                        dataType:"JSON",
+                        success:function (data) {
+                            console.log(data);
+                            for (var i = 0; i <data.length ; i++) {
+                                if(marketName == data[i].name){
+                                   $("#marketEntity").find("option:contains('"+data[i].name+"')").attr("selected",true);
+                                }
+                            }
+                        }
+                    })
 
                 },
                 error:function () {
@@ -266,6 +307,7 @@
                             '<td>' + data.content[i].name + '</td>' +
                             '<td>' + data.content[i].roles[0].name + '</td>' +
                             '<td>' + data.content[i].publicStatus.name + '</td>' +
+                            '<td>'+data.content[i].marketEntity.name+'</td>'+
                             '<td><button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].id + ')" ' +
                             'data-target="#myModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button></td>' +
                             '</tr>');
@@ -298,6 +340,7 @@
                             '<td>' + data.content[i].name + '</td>' +
                             '<td>' + data.content[i].roles[0].name + '</td>' +
                             '<td>' + data.content[i].publicStatus.name + '</td>' +
+                            '<td>'+data.content[i].marketEntity.name+'</td>'+
                             '<td><button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].id + ')" ' +
                             'data-target="#myModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button></td>' +
                             '</tr>');
@@ -331,6 +374,7 @@
                             '<td>' + data.content[i].name + '</td>' +
                             '<td>' + data.content[i].roles[0].name + '</td>' +
                             '<td>' + data.content[i].publicStatus.name + '</td>' +
+                            '<td>'+data.content[i].marketEntity.name+'</td>'+
                             '<td><button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].id + ')" ' +
                             'data-target="#myModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button></td>' +
                             '</tr>');
@@ -362,6 +406,7 @@
                             '<td>' + data.content[i].name + '</td>' +
                             '<td>' + data.content[i].roles[0].name + '</td>' +
                             '<td>' + data.content[i].publicStatus.name + '</td>' +
+                            '<td>'+data.content[i].marketEntity.name+'</td>'+
                             '<td><button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].id + ')" ' +
                             'data-target="#myModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button></td>' +
                             '</tr>');
@@ -398,6 +443,7 @@
                <th>中文名</th>
                <th>角色类型</th>
                <th>状态</th>
+               <th>所属市场</th>
                <th>操作</th>
            </tr>
            </thead>
@@ -424,12 +470,15 @@
                                   required="true"/>
                            <label for="mail">邮箱</label>
                            <input class="form-control" type="text" placeholder="邮箱" name="mail" id="mail" required="true"/>
-                           <label>状态</label>
-                           <select class="form-control" id="publicStatus" name="publicStatus">
-                           </select>
-                           <label>角色类型</label>
-                           <select class="form-control" id="roleTypeSelect" name="roles"></select>
-
+                           <div id="hiddenshow">
+                               <label>状态</label>
+                               <select class="form-control" id="publicStatus" name="publicStatus">
+                               </select>
+                               <label for="marketEntity">所属市场</label>
+                               <select class="form-control" id="marketEntity" name="marketEntity"></select>
+                               <label>角色类型</label>
+                               <select class="form-control" id="roleTypeSelect" name="roles"></select>
+                           </div>
                        </div>
                        <div class="modal-footer" id="footer"></div>
                    </div>

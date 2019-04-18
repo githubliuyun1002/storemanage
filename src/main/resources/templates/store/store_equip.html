@@ -114,6 +114,7 @@
                }
            });
        }
+       //设备填充
        $(function () {
            var storeId = $("#SID").val();
            $.ajax({
@@ -122,6 +123,7 @@
                type:"GET",
                dataType:"JSON",
                success:function (data) {
+                   console.log(data);
                    if(data.length!=0){
                           $("#showHeader").html("");
                           $("#showHeader").append('' +
@@ -142,17 +144,12 @@
                                $("#show").append('<tr>' +
                                     '<td>'+typeData.typeName+'</td>'+
                                     '<td>'+data[i].num+'</td>' +
-                                    '<td><button type="button" class="btn btn-default">变更</button></td>'+
+                                    "<td><a style=\"text-decoration: none;color: black\" href=\"/store/equipChange?typeId="+data[i].typeId+"&storeId="+data[i].storeId+"&id="+data[i].id+"\">变更</a></td>"+
                                     '</tr>');
                            }
                        });
                    }
                }
-           });
-       });
-        $(document).on("click","#returnBt",function () {
-           $.ajax({
-               url:"/store/home"
            });
        });
         //加载餐厅状态
@@ -215,8 +212,6 @@
                 }
             });
         });
-
-
     </script>
 </head>
 <body>
@@ -305,6 +300,7 @@
               </div>
           </form>
      </div>
+     <!--设置宽带模态窗口-->
      <div class="modal fade" id="widthModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
          <form method="post" th:action="@{/store/storeWidth}">
              <div class="modal-dialog">

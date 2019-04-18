@@ -17,4 +17,10 @@ public class StoreTypeService {
     public List<StoreType> findTypeByStoreId(int storeId){
         return storeTypeRepository.findTypeByStoreId(storeId);
     }
+    public StoreType findStore(int storeId,int typeId){
+        return storeTypeRepository.findStore(storeId,typeId);
+    }
+    public StoreType findById(int id){
+        return  storeTypeRepository.findById(id).get();
+    }
 }

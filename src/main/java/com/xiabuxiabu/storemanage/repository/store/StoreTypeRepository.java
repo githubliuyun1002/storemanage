@@ -10,4 +10,6 @@ import java.util.List;
 public interface StoreTypeRepository extends JpaRepository<StoreType,Integer> {
     @Query("from StoreType  where storeId = :storeId")
     List<StoreType> findTypeByStoreId(@Param("storeId") int storeId);
+    @Query("from  StoreType  where storeId = :storeId and typeId =:typeId")
+    StoreType findStore(@Param("storeId") int storeId,@Param("typeId") int typeId);
 }

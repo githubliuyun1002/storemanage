@@ -1,8 +1,10 @@
 package com.xiabuxiabu.storemanage.controller.user;
 
+import com.xiabuxiabu.storemanage.entity.publicutil.MarketEntity;
 import com.xiabuxiabu.storemanage.entity.publicutil.PublicStatus;
 import com.xiabuxiabu.storemanage.entity.user.Role;
 import com.xiabuxiabu.storemanage.entity.user.User;
+import com.xiabuxiabu.storemanage.service.publicutil.MarketService;
 import com.xiabuxiabu.storemanage.service.publicutil.PublicStatusService;
 import com.xiabuxiabu.storemanage.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,8 @@ public class UserController {
     private UserService userService;
     @Autowired
     private PublicStatusService publicStatusService;
+    @Autowired
+    private MarketService marketService;
     @RequestMapping("/findByUserName")
     @ResponseBody
     public User findByUserName(String userName){
@@ -91,6 +95,11 @@ public class UserController {
         }
         userService.updateSave(user);
         return "redirect:/person/home";
+    }
+    @RequestMapping("/marketList")
+    @ResponseBody
+    public List<MarketEntity> marketList(){
+        return marketService.findAll();
     }
 
 

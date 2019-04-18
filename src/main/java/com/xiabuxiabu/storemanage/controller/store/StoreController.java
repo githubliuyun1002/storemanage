@@ -94,8 +94,10 @@ public class StoreController {
     }
     @RequestMapping("/addEquip")
     public ModelAndView addEquip(ModelAndView modelAndView, StoreType storeType,int store_status){
+        System.out.println("storeType--->"+storeType);
         if(storeType!=null){
             int storeId = storeType.getStoreId();
+            int typeId = storeType.getTypeId();
             Store store = storeService.findById(storeId);
             StoreStatus storeStatus = storeStatusService.findById(store_status);
             store.setStoreStatus(storeStatus);
@@ -103,6 +105,11 @@ public class StoreController {
             JSONObject storeObj = JSONObject.fromObject(store.toString());
             modelAndView.addObject("StoreMsg",storeObj);
             modelAndView.addObject("StoreId",store.getId());
+            StoreType storeType1 = storeTypeService.findStore(storeId,typeId);
+            System.out.println(storeTypeService.findStore(storeId,typeId)!=null);
+            if(storeType1!=null){
+                 storeType.setId(storeType1.getId());
+            }
             storeTypeService.save(storeType);
         }
          modelAndView.setViewName("/store/store_equip");
@@ -167,8 +174,43 @@ public class StoreController {
         modelAndView.addObject("StoreId",store.getId());
         modelAndView.setViewName("/store/store_equip");
         return modelAndView;
-
-
+    }
+    /**
+     * 回显餐厅信息
+     */
+    @RequestMapping("/update")
+    @ResponseBody
+    public  ModelAndView update(int id,ModelAndView modelAndView){
+        Store store = storeService.findById(id);
+        modelAndView.addObject("storeObj",store);
+        modelAndView.setViewName("/store/store_update");
+        return modelAndView;
+    }
+    /**
+     * 执行修改餐厅信息
+     */
+    @RequestMapping("/toupdate")
+    public String toupdate(Store store, WidthBand widthBand){
+        if(widthBand.getWid()!=0){
+            if(widthBandService.findById(widthBand.getWid())!=null){
+                widthBandService.save(widthBand);
+            }
+            if(storeService.findById(store.getId())!=null){
+                store.setWidthBand(widthBand);
+                storeService.save(store);
+            }
+        }else{
+            if(storeService.findById(store.getId())!=null){
+                storeService.save(store);
+            }
+        }
+        return "redirect:/store/home";
+    }
+    @RequestMapping("/equipChange")
+    public String equipChange(int typeId,int storeId,int id){
+        StoreType storeType = storeTypeService.findById(id);
+       // System.out.println("stor");
+        return  null;
     }
 
 }

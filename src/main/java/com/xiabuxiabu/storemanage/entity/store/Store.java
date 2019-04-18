@@ -38,8 +38,7 @@ public class Store{
     @Temporal(TemporalType.DATE)
     private Date startDate;
     //闭店日期
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    @Temporal(TemporalType.DATE)
     private Date closeDate;
     public int getId() {
         return id;

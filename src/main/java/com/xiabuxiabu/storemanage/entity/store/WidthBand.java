@@ -12,7 +12,7 @@ import java.util.Date;
 public class WidthBand {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private int wid;
     //运行商
     @OneToOne
     @JoinColumn(name = "serviceperson")
@@ -38,12 +38,12 @@ public class WidthBand {
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private LocalDate endDate;
 
-    public int getId() {
-        return id;
+    public int getWid() {
+        return wid;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setWid(int wid) {
+        this.wid = wid;
     }
 
     public ServicePerson getServicePerson() {
@@ -113,7 +113,7 @@ public class WidthBand {
     @Override
     public String toString() {
         return "{" +
-                "id=" + id +
+                "wid=" + wid +
                 ", servicePerson=" + servicePerson +
                 ", accessMethod=" + accessMethod +
                 ", identity='" + identity + '\'' +
