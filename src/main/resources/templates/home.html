@@ -124,6 +124,71 @@
                 $("#name").val("");
                 $("#password").val("");
                 $("#mail").val("");
+                $("#hiddenshow").html("");
+                $("#modalBody").append('<div id="show"></div>');
+                $("#show").append('<label>状态</label>'+
+                    '<select class="form-control" id="publicStatus" name="publicStatus"></select>'+
+                    '<label for="marketEntity">所属市场</label>'+
+                    '<select class="form-control" id="marketEntity" name="marketEntity"></select>'+
+                    '<label>角色类型</label>'+
+                    '<select class="form-control" id="roleTypeSelect" name="roles"></select>'
+                );
+                <!--加载角色列表-->
+                $(function () {
+                    $.ajax({
+                        url:"/person/roleList",
+                        type:"GET",
+                        dataType:"JSON",
+                        success:function (data) {
+                            //console.log(data);
+                            for(i=0;i<data.length;i++){
+                                $("select#roleTypeSelect").append(
+                                    '<option id="' + data[i].name + '" value="' + data[i].id + '">' + data[i].name + '</option>'
+                                );
+                            }
+                        },
+                        error:function () {
+                            alert("角色列表加载失败");
+                        }
+                    });
+                });
+                <!--加载公共状态列表-->
+                $(function () {
+                    $.ajax({
+                        url:"/person/statusList",
+                        type:"GET",
+                        dataType:"JSON",
+                        success:function (data) {
+                            //console.log(data);
+                            for(i=0;i<data.length;i++){
+                                $("select#publicStatus").append(
+                                    '<option id="' + data[i].name + '" value="' + data[i].id + '">' + data[i].name + '</option>'
+                                );
+                            }
+                        },
+                        error:function () {
+                            alert("状态列表加载失败");
+                        }
+                    });
+                });
+                //加载所属市场
+                $(function () {
+                    $.ajax({
+                        url:"/store/marketList",
+                        type:"GET",
+                        dataType:"JSON",
+                        success:function (data) {
+                            for (var i = 0; i < data.length; i++) {
+                                $("select#marketEntity").append(
+                                    '<option id="' + data[i].name + '" value="' + data[i].id + '">' + data[i].name + '</option>'
+                                )
+                            }
+                        },
+                        error:function () {
+                            alert("市场加载失败");
+                        }
+                    });
+                });
 
             });
         });
@@ -151,15 +216,16 @@
                         '<button type="button" class="btn btn-primary" id="updateBtn">提交</button>'
                     );
                     $("#modalBody").append('<div id="PID"></div>');
+                    $("#show").html("")
                     <!--加载页面id,做成隐藏域-->
                     $("#PID").append('<input  class="form-control" name="id" id="personId" type="hidden" value="' + data.id + '"/>');
-                    $("#hiddenshow").append('<div id="hiddenshow"></div>');
+                    $("#modalBody").append('<div id="hiddenshow"></div>');
                     $("#hiddenshow").append('<label>状态</label>'+
-                                            '<select class="form-control" id="publicStatus" name="publicStatus"></select>'+
+                                            '<select class="form-control" id="uppublicStatus" name="publicStatus"></select>'+
                                             '<label for="marketEntity">所属市场</label>'+
-                                            '<select class="form-control" id="marketEntity" name="marketEntity"></select>'+
+                                            '<select class="form-control" id="upmarketEntity" name="marketEntity"></select>'+
                                             '<label>角色类型</label>'+
-                                            '<select class="form-control" id="roleTypeSelect" name="roles"></select>'
+                                            '<select class="form-control" id="uproleTypeSelect" name="roles"></select>'
 
                     );
                     <!--加载角色列表-->
@@ -171,7 +237,7 @@
                             success:function (data) {
                                 //console.log(data);
                                 for(i=0;i<data.length;i++){
-                                    $("select#roleTypeSelect").append(
+                                    $("select#uproleTypeSelect").append(
                                         '<option id="' + data[i].name + '" value="' + data[i].id + '">' + data[i].name + '</option>'
                                     );
                                 }
@@ -190,7 +256,7 @@
                             success:function (data) {
                                 //console.log(data);
                                 for(i=0;i<data.length;i++){
-                                    $("select#publicStatus").append(
+                                    $("select#uppublicStatus").append(
                                         '<option id="' + data[i].name + '" value="' + data[i].id + '">' + data[i].name + '</option>'
                                     );
                                 }
@@ -208,7 +274,7 @@
                             dataType:"JSON",
                             success:function (data) {
                                 for (var i = 0; i < data.length; i++) {
-                                    $("select#marketEntity").append(
+                                    $("select#upmarketEntity").append(
                                         '<option id="' + data[i].name + '" value="' + data[i].id + '">' + data[i].name + '</option>'
                                     )
                                 }
@@ -231,9 +297,9 @@
                     var marketName = data.marketEntity.name;
                     <!--对下拉框的数据进行回显-->
                     if (publicStatusName == "启用") {
-                        $("#publicStatus").find("option:contains('启用')").attr("selected", true);
+                        $("#uppublicStatus").find("option:contains('启用')").attr("selected", true);
                     } else if (publicStatusName == "禁用") {
-                        $("#publicStatus").find("option:contains('禁用')").attr("selected", true);
+                        $("#uppublicStatus").find("option:contains('禁用')").attr("selected", true);
                     }
                     //回显角色类型
                     $.ajax({
@@ -244,7 +310,7 @@
                             console.log(data);
                             for (i=0;i<data.length;i++){
                                 if(roleTypeName==data[i].name){
-                                    $("#roleTypeSelect").find("option:contains('"+data[i].name+"')").attr("selected", true);
+                                    $("#uproleTypeSelect").find("option:contains('"+data[i].name+"')").attr("selected", true);
                                 }
                             }
                         },
@@ -261,7 +327,7 @@
                             console.log(data);
                             for (var i = 0; i <data.length ; i++) {
                                 if(marketName == data[i].name){
-                                   $("#marketEntity").find("option:contains('"+data[i].name+"')").attr("selected",true);
+                                   $("#upmarketEntity").find("option:contains('"+data[i].name+"')").attr("selected",true);
                                 }
                             }
                         }
@@ -470,24 +536,12 @@
                                   required="true"/>
                            <label for="mail">邮箱</label>
                            <input class="form-control" type="text" placeholder="邮箱" name="mail" id="mail" required="true"/>
-                           <div id="hiddenshow">
-                               <label>状态</label>
-                               <select class="form-control" id="publicStatus" name="publicStatus">
-                               </select>
-                               <label for="marketEntity">所属市场</label>
-                               <select class="form-control" id="marketEntity" name="marketEntity"></select>
-                               <label>角色类型</label>
-                               <select class="form-control" id="roleTypeSelect" name="roles"></select>
-                           </div>
                        </div>
                        <div class="modal-footer" id="footer"></div>
                    </div>
                </div>
            </form>
        </div>
-
-
-
    </div>
 </body>
 </html>

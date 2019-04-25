@@ -42,16 +42,20 @@ public class AppliactionInit implements ApplicationRunner {
         marketEntity.setRemarks("天津市场");
         marketService.save(marketEntity);
         marketEntity.setId(3);
-        marketEntity.setName("石家庄市场");
-        marketEntity.setRemarks("石家庄市场");
+        marketEntity.setName("河北市场");
+        marketEntity.setRemarks("河北市场");
         marketService.save(marketEntity);
         marketEntity.setId(4);
         marketEntity.setName("东北市场");
         marketEntity.setRemarks("东北市场");
         marketService.save(marketEntity);
         marketEntity.setId(5);
-        marketEntity.setName("华南市场");
-        marketEntity.setRemarks("华南市场");
+        marketEntity.setName("深圳市场");
+        marketEntity.setRemarks("深圳市场");
+        marketService.save(marketEntity);
+        marketEntity.setId(6);
+        marketEntity.setName("上海市场");
+        marketEntity.setRemarks("上海市场");
         marketService.save(marketEntity);
     }
 }

@@ -9,6 +9,7 @@ import com.xiabuxiabu.storemanage.service.equip.TypeService;
 import com.xiabuxiabu.storemanage.service.publicutil.MarketService;
 import com.xiabuxiabu.storemanage.service.store.*;
 import net.bytebuddy.asm.Advice;
+import net.sf.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.data.domain.Page;
@@ -23,6 +24,7 @@ import net.sf.json.JSONObject;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.lang.reflect.Type;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -49,6 +51,8 @@ public class StoreController {
     private PayMethodService payMethodService;
     @Autowired
     private WidthBandService widthBandService;
+    @Autowired
+    private StoreChangeService storeChangeService;
     /**
      * 初始化转换日期类，将输入框中String类型的值，转化为Date类型的值。
      * 并设置相应的日期类型
@@ -106,7 +110,7 @@ public class StoreController {
             modelAndView.addObject("StoreMsg",storeObj);
             modelAndView.addObject("StoreId",store.getId());
             StoreType storeType1 = storeTypeService.findStore(storeId,typeId);
-            System.out.println(storeTypeService.findStore(storeId,typeId)!=null);
+          //  System.out.println(storeTypeService.findStore(storeId,typeId)!=null);
             if(storeType1!=null){
                  storeType.setId(storeType1.getId());
             }
@@ -206,11 +210,69 @@ public class StoreController {
         }
         return "redirect:/store/home";
     }
+
+    /**
+     * 显示设别变更界面
+     * @param typeId
+     * @param storeId
+     * @param id
+     * @param modelAndView
+     * @return
+     */
     @RequestMapping("/equipChange")
-    public String equipChange(int typeId,int storeId,int id){
+    @ResponseBody
+    public ModelAndView equipChange(int typeId,int storeId,int id,ModelAndView modelAndView){
         StoreType storeType = storeTypeService.findById(id);
-       // System.out.println("stor");
-        return  null;
+        Store store = storeService.findById(storeId);
+        TypeEntity type = typeService.findById(typeId);
+        modelAndView.addObject("type",type);
+        modelAndView.addObject("store",store);
+        modelAndView.addObject("storeType",storeType);
+        modelAndView.setViewName("/store/store_TypeChange");
+        return  modelAndView;
     }
 
+    /**
+     * 设置变更
+     * @param modelAndView
+     * @param id
+     * @param num
+     * @param
+     * @return
+     */
+    @RequestMapping("/storeTypeChange")
+    public ModelAndView storeTypeChange(ModelAndView modelAndView,int id,int num,String storeName,String typeName){
+        System.out.println("id---->"+id);
+        System.out.println("num--->"+num);
+        System.out.println("storeName-->"+storeName);
+        System.out.println("typeName--->"+typeName);
+        StoreType storeType = storeTypeService.findById(id);
+        Store store = storeService.findById(storeType.getStoreId());
+        JSONObject jsonObject = JSONObject.fromObject(store.toString());
+        modelAndView.addObject("StoreMsg",jsonObject);
+        modelAndView.addObject("StoreId",store.getId());
+        storeType.setNum(num);
+        storeTypeService.save(storeType);
+        modelAndView.setViewName("/store/store_equip");
+       // System.out.println("storeChange------>"+storeChange);
+       // storeChange.setStoreId(storeType.getStoreId());
+       // storeChangeService.save(storeChange);
+        return modelAndView;
+    }
+    /**
+     * 变更历史查询页面
+     */
+    @RequestMapping("/historySearch")
+    public ModelAndView historySearch(int storeId,ModelAndView modelAndView){
+
+        modelAndView.addObject("storeId",storeId);
+        modelAndView.setViewName("/store/store_history");
+        return modelAndView;
+
+    }
+    @RequestMapping("/storeChangeList")
+    @ResponseBody
+    public List<StoreChange> storeChangeList(int storeId){
+        return storeChangeService.findByStoreId(storeId);
+    }
 }

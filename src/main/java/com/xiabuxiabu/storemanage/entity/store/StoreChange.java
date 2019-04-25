@@ -12,11 +12,14 @@ public class StoreChange {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     private int storeId;
+    private String storeName;
     private int typeId;
+    private String typeName;
     //变更人
     private String changePerson;
     //变更原因
     private String changeReason;
+
     //变更时间
     @Temporal(TemporalType.DATE)
     private Date changeDate;
@@ -27,6 +30,22 @@ public class StoreChange {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getTypeName() {
+        return typeName;
+    }
+
+    public String getStoreName() {
+        return storeName;
+    }
+
+    public void setStoreName(String storeName) {
+        this.storeName = storeName;
+    }
+
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
     }
 
     public int getStoreId() {
@@ -71,7 +90,9 @@ public class StoreChange {
         return "{" +
                 "id=" + id +
                 ", storeId=" + storeId +
+                ", storeName='" + storeName + '\'' +
                 ", typeId=" + typeId +
+                ", typeName='" + typeName + '\'' +
                 ", changePerson='" + changePerson + '\'' +
                 ", changeReason='" + changeReason + '\'' +
                 ", changeDate=" + changeDate +
