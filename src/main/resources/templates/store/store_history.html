@@ -21,8 +21,13 @@
                            if(data.length!=0){
                              console.log(data);
                                for (var i = 0; i < data.length; i++) {
-                                   $("tbody").append()
-
+                                   $("tbody").append('<tr>' +
+                                       '<td>'+data[i].storeName+'</td>' +
+                                       '<td>'+data[i].typeName+'</td>' +
+                                       '<td>'+data[i].changePerson+'</td>'+
+                                       '<td>'+data[i].changeDate+'</td>'+
+                                       '<td>'+data[i].changeReason+'</td>'+
+                                       '</tr>');
                                }
 
                            }else{
@@ -34,11 +39,14 @@
                        }
                    });
         })
+        function goback() {
+            history.go(-1);
+        }
     </script>
 </head>
 <body>
        <div class="container">
-           <input type="text" class="form-control" id="storeId" th:value="${storeId}">
+           <input type="hidden" class="form-control" id="storeId" th:value="${storeId}">
            <table class="table table-striped">
                <caption>设备更新展示列表</caption>
                <thead>
@@ -52,6 +60,9 @@
                </thead>
                <tbody></tbody>
            </table>
+           <div class="col-sm-offset-6">
+               <button type="button" class="btn btn-default" onclick="goback()">返回</button>
+           </div>
        </div>
 </body>
 </html>

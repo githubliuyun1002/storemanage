@@ -23,20 +23,20 @@
               <label for="storeId" class="col-md-3 control-label">门店编码</label>
               <div class="col-md-6">
                   <input type="hidden" class="form-control" name="id" id="storeTypeId" th:value="${storeType.id}">
-                  <input type="text" class="form-control" disabled="true" name="storeId" id="storeId" th:value="${store.id}">
+                  <input type="text" class="form-control"  readonly="true" name="storeId" id="storeId" th:value="${store.id}">
               </div>
           </div>
           <div class="form-group">
               <label for="storeName" class="col-md-3 control-label">门店名称</label>
               <div class="col-md-6">
-                  <input type="text" class="form-control" disabled="true" name="storeName" id="storeName" th:value="${store.name}">
+                  <input type="text" class="form-control"  readonly="true"  name="storeName" id="storeName" th:value="${store.name}">
               </div>
           </div>
           <div class="form-group">
               <label for="typeName" class="col-md-3 control-label">设备名称</label>
               <div class="col-md-6">
                   <input type="hidden" class="form-control" name="typeId" th:value="${type.id}">
-                  <input type="text" class="form-control" disabled="true" name="typeName" id="typeName" th:value="${type.typeName}">
+                  <input type="text" class="form-control"  readonly="true" name="typeName" id="typeName" th:value="${type.typeName}">
               </div>
           </div>
           <div class="form-group">

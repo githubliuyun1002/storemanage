@@ -39,7 +39,5 @@ public class StoreService {
     public Store save(Store store){
         return  storeRepository.save(store);
     }
-    /*public Store updateById(int id){
-        return storeRepository.
-    }*/
+
 }

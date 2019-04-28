@@ -241,11 +241,7 @@ public class StoreController {
      * @return
      */
     @RequestMapping("/storeTypeChange")
-    public ModelAndView storeTypeChange(ModelAndView modelAndView,int id,int num,String storeName,String typeName){
-        System.out.println("id---->"+id);
-        System.out.println("num--->"+num);
-        System.out.println("storeName-->"+storeName);
-        System.out.println("typeName--->"+typeName);
+    public ModelAndView storeTypeChange(ModelAndView modelAndView,int id,int num,StoreChange storeChange){
         StoreType storeType = storeTypeService.findById(id);
         Store store = storeService.findById(storeType.getStoreId());
         JSONObject jsonObject = JSONObject.fromObject(store.toString());
@@ -254,9 +250,9 @@ public class StoreController {
         storeType.setNum(num);
         storeTypeService.save(storeType);
         modelAndView.setViewName("/store/store_equip");
-       // System.out.println("storeChange------>"+storeChange);
-       // storeChange.setStoreId(storeType.getStoreId());
-       // storeChangeService.save(storeChange);
+        System.out.println("storeChange------>"+storeChange);
+        storeChange.setStoreId(storeType.getStoreId());
+        storeChangeService.save(storeChange);
         return modelAndView;
     }
     /**
@@ -268,7 +264,6 @@ public class StoreController {
         modelAndView.addObject("storeId",storeId);
         modelAndView.setViewName("/store/store_history");
         return modelAndView;
-
     }
     @RequestMapping("/storeChangeList")
     @ResponseBody

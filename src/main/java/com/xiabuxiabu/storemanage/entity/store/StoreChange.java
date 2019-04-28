@@ -12,9 +12,9 @@ public class StoreChange {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     private int storeId;
-    private String storeName;
+    private String storeName;   //storeName
     private int typeId;
-    private String typeName;
+    private String typeName;    //typeName
     //变更人
     private String changePerson;
     //变更原因
