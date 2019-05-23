@@ -26,9 +26,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
     private AuthenticationSuccessHandler authenticationSuccessHandler;  //客户端登录成功的处理器
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-         http.headers().frameOptions().disable();
-         http.sessionManagement().invalidSessionUrl("/timeout");
-        http.authorizeRequests().antMatchers("/publicUtils/**", "/**/*.css", "/**/*.js", "*/*/img/*", "/", "/**/*.txt").permitAll()
+        http.headers().frameOptions().disable();
+        http.sessionManagement().invalidSessionUrl("/timeout");
+        http.authorizeRequests().antMatchers("/img/**","/style/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
@@ -52,5 +52,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
     @Override
     public void configure(WebSecurity web) throws Exception {
         web.privilegeEvaluator(new DefaultWebInvocationPrivilegeEvaluator(myFilterSecurityInterceptor));
+        web.ignoring().antMatchers("/static/**","/public/**");
     }
 }

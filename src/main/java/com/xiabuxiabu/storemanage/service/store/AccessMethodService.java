@@ -1,3 +1,4 @@
+/*
 package com.xiabuxiabu.storemanage.service.store;
 
 import com.xiabuxiabu.storemanage.entity.store.AccessMethod;
@@ -19,3 +20,4 @@ public class AccessMethodService {
         return accessMethodRepository.findById(id).get();
     }
 }
+*/

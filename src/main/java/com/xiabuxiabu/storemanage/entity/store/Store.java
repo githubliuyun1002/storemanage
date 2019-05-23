@@ -1,67 +1,67 @@
 package com.xiabuxiabu.storemanage.entity.store;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.xiabuxiabu.storemanage.entity.equip.EquipEntity;
+import com.alibaba.fastjson.JSONObject;
+import com.xiabuxiabu.storemanage.entity.equip.Items;
 import com.xiabuxiabu.storemanage.entity.publicutil.MarketEntity;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.util.Date;
 import java.util.Set;
 
+/**
+
+* @Description:    java类门店实体类
+*/
+
 @Entity
-public class Store{
+public class Store {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
-    private String code;
-    private String name;
-    private String address;
-    //市场IT
-    private String marketIT;
-    //门店所属市场
+    private int storeId;
+    private String storeCode;  //门店编码
+    private String storeName;  //门店名称
+    private String address;     //地址
+
     @OneToOne
-    @JoinColumn(name = "marketentity")
-    private MarketEntity marketEntity;
-    //门店经理
-    private String manager;
+    @JoinColumn(name = "marketCode")
+    private MarketEntity marketCode;
+    private String marger;     //(有些门店没有门店经理，再列表中展示时需要判断)
+
+    //门店状态
     @OneToOne
-    @JoinColumn(name = "storestatus")
-    //餐厅状态
+    @JoinColumn(name = "storeStatus")
     private StoreStatus storeStatus;
-    @OneToOne
-    @JoinColumn(name = "widthband")
-    //餐厅宽带
-    private WidthBand widthBand;
-    //开店日期
+
     @Temporal(TemporalType.DATE)
-    private Date startDate;
-    //闭店日期
-    @Temporal(TemporalType.DATE)
-    private Date closeDate;
-    public int getId() {
-        return id;
+    private Date openDate;
+
+    //设置门店的设备(items)
+    @ManyToMany(targetEntity = Items.class,fetch = FetchType.EAGER)
+    @JoinTable(name = "store_items",joinColumns = @JoinColumn(name = "store_id"),inverseJoinColumns = @JoinColumn(name = "items_id"))
+    private Set<Items> itemsSet;
+
+    public int getStoreId() {
+        return storeId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setStoreId(int storeId) {
+        this.storeId = storeId;
     }
 
-    public String getCode() {
-        return code;
+    public String getStoreCode() {
+        return storeCode;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setStoreCode(String storeCode) {
+        this.storeCode = storeCode;
     }
 
-    public String getName() {
-        return name;
+    public String getStoreName() {
+        return storeName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setStoreName(String storeName) {
+        this.storeName = storeName;
     }
 
     public String getAddress() {
@@ -72,77 +72,40 @@ public class Store{
         this.address = address;
     }
 
-    public StoreStatus getStoreStatus() {
-        return storeStatus;
+    public MarketEntity getMarketCode() {
+        return marketCode;
     }
 
-    public void setStoreStatus(StoreStatus storeStatus) {
-        this.storeStatus = storeStatus;
+    public void setMarketCode(MarketEntity marketCode) {
+        this.marketCode = marketCode;
     }
 
-    public WidthBand getWidthBand() {
-        return widthBand;
+    public String getMarger() {
+        return marger;
     }
 
-    public void setWidthBand(WidthBand widthBand) {
-        this.widthBand = widthBand;
+    public void setMarger(String marger) {
+        this.marger = marger;
     }
 
-
-    public String getManager() {
-        return manager;
+    public Date getOpenDate() {
+        return openDate;
     }
 
-    public void setManager(String manager) {
-        this.manager = manager;
+    public void setOpenDate(Date openDate) {
+        this.openDate = openDate;
     }
 
-    public Date getStartDate() {
-        return startDate;
+    public Set<Items> getItemsSet() {
+        return itemsSet;
     }
 
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
-
-    public Date getCloseDate() {
-        return closeDate;
-    }
-
-    public void setCloseDate(Date closeDate) {
-        this.closeDate = closeDate;
-    }
-
-    public String getMarketIT() {
-        return marketIT;
-    }
-
-    public void setMarketIT(String marketIT) {
-        this.marketIT = marketIT;
-    }
-
-    public MarketEntity getMarketEntity() {
-        return marketEntity;
-    }
-
-    public void setMarketEntity(MarketEntity marketEntity) {
-        this.marketEntity = marketEntity;
+    public void setItemsSet(Set<Items> itemsSet) {
+        this.itemsSet = itemsSet;
     }
 
     @Override
     public String toString() {
-        return "{" +
-                "id=" + id +
-                ", code='" + code + '\'' +
-                ", name='" + name + '\'' +
-                ", address='" + address + '\'' +
-                ", marketIT='" + marketIT + '\'' +
-                ", marketEntity=" + marketEntity +
-                ", manager='" + manager + '\'' +
-                ", storeStatus=" + storeStatus +
-                ", widthBand=" + widthBand +
-                ", startDate=" + startDate +
-                ", closeDate=" + closeDate +
-                '}';
+        return JSONObject.toJSONString(this,true);
     }
 }

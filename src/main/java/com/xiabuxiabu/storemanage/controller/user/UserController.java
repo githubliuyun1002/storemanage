@@ -3,9 +3,11 @@ package com.xiabuxiabu.storemanage.controller.user;
 import com.xiabuxiabu.storemanage.entity.publicutil.MarketEntity;
 import com.xiabuxiabu.storemanage.entity.publicutil.PublicStatus;
 import com.xiabuxiabu.storemanage.entity.user.Role;
+import com.xiabuxiabu.storemanage.entity.user.RoleType;
 import com.xiabuxiabu.storemanage.entity.user.User;
 import com.xiabuxiabu.storemanage.service.publicutil.MarketService;
 import com.xiabuxiabu.storemanage.service.publicutil.PublicStatusService;
+import com.xiabuxiabu.storemanage.service.user.RoleTypeService;
 import com.xiabuxiabu.storemanage.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -48,6 +50,12 @@ public class UserController {
     public List<Role> RoleList(){
         return userService.RoleList();
     }
+
+    @RequestMapping("/roleTypeList")
+    @ResponseBody
+    public List<RoleType> roleTypeList(){
+        return userService.findAllRole();
+    }
     /**
      * 查询所有的公共状态列表
      */
@@ -61,7 +69,7 @@ public class UserController {
      */
     @RequestMapping("/home")
     public String home(){
-        return "/home";
+        return "/user/home";
     }
     /**
      * 新增保存人员,在列表中进行展示
@@ -77,7 +85,7 @@ public class UserController {
     /**
      * 修改人员进行展示
      */
-    @RequestMapping("findById")
+    @RequestMapping("/findById")
     @ResponseBody
     public User findById(int id){
         return  userService.findById(id);

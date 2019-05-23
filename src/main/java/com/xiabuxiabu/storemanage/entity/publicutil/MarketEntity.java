@@ -1,19 +1,22 @@
 package com.xiabuxiabu.storemanage.entity.publicutil;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import com.alibaba.fastjson.JSONObject;
+import com.xiabuxiabu.storemanage.entity.user.User;
+
+import javax.persistence.*;
+import java.util.Set;
 
 /**
- * 市场的基本信息实体类
+ * 市场的基本信息实体类，市场要和相应的人员进行对应
  */
 @Entity
 public class MarketEntity {
-    @Id
+   @Id
     private int id;
+    private String marketCode;
     private String name;
-    private String remarks;  //描述
+
+
     public int getId() {
         return id;
     }
@@ -30,21 +33,16 @@ public class MarketEntity {
         this.name = name;
     }
 
-    public String getRemarks() {
-        return remarks;
+    public String getMarketCode() {
+        return marketCode;
     }
 
-    public void setRemarks(String remarks) {
-        this.remarks = remarks;
+    public void setMarketCode(String marketCode) {
+        this.marketCode = marketCode;
     }
 
     @Override
     public String toString() {
-        return "{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", remarks='" + remarks + '\'' +
-                '}';
+        return JSONObject.toJSONString(this,true);
     }
-
 }

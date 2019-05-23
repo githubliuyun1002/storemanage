@@ -1,8 +1,10 @@
 package com.xiabuxiabu.storemanage.service.user;
 
 import com.xiabuxiabu.storemanage.entity.user.Role;
+import com.xiabuxiabu.storemanage.entity.user.RoleType;
 import com.xiabuxiabu.storemanage.entity.user.User;
 import com.xiabuxiabu.storemanage.repository.user.RoleRepository;
+import com.xiabuxiabu.storemanage.repository.user.RoleTypeRepository;
 import com.xiabuxiabu.storemanage.repository.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,6 +23,8 @@ public class UserService {
     private UserRepository userRepository;
     @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    private RoleTypeRepository roleTypeRepository;
     public List<User> findAll(){
         return  userRepository.findAll();
     }
@@ -42,6 +46,7 @@ public class UserService {
         }
         return  userRepository.findAll(pageable);
     }
+    public List<RoleType> findAllRole(){return roleTypeRepository.findAll(); }
     public List<Role> RoleList(){
         return roleRepository.findAll();
     }

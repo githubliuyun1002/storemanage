@@ -1,4 +1,5 @@
 package com.xiabuxiabu.storemanage.entity.user;
+import com.alibaba.fastjson.JSONObject;
 import com.xiabuxiabu.storemanage.entity.publicutil.MarketEntity;
 import com.xiabuxiabu.storemanage.entity.publicutil.PublicStatus;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -92,15 +93,6 @@ public class User {
 
     @Override
     public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", name='" + name + '\'' +
-                ", password='" + password + '\'' +
-                ", mail='" + mail + '\'' +
-                ", publicStatus=" + publicStatus +
-                ", roles=" + roles +
-                ", marketEntity=" + marketEntity +
-                '}';
+        return JSONObject.toJSONString(this,true);
     }
 }

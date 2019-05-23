@@ -1,20 +1,16 @@
+/*
 package com.xiabuxiabu.storemanage.controller.store;
 
-import com.xiabuxiabu.storemanage.entity.equip.EquipEntity;
-import com.xiabuxiabu.storemanage.entity.equip.TypeEntity;
+
 import com.xiabuxiabu.storemanage.entity.publicutil.MarketEntity;
 import com.xiabuxiabu.storemanage.entity.store.*;
-import com.xiabuxiabu.storemanage.service.equip.EquipService;
-import com.xiabuxiabu.storemanage.service.equip.TypeService;
+
 import com.xiabuxiabu.storemanage.service.publicutil.MarketService;
 import com.xiabuxiabu.storemanage.service.store.*;
-import net.bytebuddy.asm.Advice;
-import net.sf.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,10 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import net.sf.json.JSONObject;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
-
-import java.lang.reflect.Type;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -35,10 +28,6 @@ import java.util.*;
 public class StoreController {
     @Autowired
     private StoreService storeService;
-    @Autowired
-    private StoreTypeService storeTypeService;
-    @Autowired
-    private TypeService typeService;
     @Autowired
     private MarketService marketService;
     @Autowired
@@ -53,13 +42,14 @@ public class StoreController {
     private WidthBandService widthBandService;
     @Autowired
     private StoreChangeService storeChangeService;
-    /**
-     * 初始化转换日期类，将输入框中String类型的值，转化为Date类型的值。
+
+    */
+/* * 初始化转换日期类，将输入框中String类型的值，转化为Date类型的值。
      * 并设置相应的日期类型
      *
      * @param binder
-     * @param request CustomDateEditor为自定义日期编辑器
-     */
+     * @param request CustomDateEditor为自定义日期编辑器*//*
+
     @InitBinder
     public void initBinder(WebDataBinder binder, WebRequest request) {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -69,17 +59,24 @@ public class StoreController {
     public String home(){
         return "/store/home";
     }
-    /**
-     * 查询List数据
      */
+/**
+     * 查询List数据
+      * *//*
+
+
+
     @RequestMapping("/findAll")
     @ResponseBody
     public Page<Store> findAll(@RequestParam("page")int page, @RequestParam("pageSize") int pageSize, @RequestParam("searchName") String searchName){
         return  storeService.findAll(page,pageSize,searchName);
     }
-    /**
-     * 为门店添加具体设备的界面
-     */
+*/
+/**
+     * 为门店添加具体设备的界面*//*
+
+
+
     @RequestMapping("/equipsets")
     public ModelAndView equipsets(@RequestParam("id") int id,ModelAndView modelAndView){
         Store store = storeService.findById(id);
@@ -96,7 +93,8 @@ public class StoreController {
 
         return storeService.findById(id);
     }
-    @RequestMapping("/addEquip")
+*/
+/*@RequestMapping("/addEquip")
     public ModelAndView addEquip(ModelAndView modelAndView, StoreType storeType,int store_status){
         System.out.println("storeType--->"+storeType);
         if(storeType!=null){
@@ -118,8 +116,10 @@ public class StoreController {
         }
          modelAndView.setViewName("/store/store_equip");
          return  modelAndView;
-    }
-    @RequestMapping("/storeTypeList")
+    }*//*
+
+    */
+/*@RequestMapping("/storeTypeList")
     @ResponseBody
     public List<StoreType> storeTypeList(@RequestParam("storeId") int storeId){
         return storeTypeService.findTypeByStoreId(storeId);
@@ -128,13 +128,15 @@ public class StoreController {
     @ResponseBody
     public TypeEntity findByTypeId(@RequestParam("typeId") int typeId){
         return  typeService.findById(typeId);
-    }
+    }*//*
+
     @RequestMapping("/saveStore")
     public String saveStore(Store store){
         System.out.println("store--->"+store);
         storeService.save(store);
         return "redirect:/store/home";
     }
+
     @RequestMapping("/marketList")
     @ResponseBody
     public List<MarketEntity> marketList(){
@@ -179,9 +181,12 @@ public class StoreController {
         modelAndView.setViewName("/store/store_equip");
         return modelAndView;
     }
-    /**
-     * 回显餐厅信息
-     */
+*/
+/**
+     * 回显餐厅信息*//*
+
+
+
     @RequestMapping("/update")
     @ResponseBody
     public  ModelAndView update(int id,ModelAndView modelAndView){
@@ -190,9 +195,14 @@ public class StoreController {
         modelAndView.setViewName("/store/store_update");
         return modelAndView;
     }
-    /**
+*/
+/*
+*
      * 执行修改餐厅信息
-     */
+*//*
+
+
+
     @RequestMapping("/toupdate")
     public String toupdate(Store store, WidthBand widthBand){
         if(widthBand.getWid()!=0){
@@ -211,15 +221,18 @@ public class StoreController {
         return "redirect:/store/home";
     }
 
-    /**
+*/
+/**
      * 显示设别变更界面
      * @param typeId
      * @param storeId
      * @param id
      * @param modelAndView
-     * @return
-     */
-    @RequestMapping("/equipChange")
+     * @return*//*
+
+
+   */
+/* @RequestMapping("/equipChange")
     @ResponseBody
     public ModelAndView equipChange(int typeId,int storeId,int id,ModelAndView modelAndView){
         StoreType storeType = storeTypeService.findById(id);
@@ -230,17 +243,22 @@ public class StoreController {
         modelAndView.addObject("storeType",storeType);
         modelAndView.setViewName("/store/store_TypeChange");
         return  modelAndView;
-    }
+    }*//*
 
-    /**
+
+
+*/
+/**
      * 设置变更
      * @param modelAndView
      * @param id
      * @param num
      * @param
-     * @return
-     */
-    @RequestMapping("/storeTypeChange")
+     * @return*//*
+
+
+    */
+/*@RequestMapping("/storeTypeChange")
     public ModelAndView storeTypeChange(ModelAndView modelAndView,int id,int num,StoreChange storeChange){
         StoreType storeType = storeTypeService.findById(id);
         Store store = storeService.findById(storeType.getStoreId());
@@ -254,11 +272,17 @@ public class StoreController {
         storeChange.setStoreId(storeType.getStoreId());
         storeChangeService.save(storeChange);
         return modelAndView;
-    }
-    /**
-     * 变更历史查询页面
-     */
-    @RequestMapping("/historySearch")
+    }*//*
+
+
+*/
+/**
+     * 变更历史查询页面*//*
+
+
+
+   */
+/* @RequestMapping("/historySearch")
     public ModelAndView historySearch(int storeId,ModelAndView modelAndView){
 
         modelAndView.addObject("storeId",storeId);
@@ -269,5 +293,34 @@ public class StoreController {
     @ResponseBody
     public List<StoreChange> storeChangeList(int storeId){
         return storeChangeService.findByStoreId(storeId);
-    }
+    }*//*
+
+*/
+/**
+     * 信息推送页面
+
+
+    @RequestMapping("/store_Message")
+    public String store_Message(){
+        return "/store/store_Message";
+    }*//*
+
+*/
+/*
+*
+     * 信息推送页面数据展示
+*//*
+
+
+
+*/
+/*@RequestMapping("/storeMesData")
+    @ResponseBody
+    public Page<Store> storeMesData(@RequestParam("page")int page, @RequestParam("pageSize") int pageSize){
+
+    }*//*
+
+
+
 }
+*/

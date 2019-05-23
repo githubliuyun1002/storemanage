@@ -1,5 +1,6 @@
 package com.xiabuxiabu.storemanage.entity.user;
 
+import com.alibaba.fastjson.JSONObject;
 import com.sun.javafx.beans.IDProperty;
 
 import javax.persistence.Entity;
@@ -57,12 +58,6 @@ public class Permission {
 
     @Override
     public String toString() {
-        return "Permission{" +
-                "id=" + id +
-                ", pid=" + pid +
-                ", url='" + url + '\'' +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                '}';
+        return JSONObject.toJSONString(this,true);
     }
 }

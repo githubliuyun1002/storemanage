@@ -1,47 +1,45 @@
 package com.xiabuxiabu.storemanage.controller.equip;
 
-import com.xiabuxiabu.storemanage.entity.equip.EquipEntity;
-import com.xiabuxiabu.storemanage.entity.equip.TypeEntity;
-import com.xiabuxiabu.storemanage.service.equip.EquipService;
-import com.xiabuxiabu.storemanage.service.equip.TypeService;
-import net.bytebuddy.asm.Advice;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
+
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 @Controller
 @RequestMapping("/equip")
 public class EquipController {
-    @Autowired
-    private EquipService equipService;
-    @Autowired
-    private TypeService typeService;
     /**
-     * 设置展示首页
+     * 设备展示首页
+     * @return
      */
     @RequestMapping("/home")
     public String home(){
         return "/equip/home";
     }
+    @RequestMapping("/left")
+    public String left(){
+        //return "/equip/home";
+        return "/equip/left";
+    }
+    @RequestMapping("/right")
+    public String right(){
+        //return "/equip/home";
+        return "/equip/list";
+    }
+
+
+
     /**
-     * 查询List数据
-     */
-    @RequestMapping("/findAll")
+    * 查询List数据*/
+
+
+    /*@RequestMapping("/findAll")
     @ResponseBody
     public Page<EquipEntity> findAll(@RequestParam("page")int page, @RequestParam("pageSize") int pageSize,@RequestParam("searchName") String searchName){
         return equipService.findAll(page,pageSize,searchName);
-    }
-    /**
+    }*/
+
+/**
      * 保存新增设备数据
-     */
+
     @RequestMapping("/addSave")
     public String addSave(EquipEntity equipEntity,String[] typeName){
         //保存设备类型
@@ -60,8 +58,8 @@ public class EquipController {
         }
         equipService.addSave(equipEntity);
         return "redirect:/equip/home";
-    }
-    @RequestMapping("/findById")
+    }*/
+   /* @RequestMapping("/findById")
     @ResponseBody
     public EquipEntity findById(int id){
         return equipService.findById(id);
@@ -96,6 +94,7 @@ public class EquipController {
     public List<EquipEntity> allList(){
         return equipService.findAll();
     }
+*/
 
 
 }

@@ -142,10 +142,10 @@
                            async:false,
                            success:function (typeData) {
                                $("#show").append('<tr>' +
-                                    '<td>'+typeData.typeName+'</td>'+
-                                    '<td>'+data[i].num+'</td>' +
-                                    "<td><span class=\"glyphicon glyphicon-pencil\"></span><a style=\"text-decoration: none;color: black\" href=\"/store/equipChange?typeId="+data[i].typeId+"&storeId="+data[i].storeId+"&id="+data[i].id+"\"><B>变更</B></a></td>"+
-                                    '</tr>');
+                                   '<td>'+typeData.typeName+'</td>'+
+                                   '<td>'+data[i].num+'</td>' +
+                                   "<td><button class=\"btn btn-default\" onclick=\"window.location.href='/store/equipChange?typeId="+data[i].typeId+"&storeId="+data[i].storeId+"&id="+data[i].id+"'\"><span class=\"glyphicon glyphicon-pencil\"></span>变更</button></td>"+
+                                   '</tr>');
                            }
                        });
                    }
@@ -237,7 +237,6 @@
          </thead>
          <tbody id="showTbody"></tbody>
      </table>
-
      <!--新增按钮-->
      <div>
          <button type="button" class="btn btn-default" id="addTypes" data-toggle="modal" data-target="#myModal">

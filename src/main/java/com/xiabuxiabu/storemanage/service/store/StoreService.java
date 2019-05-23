@@ -1,3 +1,4 @@
+/*
 package com.xiabuxiabu.storemanage.service.store;
 
 import com.xiabuxiabu.storemanage.entity.store.Store;
@@ -41,3 +42,4 @@ public class StoreService {
     }
 
 }
+*/

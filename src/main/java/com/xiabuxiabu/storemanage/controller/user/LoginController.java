@@ -1,12 +1,9 @@
 package com.xiabuxiabu.storemanage.controller.user;
 
-import com.xiabuxiabu.storemanage.entity.user.User;
 import com.xiabuxiabu.storemanage.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class LoginController {
@@ -18,6 +15,7 @@ public class LoginController {
      */
     @RequestMapping("/login")
     public String login(){
+
         return "/login";
     }
     /**
@@ -28,6 +26,9 @@ public class LoginController {
         return "/home";
     }
 
-
+    @RequestMapping("/info")
+    public String info(){
+        return "/common/info";
+    }
 
 }

@@ -1,5 +1,6 @@
 package com.xiabuxiabu.storemanage.entity.publicutil;
 
+import com.alibaba.fastjson.JSONObject;
 import org.hibernate.annotations.GeneratorType;
 
 import javax.persistence.Entity;
@@ -41,10 +42,6 @@ public class PublicStatus {
 
     @Override
     public String toString() {
-        return "{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", remarks='" + remarks + '\'' +
-                '}';
+        return JSONObject.toJSONString(this,true);
     }
 }

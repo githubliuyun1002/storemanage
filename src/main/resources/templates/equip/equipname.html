@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <meta charset="UTF-8">
+    <title>设备名称展示页面</title>
+    <link th:href="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css}" rel="stylesheet"/>
+    <script th:src="@{https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js}"></script>
+    <script th:src="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+    <style>
+        #page {
+            margin-top: 10px;
+        }
+
+        #page .curr-page {
+            background-color: #337AB7;
+            color: white;
+        }
+
+        #page .page-btn:hover, #page .prev:hover, #page .next:hover {
+            background-color: #337AB7;
+            color: white;
+        }
+    </style>
+    <script>
+        var page = {
+            currPage: 1,
+            totalPage: 0,
+            pageLength: 4,
+            startPage: 1,
+            endPage: 4,   //endPage与pageLength保持一致
+            pageSize: 5
+        };
+        //填充页面的展示列表
+        $(function () {
+            $.ajax({
+                url:"/classfication/findAllList",
+                dataType:"JSON",
+                type:"GET",
+                data: {"page": page.currPage, "pageSize": page.pageSize, "searchName": ""},
+                success:function (data) {
+                    page.totalPage = data.totalPages;
+                    //初始化页面按钮
+                    if (data.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, data.totalPages);
+                    }
+                    pageIteration(page.currPage);
+                    isDisabled(page.currPage, data.totalPages);
+                    for (var i = 0; i <data.content.length ; i++) {
+                        if(data.content[i].equipNames.length>0&&data.content[i].publicStatus.name=="启用"){
+                            $("tbody").append('' +
+                                '<tr>' +
+                                '<td>'+data.content[i].name+'</td>' +
+                                '<td id="td'+i+'"></td>' +
+                                '<td>' +
+                                '<button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].classId + ')" ' +
+                                'data-target="#upmyModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button>' +
+                                '</td>'+
+                                '</tr>');
+                            for (var j = 0; j <data.content[i].equipNames.length ; j++) {
+                                $("#td"+i).append(data.content[i].equipNames[j].name+",");
+                            }
+                        }
+                    }
+                }
+            })
+        });
+        //填充设备类型
+        $(function () {
+            $.ajax({
+                url:"/classfication/findAll",
+                dataType:"JSON",
+                type:"GET",
+                success:function (data) {
+                    for (var i = 0; i <data.length ; i++) {
+                        $("select#classfication").append('' +
+                            '<option id="'+data[i].name+'" value="'+data[i].classId+'">'+data[i].name+'</option>');
+                    }
+                }
+            })
+        });
+        //新增设备名称
+        $(document).on("click","#addTypes",function () {
+            $("#modalBody").append('<div id="addEquipName"></div>');
+            $("#addEquipName").append(
+                '<input class="form-control" type="text" placeholder="设备名称" name="equipName" required="true"/>');
+        });
+
+        //修改设备回显
+        function updateBtn(id){
+            $.ajax({
+                url:"/classfication/findById",
+                data:{"id":id},
+                dataType:"JSON",
+                type:"GET",
+                success:function (data) {
+                     console.log("修改数据回显---->"+data);
+                    $("#updateId").html("");
+                    $("#updateId").append('<input type="hidden" name="classId" value="'+data.classId+'">');
+                    $("#appendEquipName").html("");
+                    $("#appendEquipName").append('' +
+                        '<input type="hidden" name="publicStatus" value="'+data.publicStatus.id+'">');
+                    $("#updatename").val(data.name);
+                    for (var i = 0; i < data.equipNames.length; i++) {
+                        $("#appendEquipName").append('' +
+                            '<input type="checkbox" name="equipNames" value="'+data.equipNames[i].equipId+'" id="ck'+i+'">'+data.equipNames[i].name);
+                    }
+                    for (var j = 0; j <data.equipNames.length ; j++) {
+                        var cks = $("input:checkbox[name='equipNames']");
+                        for (var k = 0; k < cks.length; k++) {
+                            if(data.equipNames[j].equipId==cks[k].value){
+                                cks[k].checked=true;
+                            }
+                        }
+                    }
+                },
+                error:function () {
+                    alert("修改设备失败");
+                }
+            })
+        }
+
+        //搜索按钮，添加事件
+        $(document).on("click","#searchButton",function () {
+            page.currPage=1;
+            page.startPage=1;
+            page.endPage=4;
+            $("tbody").html("");
+            searchName = $('#search').val();
+            $.ajax({
+                url:"/classfication/findAllList",
+                data:{"page": page.currPage, "pageSize": page.pageSize,"searchName":searchName},
+                type:"GET",
+                dataType:"JSON",
+                success:function (data) {
+                    console.log(data);
+                    //初始化按钮，即第一次网页面上添加按钮
+                    if (data.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, data.totalPages);
+                    }
+                    pageIteration(page.currPage);
+                    isDisabled(page.currPage, data.totalPages);
+                    for (var i = 0; i <data.content.length ; i++) {
+                        if(data.content[i].equipNames.length>0&&data.content[i].publicStatus.name=="启用"){
+                            $("tbody").append('' +
+                                '<tr>' +
+                                '<td>'+data.content[i].name+'</td>' +
+                                '<td id="td'+i+'"></td>' +
+                                '<td>' +
+                                '<button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].classId + ')" ' +
+                                'data-target="#upmyModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button>' +
+                                '</td>'+
+                                '</tr>');
+                            for (var j = 0; j <data.content[i].equipNames.length ; j++) {
+                                $("#td"+i).append(data.content[i].equipNames[j].name+",");
+                            }
+                        }
+                    }
+                }
+            })
+        });
+
+        //对上一页添加点击事件
+        $(document).on("click", "#page .prev", function () {
+            searchName = $('#search').val();
+            page.currPage = parseInt(page.currPage) - 1;
+            curr_page = page.currPage;
+            $("tbody").html("");
+            pageIteration(page.currPage);
+            isDisabled(page.currPage, page.totalPage);
+            $.ajax({
+                url:"/classfication/findAllList",
+                data:{"page": page.currPage, "pageSize": page.pageSize,"searchName":searchName},
+                dataType: "JSON",
+                type: "GET",
+                success:function (data) {
+                    if (data.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, data.totalPages);
+                    }
+                    page.totalPage = data.totalPages;
+                    isDisabled(page.currPage, data.totalPages);
+                    for (var i = 0; i <data.content.length ; i++) {
+                        if(data.content[i].equipNames.length>0&&data.content[i].publicStatus.name=="启用"){
+                            $("tbody").append('' +
+                                '<tr>' +
+                                '<td>'+data.content[i].name+'</td>' +
+                                '<td id="td'+i+'"></td>' +
+                                '<td>' +
+                                '<button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].classId + ')" ' +
+                                'data-target="#upmyModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button>' +
+                                '</td>'+
+                                '</tr>');
+                            for (var j = 0; j <data.content[i].equipNames.length ; j++) {
+                                $("#td"+i).append(data.content[i].equipNames[j].name+",");
+                            }
+                        }
+                    }
+                },
+                error:function () {
+                    alert("上一页加载数据失败");
+                }
+                
+            });
+        });
+
+        //对页码添加点击事件
+        $(document).on("click", ".page-btn", function () {
+            searchName = $('#search').val();
+            $this = $(this);
+            $("tbody").html("");
+            page.currPage = parseInt($this.text());
+            curr_page = page.currPage;
+            pageIteration(page.currPage);
+            isDisabled(page.currPage, page.totalPage);
+            $.ajax({
+                url:"/classfication/findAllList",
+                data:{"page": page.currPage, "pageSize": page.pageSize,"searchName":searchName},
+                dataType: "JSON",
+                type: "GET",
+                success:function (data) {
+                    if (data.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, data.totalPages);
+                    }
+                    page.totalPage = data.totalPages;
+                    isDisabled(page.currPage, data.totalPages);
+                    for (var i = 0; i <data.content.length ; i++) {
+                        if(data.content[i].equipNames.length>0&&data.content[i].publicStatus.name=="启用"){
+                            $("tbody").append('' +
+                                '<tr>' +
+                                '<td>'+data.content[i].name+'</td>' +
+                                '<td id="td'+i+'"></td>' +
+                                '<td>' +
+                                '<button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].classId + ')" ' +
+                                'data-target="#upmyModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button>' +
+                                '</td>'+
+                                '</tr>');
+                            for (var j = 0; j <data.content[i].equipNames.length ; j++) {
+                                $("#td"+i).append(data.content[i].equipNames[j].name+",");
+                            }
+                        }
+                    }
+                },
+                error:function () {
+                    alert("页码加载数据失败");
+                }
+
+            });
+        });
+
+        //对下一页添加事件
+        $(document).on("click", "#page .next", function () {
+            searchName = $('#search').val();
+            page.currPage = parseInt(page.currPage) + 1;
+            $("tbody").html("");
+            curr_page = page.currPage;
+            pageIteration(page.currPage);
+            isDisabled(page.currPage, page.totalPage);
+            $.ajax({
+                url:"/classfication/findAllList",
+                data:{"page": page.currPage, "pageSize": page.pageSize,"searchName":searchName},
+                dataType: "JSON",
+                type: "GET",
+                success:function (data) {
+                    if (data.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, data.totalPages);
+                    }
+                    page.totalPage = data.totalPages;
+                    isDisabled(page.currPage, data.totalPages);
+                    for (var i = 0; i <data.content.length ; i++) {
+                        if(data.content[i].equipNames.length>0&&data.content[i].publicStatus.name=="启用"){
+                            $("tbody").append('' +
+                                '<tr>' +
+                                '<td>'+data.content[i].name+'</td>' +
+                                '<td id="td'+i+'"></td>' +
+                                '<td>' +
+                                '<button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].classId + ')" ' +
+                                'data-target="#upmyModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button>' +
+                                '</td>'+
+                                '</tr>');
+                            for (var j = 0; j <data.content[i].equipNames.length ; j++) {
+                                $("#td"+i).append(data.content[i].equipNames[j].name+",");
+                            }
+                        }
+                    }
+                },
+                error:function () {
+                    alert("下一页加载数据失败");
+                }
+
+            });
+        });
+        //添加分页插件，根据总页数来添加按钮
+        function addButtons(startPage, pageLength) {
+            // alert(pageLength);
+            $("#page").html(" ");
+            var _html = "<center><button class='btn btn-default prev' ><<上一页</button> ";
+            for (var i = startPage; i < startPage + pageLength; i++) {
+                _html += "<button class='btn btn-default page-btn' data-pageno=" + i + ">" + i + "</button> ";
+            }
+            _html += " <button class='btn btn-default next'>下一页>></button></center>";
+            $("#page").html(_html);
+        }
+        //分页按钮迭代(最要是对"上一页"和”下一页“是否禁用的判断)
+        function isDisabled(pagenum, totalpage) {
+            if (totalpage == 0 || totalpage == 1) {
+                $("#page .prev").attr("disabled", true);
+                $("#page .next").attr("disabled", true);
+            } else if (pagenum == 1) {
+                $("#page .prev").attr("disabled", true);
+                $("#page .next").removeAttr("disabled");
+            } else if (pagenum == totalpage) {
+                $("#page .next").attr("disabled", true);
+                $("#page .prev").removeAttr("disabled");
+            } else {
+                $("#page .next").removeAttr("disabled");
+                $("#page .prev").removeAttr("disabled");
+            }
+        }
+        //按钮迭代器
+        function pageIteration(currPage) {
+            if (page.currPage != 1 && page.currPage == page.startPage) {
+                page.startPage = page.currPage - page.pageLength / 2;
+                page.endPage = page.currPage + page.pageLength / 2 - 1;
+                addButtons(page.startPage, page.pageLength);
+                $("#page .page-btn").eq(page.pageLength / 2).addClass("curr-page");
+            } else if (page.currPage != page.totalPage && page.currPage == page.endPage) {
+                page.startPage = page.currPage - page.pageLength / 2 + 1;
+                page.endPage = (page.currPage + page.pageLength / 2) >= page.totalPage ? page.totalPage : (page.currPage + page.pageLength / 2);
+                addButtons(page.startPage, page.pageLength / 2 + (page.endPage == page.totalPage ? (page.endPage - page.currPage) : page.pageLength / 2));
+                $("#page .page-btn").eq(page.pageLength / 2 - 1).addClass("curr-page");
+            }
+            $("#page .page-btn").removeClass("curr-page").parent().find("[data-pageno=" + currPage + "]").addClass("curr-page");
+        }
+
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="col-md-5 col-xs-12">
+            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal" id="add"
+                    data-backdrop="static" data-keyboard="false"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增设备名称
+            </button>
+        </div>
+        <div class="col-md-7 col-xs-12">
+            <div class="input-group">
+                <input type="text" id="search" class="form-control" placeholder="输入设备类别名称进行搜索">
+                <span class="input-group-btn">
+                 <button type="button" class="btn btn-primary" id="searchButton">搜 索</button>
+                </span>
+            </div>
+            <!--<div class="form-inline">
+                <input type="text" id="searchClass" class="form-control" placeholder="输入设备类别进行搜索">
+                <input type="text" id="searchEquip" class="form-control" placeholder="输入设备名称进行搜索">
+                <button type="button" class="btn btn-primary" id="searchButton">搜 索</button>
+            </div>-->
+        </div>
+
+        <table class="table table-striped">
+            <caption>设备名称展示列表</caption>
+            <thead>
+                <tr>
+                    <th>设备类型</th>
+                    <th>设备名称</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <div id="page"></div>
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <form method="post" th:action="@{/equipname/save}" id="formDate">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="myModalLabel">设备名称新增</h4>
+                        </div>
+                        <div class="modal-body" id="modalBody">
+                            <label for="classfication">设备类型</label>
+                            <select class="form-control" id="classfication" name="classId"></select>
+                            <label for="equipName">设备名称</label>
+                            <input class="form-control" type="text" placeholder="设备名称" name="equipName" id="equipName" required="true"/>
+                            <button type="button" class="btn btn-default" id="addTypes"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增设备名称</button>
+                        </div>
+                        <div class="modal-footer" id="footer">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
+                            <button type="submit" class="btn btn-primary">新增</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal fade" id="upmyModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <form method="post" th:action="@{/equipname/updateSave}" id="updateDate">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">修改操作</h4>
+                        </div>
+                        <div class="modal-body" id="updateBody">
+                            <div id="updateId"></div>
+                            <label>设备类型</label>
+                            <input type="text" class="form-control" id="updatename" name="name" placeholder="设备类型" required="true">
+                            <label>设备名称</label>
+                            <div id="appendEquipName"></div>
+                        </div>
+                        <div class="modal-footer" id="updateFooter">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
+                            <button type="submit" class="btn btn-primary" id="updateBtn">修改</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</body>
+</html>

@@ -1,5 +1,6 @@
 package com.xiabuxiabu.storemanage.entity.user;
 
+import com.alibaba.fastjson.JSONObject;
 import com.xiabuxiabu.storemanage.entity.publicutil.PublicStatus;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -16,10 +17,21 @@ public class Role {
     @OneToOne
     @JoinColumn(name = "status")
     private PublicStatus publicStatus;
+    @OneToOne
+    @JoinColumn(name = "type")
+    private RoleType roleType;
     @ManyToMany(targetEntity = Permission.class,fetch = FetchType.EAGER)
     @JoinTable(name = "role_permission",joinColumns = @JoinColumn(name = "role_id"),inverseJoinColumns = @JoinColumn(name = "permission_id"))
     @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private Set<Permission> permissions;
+
+    public RoleType getRoleType() {
+        return roleType;
+    }
+
+    public void setRoleType(RoleType roleType) {
+        this.roleType = roleType;
+    }
 
     public int getId() {
         return id;
@@ -63,12 +75,6 @@ public class Role {
 
     @Override
     public String toString() {
-        return "Role{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", publicStatus=" + publicStatus +
-                ", permissions=" + permissions +
-                '}';
+        return JSONObject.toJSONString(this,true);
     }
 }

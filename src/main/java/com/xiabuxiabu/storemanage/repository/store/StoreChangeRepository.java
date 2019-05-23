@@ -1,3 +1,4 @@
+/*
 package com.xiabuxiabu.storemanage.repository.store;
 
 import com.xiabuxiabu.storemanage.entity.store.StoreChange;
@@ -11,3 +12,4 @@ public interface StoreChangeRepository extends JpaRepository<StoreChange,Integer
       @Query(" from StoreChange where storeId=:storeId")
       List<StoreChange> findByStoreId(@Param("storeId") int storeId);
 }
+*/

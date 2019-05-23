@@ -1,32 +1,31 @@
 package com.xiabuxiabu.storemanage.entity.store;
 
+import com.alibaba.fastjson.JSONObject;
+
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
 public class StoreStatus {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
-    private String name;
+    private int statusId;
+    private String statusName;
     private String remarks;
 
-    public int getId() {
-        return id;
+    public int getStatusId() {
+        return statusId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setStatusId(int statusId) {
+        this.statusId = statusId;
     }
 
-    public String getName() {
-        return name;
+    public String getStatusName() {
+        return statusName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setStatusName(String statusName) {
+        this.statusName = statusName;
     }
 
     public String getRemarks() {
@@ -39,10 +38,6 @@ public class StoreStatus {
 
     @Override
     public String toString() {
-        return "{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", remarks='" + remarks + '\'' +
-                '}';
+        return JSONObject.toJSONString(this,true);
     }
 }

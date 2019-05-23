@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>登录主页面</title>
+    <link th:href="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css}" rel="stylesheet"/>
+    <script th:src="@{https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js}"></script>
+    <script th:src="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+    <style>
+        #page {
+            margin-top: 10px;
+        }
+
+        #page .curr-page {
+            background-color: #337AB7;
+            color: white;
+        }
+
+        #page .page-btn:hover, #page .prev:hover, #page .next:hover {
+            background-color: #337AB7;
+            color: white;
+        }
+    </style>
+    <script>
+        var page = {
+            currPage: 1,
+            totalPage: 0,
+            pageLength: 4,
+            startPage: 1,
+            endPage: 4,   //endPage与pageLength保持一致
+            pageSize: 5
+        };
+        //加载List列表展示
+        $(function () {
+            $.ajax({
+                url:"/person/findAll",
+                type: "GET",
+                dataType: "JSON",
+                data: {"page": page.currPage, "pageSize": page.pageSize, "searchName": ""},
+                success:function (data) {
+                     page.totalPage = data.totalPages;
+                     //初始化页面按钮
+                    if (data.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, data.totalPages);
+                    }
+                    pageIteration(page.currPage);
+                    isDisabled(page.currPage, data.totalPages);
+                    //在添加时，要注意用户与角色之间的对应关系
+                    for (i = 0; i < data.content.length; i++) {
+                        $("tbody").append('<tr>' +
+                            '<td>' + data.content[i].username + '</td>' +
+                            '<td>' + data.content[i].name + '</td>' +
+                            '<td>' + data.content[i].roles[0].roleType.name + '</td>' +
+                            '<td>' + data.content[i].publicStatus.name + '</td>' +
+                            '<td>'+data.content[i].marketEntity.name+'</td>'+
+                            '<td><button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].id + ')" ' +
+                            'data-target="#myModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button></td>' +
+                            '</tr>');
+                    }
+
+                },
+                error:function () {
+                    alert("人员列表加载失败");
+                }
+            });
+        });
+        //添加分页插件，根据总页数来添加按钮
+        function addButtons(startPage, pageLength) {
+            // alert(pageLength);
+            $("#page").html(" ");
+            var _html = "<center><button class='btn btn-default prev' ><<上一页</button> ";
+            for (var i = startPage; i < startPage + pageLength; i++) {
+                _html += "<button class='btn btn-default page-btn' data-pageno=" + i + ">" + i + "</button> ";
+            }
+            _html += " <button class='btn btn-default next'>下一页>></button></center>";
+            $("#page").html(_html);
+        }
+        //分页按钮迭代(最要是对"上一页"和”下一页“是否禁用的判断)
+        function isDisabled(pagenum, totalpage) {
+            if (totalpage == 0 || totalpage == 1) {
+                $("#page .prev").attr("disabled", true);
+                $("#page .next").attr("disabled", true);
+            } else if (pagenum == 1) {
+                $("#page .prev").attr("disabled", true);
+                $("#page .next").removeAttr("disabled");
+            } else if (pagenum == totalpage) {
+                $("#page .next").attr("disabled", true);
+                $("#page .prev").removeAttr("disabled");
+            } else {
+                $("#page .next").removeAttr("disabled");
+                $("#page .prev").removeAttr("disabled");
+            }
+        }
+        //按钮迭代器
+        function pageIteration(currPage) {
+            if (page.currPage != 1 && page.currPage == page.startPage) {
+                page.startPage = page.currPage - page.pageLength / 2;
+                page.endPage = page.currPage + page.pageLength / 2 - 1;
+                addButtons(page.startPage, page.pageLength);
+                $("#page .page-btn").eq(page.pageLength / 2).addClass("curr-page");
+            } else if (page.currPage != page.totalPage && page.currPage == page.endPage) {
+                page.startPage = page.currPage - page.pageLength / 2 + 1;
+                page.endPage = (page.currPage + page.pageLength / 2) >= page.totalPage ? page.totalPage : (page.currPage + page.pageLength / 2);
+                addButtons(page.startPage, page.pageLength / 2 + (page.endPage == page.totalPage ? (page.endPage - page.currPage) : page.pageLength / 2));
+                $("#page .page-btn").eq(page.pageLength / 2 - 1).addClass("curr-page");
+            }
+            $("#page .page-btn").removeClass("curr-page").parent().find("[data-pageno=" + currPage + "]").addClass("curr-page");
+        }
+        <!--新增人员-->
+        $(function () {
+            $("#add").click(function () {
+                $("#formData").attr("action","/person/addSave");
+                $("#footer").html("");
+                $("#PID").html("");
+                $("#show").html("");
+                $("#footer").append(
+                    '<button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>'+
+                    '<button type="submit" class="btn btn-primary" id="submitBtn">新增</button>'
+                );
+                $("#username").val("");
+                $("#name").val("");
+                $("#password").val("");
+                $("#mail").val("");
+                $("#hiddenshow").html("");
+                $("#modalBody").append('<div id="show"></div>');
+                $("#show").append(
+                    '<label>状态</label>'+
+                    '<select class="form-control" id="publicStatus" name="publicStatus"></select>'+
+                    '<label for="marketEntity">所属市场</label>'+
+                    '<select class="form-control" id="marketEntity" name="marketEntity"></select>'+
+                    '<label>角色类型</label>'+
+                    '<select class="form-control" id="roleTypeSelect" name="roles"></select>'
+                );
+                <!--加载角色列表-->
+                $(function () {
+                    $.ajax({
+                        url:"/person/roleTypeList",
+                        type:"GET",
+                        dataType:"JSON",
+                        success:function (data) {
+                            //console.log(data);
+                            for(i=0;i<data.length;i++){
+                                $("select#roleTypeSelect").append(
+                                    '<option id="' + data[i].name + '" value="' + data[i].id + '">' + data[i].name + '</option>'
+                                );
+                            }
+                        },
+                        error:function () {
+                            alert("角色列表加载失败");
+                        }
+                    });
+                });
+                <!--加载公共状态列表-->
+                $(function () {
+                    $.ajax({
+                        url:"/person/statusList",
+                        type:"GET",
+                        dataType:"JSON",
+                        success:function (data) {
+                            //console.log(data);
+                            for(i=0;i<data.length;i++){
+                                $("select#publicStatus").append(
+                                    '<option id="' + data[i].name + '" value="' + data[i].id + '">' + data[i].name + '</option>'
+                                );
+                            }
+                        },
+                        error:function () {
+                            alert("状态列表加载失败");
+                        }
+                    });
+                });
+                //加载所属市场
+                $(function () {
+                    $.ajax({
+                        url:"/market/marketList",
+                        type:"GET",
+                        dataType:"JSON",
+                        success:function (data) {
+                            for (var i = 0; i < data.length; i++) {
+                                $("select#marketEntity").append(
+                                    '<option id="' + data[i].name + '" value="' + data[i].id + '">' + data[i].name + '</option>'
+                                )
+                            }
+                        },
+                        error:function () {
+                            alert("市场加载失败");
+                        }
+                    });
+                });
+
+            });
+        });
+        <!--修改人员-->
+        function updateBtn(id) {
+            $("#footer").html("");
+            $("#formData").attr("action","/person/updateSave");
+            $.ajax({
+                url:"/person/findById",
+                data:{"id":id},
+                type:"GET",
+                dataType:"JSON",
+                success:function (data) {
+                    $("#PID").html("");
+                    $("#hiddenshow").html("");
+                    $("#footer").append(
+                        '<button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>'+
+                        '<button type="submit" class="btn btn-primary" id="updateBtn">提交</button>'
+                    );
+                    $("#modalBody").append('<div id="PID"></div>');
+                    $("#show").html("")
+                    <!--加载页面id,做成隐藏域-->
+                    $("#PID").append('<input  class="form-control" name="id" id="personId" type="hidden" value="' + data.id + '"/>');
+                    $("#modalBody").append('<div id="hiddenshow"></div>');
+                    $("#hiddenshow").append('<label>状态</label>'+
+                                            '<select class="form-control" id="uppublicStatus" name="publicStatus"></select>'+
+                                            '<label for="marketEntity">所属市场</label>'+
+                                            '<select class="form-control" id="upmarketEntity" name="marketEntity"></select>'+
+                                            '<label>角色类型</label>'+
+                                            '<select class="form-control" id="uproleTypeSelect" name="roles"></select>'
+
+                    );
+                    <!--加载角色列表-->
+                    $(function () {
+                        $.ajax({
+                            url:"/person/roleList",
+                            type:"GET",
+                            dataType:"JSON",
+                            success:function (data) {
+                                //console.log(data);
+                                for(i=0;i<data.length;i++){
+                                    $("select#uproleTypeSelect").append(
+                                        '<option id="' + data[i].name + '" value="' + data[i].id + '">' + data[i].name + '</option>'
+                                    );
+                                }
+                            },
+                            error:function () {
+                                alert("角色列表加载失败");
+                            }
+                        });
+                    });
+                    <!--加载公共状态列表-->
+                    $(function () {
+                        $.ajax({
+                            url:"/person/statusList",
+                            type:"GET",
+                            dataType:"JSON",
+                            success:function (data) {
+                                //console.log(data);
+                                for(i=0;i<data.length;i++){
+                                    $("select#uppublicStatus").append(
+                                        '<option id="' + data[i].name + '" value="' + data[i].id + '">' + data[i].name + '</option>'
+                                    );
+                                }
+                            },
+                            error:function () {
+                                alert("状态列表加载失败");
+                            }
+                        });
+                    });
+                    //加载所属市场
+                    $(function () {
+                        $.ajax({
+                            url:"/market/marketList",
+                            type:"GET",
+                            dataType:"JSON",
+                            success:function (data) {
+                                for (var i = 0; i < data.length; i++) {
+                                    $("select#upmarketEntity").append(
+                                        '<option id="' + data[i].name + '" value="' + data[i].id + '">' + data[i].name + '</option>'
+                                    )
+                                }
+                            },
+                            error:function () {
+                                alert("市场加载失败");
+                            }
+                        });
+                    });
+                    <!--页面数据回显-->
+                    $("#username").val(data.username);
+                    $("#name").val(data.name);
+                    $("#password").val(data.password);
+                    $("#mail").val(data.mail);
+                    //公共状态
+                    var publicStatusName=data.publicStatus.name;
+                    //角色类型
+                    var roleTypeName=data.roles[0].name;
+                    //所属市场名
+                    var marketName = data.marketEntity.name;
+                    <!--对下拉框的数据进行回显-->
+                    if (publicStatusName == "启用") {
+                        $("#uppublicStatus").find("option:contains('启用')").attr("selected", true);
+                    } else if (publicStatusName == "禁用") {
+                        $("#uppublicStatus").find("option:contains('禁用')").attr("selected", true);
+                    }
+                    //回显角色类型
+                    $.ajax({
+                        url:"/person/roleList",
+                        type:"GET",
+                        dataType:"JSON",
+                        success:function (data) {
+                            console.log(data);
+                            for (i=0;i<data.length;i++){
+                                if(roleTypeName==data[i].name){
+                                    $("#uproleTypeSelect").find("option:contains('"+data[i].name+"')").attr("selected", true);
+                                }
+                            }
+                        },
+                        error:function () {
+                             alert("角色类型回显失败");
+                        }
+                    });
+                    //回显市场
+                    $.ajax({
+                        url:"/market/marketList",
+                        type:"GET",
+                        dataType:"JSON",
+                        success:function (data) {
+                            console.log(data);
+                            for (var i = 0; i <data.length ; i++) {
+                                if(marketName == data[i].name){
+                                   $("#upmarketEntity").find("option:contains('"+data[i].name+"')").attr("selected",true);
+                                }
+                            }
+                        }
+                    })
+
+                },
+                error:function () {
+                     alert("修改数据失败");
+                }
+            });
+        }
+        //提交修改的数据
+        /*$(document).on("click","#updateBtn",function () {
+            $("#formData").attr("action","/person/updateSave");
+            $("#formData").submit();
+        });*/
+        //搜索按钮添加事件
+        $(document).on("click","#searchButton",function () {
+            page.currPage=1;
+            page.startPage=1;
+            page.endPage=4;
+            var searchName = $('#search').val();
+            $("tbody").html("");
+            $.ajax({
+                url:"/person/findAll",
+                type: "GET",
+                dataType: "JSON",
+                data: {"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
+                success:function (data) {
+                    console.log(data);
+                    //初始化按钮，即第一次网页面上添加按钮
+                    if (data.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, data.totalPages);
+                    }
+                    pageIteration(page.currPage);
+                    //禁用"上一页"按钮，因为默认是第一页，第一页没有上一页
+                    isDisabled(page.currPage, data.totalPages);
+                    for (var i = 0; i < data.content.length; i++) {
+                        $("tbody").append('<tr>' +
+                            '<td>' + data.content[i].username + '</td>' +
+                            '<td>' + data.content[i].name + '</td>' +
+                            '<td>' + data.content[i].roles[0].roleType.name + '</td>' +
+                            '<td>' + data.content[i].publicStatus.name + '</td>' +
+                            '<td>'+data.content[i].marketEntity.name+'</td>'+
+                            '<td><button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].id + ')" ' +
+                            'data-target="#myModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button></td>' +
+                            '</tr>');
+                    }
+                },
+                error:function () {
+                    alert("搜索按钮加载失败");
+                }
+            });
+        });
+        //对上一页添加点击事件
+        $(document).on("click", "#page .prev", function () {
+            searchName = $('#search').val();
+            page.currPage = parseInt(page.currPage) - 1;
+            curr_page = page.currPage;
+            $("tbody").html("");
+            pageIteration(page.currPage);
+            isDisabled(page.currPage, page.totalPage);
+            $.ajax({
+                url:"/person/findAll",
+                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
+                type:"GET",
+                dataType:"JSON",
+                success:function (data) {
+                    <!--页面展示的数据-->
+                    if (data.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, data.totalPages);
+                    }
+                    page.totalPage = data.totalPages;
+                    isDisabled(page.currPage, data.totalPages);  //返回分页的页数用totalPages属性表示
+
+                    for (var i = 0; i < data.content.length; i++) {
+                        $("tbody").append('<tr>' +
+                            '<td>' + data.content[i].username + '</td>' +
+                            '<td>' + data.content[i].name + '</td>' +
+                            '<td>' + data.content[i].roles[0].roleType.name + '</td>' +
+                            '<td>' + data.content[i].publicStatus.name + '</td>' +
+                            '<td>'+data.content[i].marketEntity.name+'</td>'+
+                            '<td><button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].id + ')" ' +
+                            'data-target="#myModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button></td>' +
+                            '</tr>');
+                    }
+
+                },
+                error:function () {
+                    alert("上页数据展示失败");
+                }
+            });
+        });
+        //对页码添加点击事件
+        $(document).on("click", ".page-btn", function () {
+            searchName = $('#search').val();
+            $this = $(this);
+            $("tbody").html("");
+            page.currPage = parseInt($this.text());
+            curr_page = page.currPage;
+            pageIteration(page.currPage);
+            isDisabled(page.currPage, page.totalPage);
+            $.ajax({
+                url:"/person/findAll",
+                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
+                dataType:"JSON",
+                type:"GET",
+                success:function (data) {
+                    if (data.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, data.totalPages);
+                    }
+                    page.totalPage = data.totalPages;
+                    isDisabled(page.currPage, data.totalPages);
+                    for (var i = 0; i < data.content.length; i++) {
+                        $("tbody").append('<tr>' +
+                            '<td>' + data.content[i].username + '</td>' +
+                            '<td>' + data.content[i].name + '</td>' +
+                            '<td>' + data.content[i].roles[0].roleType.name + '</td>' +
+                            '<td>' + data.content[i].publicStatus.name + '</td>' +
+                            '<td>'+data.content[i].marketEntity.name+'</td>'+
+                            '<td><button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].id + ')" ' +
+                            'data-target="#myModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button></td>' +
+                            '</tr>');
+                    }
+                },
+                error:function () {
+                   alert("页码数据加载失败");
+                }
+            });
+        });
+        //对下一页添加点击事件
+        $(document).on("click", "#page .next", function () {
+            searchName = $('#search').val();
+            page.currPage = parseInt(page.currPage) + 1;
+            $("tbody").html("");
+            curr_page = page.currPage;
+            pageIteration(page.currPage);
+            isDisabled(page.currPage, page.totalPage);
+            $.ajax({
+                url:"/person/findAll",
+                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
+                dataType:"JSON",
+                type:"GET",
+                success:function (data) {
+                    if (data.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, data.totalPages);
+                    }
+                    page.totalPage = data.totalPages;
+                    isDisabled(page.currPage, data.totalPages);
+                    for (var i = 0; i < data.content.length; i++) {
+                        $("tbody").append('<tr>' +
+                            '<td>' + data.content[i].username + '</td>' +
+                            '<td>' + data.content[i].name + '</td>' +
+                            '<td>' + data.content[i].roles[0].roleType.name + '</td>' +
+                            '<td>' + data.content[i].publicStatus.name + '</td>' +
+                            '<td>'+data.content[i].marketEntity.name+'</td>'+
+                            '<td><button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].id + ')" ' +
+                            'data-target="#myModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button></td>' +
+                            '</tr>');
+                    }
+                },
+                error:function () {
+                    alert("页码数据加载失败");
+                }
+            });
+        });
+    </script>
+
+</head>
+<body>
+   <div class="container">
+       <div class="col-md-7 col-xs-12">
+           <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal" id="add"
+                   data-backdrop="static" data-keyboard="false"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增人员
+           </button>
+       </div>
+       <div class="col-md-5 col-xs-12">
+           <div class="input-group">
+               <input type="text" id="search" class="form-control" placeholder="输入中文名进行搜索">
+               <span class="input-group-btn">
+                 <button class="btn btn-primary" id="searchButton">搜 索</button>
+            </span>
+           </div>
+       </div>
+       <table class="table table-striped">
+           <caption>员工列表展示</caption>
+           <thead>
+           <tr>
+               <th>用户名</th>
+               <th>中文名</th>
+               <th>角色类型</th>
+               <th>状态</th>
+               <th>所属市场</th>
+               <th>操作</th>
+           </tr>
+           </thead>
+           <tbody>
+           </tbody>
+       </table>
+       <div id="page"></div>
+
+       <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+           <form th:action="@{/person/updateSave}" method="post" id="formData">
+               <div class="modal-dialog">
+                   <div class="modal-content">
+                       <div class="modal-header">
+                           <h4 class="modal-title" id="myModalLabel">人员操作</h4>
+                       </div>
+                       <div class="modal-body" id="modalBody">
+                           <label for="username">用户名</label>
+                           <input class="form-control" type="text" placeholder="人员名称" name="username" id="username"
+                                  required="true"/>
+                           <label for="password">密码</label>
+                           <input class="form-control" type="text" placeholder="密码" name="password" id="password"
+                                  required="true"/>
+                           <label for="name">中文名</label>
+                           <input class="form-control" type="text" placeholder="中文名" name="name" id="name"
+                                  required="true"/>
+                           <label for="mail">邮箱</label>
+                           <input class="form-control" type="text" placeholder="邮箱" name="mail" id="mail" required="true"/>
+                       </div>
+                       <div class="modal-footer" id="footer"></div>
+                   </div>
+               </div>
+           </form>
+       </div>
+   </div>
+
+
+</body>
+</html>

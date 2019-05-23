@@ -2,7 +2,6 @@ package com.xiabuxiabu.storemanage.service.store;
 
 import com.xiabuxiabu.storemanage.entity.store.StoreStatus;
 import com.xiabuxiabu.storemanage.repository.store.StoreStatusRepository;
-import net.bytebuddy.asm.Advice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +16,9 @@ public class StoreStatusService {
     }
     public List<StoreStatus> findAll(){
         return storeStatusRepository.findAll();
+    }
+    public StoreStatus save(StoreStatus storeStatus){
+        return storeStatusRepository.save(storeStatus);
     }
 
 }

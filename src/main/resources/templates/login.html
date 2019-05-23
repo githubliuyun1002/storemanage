@@ -4,50 +4,43 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
-    <meta charset="UTF-8">
-    <!--bootstrap页面展示的数据-->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>IT设备报修系统</title>
+    <title>IT设备管理系统</title>
+    <link rel="stylesheet" type="text/css" href="/style/base.css">
     <link th:href="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css}" rel="stylesheet"/>
-    <script th:src="@{https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js}"></script>
-    <script th:src="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js}"></script>
-    <script charset="utf-8" th:src="@{http://res.wx.qq.com/open/js/jweixin-1.4.0.js}"></script>
 </head>
 <body>
-<div class="container">
-    <form class="form-horizontal" role="form" id="from" th:action="@{/login}" method="post">
-        <div class="input-group">
-        </div>
-        <div th:if="${param.error}">
-            用户名或密码错
-        </div>
-        <div th:if="${param.logout}">
-            您已注销成功
-        </div>
-        <br/>
-        <div class="form-group">
-            <label for="firstname" class="col-sm-2 control-label">用户名</label>
-            <div class="col-sm-10">
-                <input type="text" name="username" class="form-control" id="firstname"
-                       placeholder="请输入名字">
-            </div>
-        </div>
-        <div class="form-group">
-            <label for="lastname" class="col-sm-2 control-label">密码</label>
-            <div class="col-sm-10">
-                <input type="text" name="password" class="form-control" id="lastname"
-                       placeholder="请输入密码">
-            </div>
-        </div>
-        <input type="hidden" name="equipment" id="equipment" value="PC"/>
-        <br/>
-        <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
-                <button id="submit" class="btn btn-primary btn-lg btn-block">登录</button>
-            </div>
-        </div>
-    </form>
+<div class="header Cgreen">
+    <div class="wrapper clearfix">
+        <h1 style="color: dimgray">IT设备管理系统</h1>
+    </div>
 </div>
+<div class="content" style="height: 549px;">
+    <div class="wrapper">
+        <img class="bg1" src="/style/bg1.png">
+        <div class="loginBox">
+            <div class="logo"></div>
+            <div class="formDiv">
+                <form method="post" th:action="@{/login}">
+                    <div>
+                        <input type="text" name="username" class="form-control" placeholder="请输入用户名">
+                    </div>
+                    <div>
+                        <input type="password"  class="form-control" name="password" placeholder="请输入密码">
+                    </div>
+                    <div>
+                        <input type="submit" class="form-control" value="登录">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="footer">
+    <div class="wrapper">
+        <span>呷哺呷哺餐饮管理有限公司</span>
+    </div>
 </div>
 </body>
 </html>
