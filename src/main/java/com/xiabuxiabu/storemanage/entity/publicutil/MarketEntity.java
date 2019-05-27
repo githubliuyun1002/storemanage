@@ -11,19 +11,9 @@ import java.util.Set;
  */
 @Entity
 public class MarketEntity {
-   @Id
-    private int id;
-    private String marketCode;
+    @Id
+    private int marketCode;
     private String name;
-
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
@@ -33,11 +23,11 @@ public class MarketEntity {
         this.name = name;
     }
 
-    public String getMarketCode() {
+    public int getMarketCode() {
         return marketCode;
     }
 
-    public void setMarketCode(String marketCode) {
+    public void setMarketCode(int marketCode) {
         this.marketCode = marketCode;
     }
 

@@ -3,8 +3,9 @@ package com.xiabuxiabu.storemanage.controller.user;
 import com.xiabuxiabu.storemanage.entity.publicutil.MarketEntity;
 import com.xiabuxiabu.storemanage.entity.publicutil.PublicStatus;
 import com.xiabuxiabu.storemanage.entity.user.Role;
-import com.xiabuxiabu.storemanage.entity.user.RoleType;
+
 import com.xiabuxiabu.storemanage.entity.user.User;
+import com.xiabuxiabu.storemanage.entity.user.UserType;
 import com.xiabuxiabu.storemanage.service.publicutil.MarketService;
 import com.xiabuxiabu.storemanage.service.publicutil.PublicStatusService;
 import com.xiabuxiabu.storemanage.service.user.RoleTypeService;
@@ -51,9 +52,9 @@ public class UserController {
         return userService.RoleList();
     }
 
-    @RequestMapping("/roleTypeList")
+    @RequestMapping("/userTypeList")
     @ResponseBody
-    public List<RoleType> roleTypeList(){
+    public List<UserType> roleTypeList(){
         return userService.findAllRole();
     }
     /**
@@ -76,6 +77,7 @@ public class UserController {
      */
     @RequestMapping("/addSave")
     public String addUser(User user){
+        System.out.println("新增人员----》"+user);
         String password = user.getPassword();
         password = new BCryptPasswordEncoder().encode(password);
         user.setPassword(password);
@@ -95,6 +97,7 @@ public class UserController {
      */
     @RequestMapping("/updateSave")
     public String updateSave(User user){
+        System.out.println("执行修改动作user---->"+user);
         if(!user.getPassword().equals(userService.findById(user.getId()).getPassword())){
             //密码加密
             String password = user.getPassword();

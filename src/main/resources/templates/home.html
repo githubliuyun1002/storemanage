@@ -21,7 +21,7 @@
                 data: {"userName": loginName},
                 dataType: "JSON",
                 success: function (data) {
-                    var roleName = data.roles[0].roleType.name;
+                    var roleName = data.userType.name;
                     if(roleName=="市场IT"){
                          $("#person").hide();
                     }

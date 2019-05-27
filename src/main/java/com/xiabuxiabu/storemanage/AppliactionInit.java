@@ -37,31 +37,25 @@ public class AppliactionInit implements ApplicationRunner {
         publicStatusService.save(publicStatus);
         //初始化市场的基本信息
         MarketEntity marketEntity = new MarketEntity();
-        marketEntity.setId(1);
+        marketEntity.setMarketCode(6001);
         marketEntity.setName("北京市场");
-        marketEntity.setMarketCode("006001");
         marketService.save(marketEntity);
-        marketEntity.setId(2);
+        marketEntity.setMarketCode(6002);
         marketEntity.setName("上海市场");
-        marketEntity.setMarketCode("006002");
         marketService.save(marketEntity);
-        marketEntity.setId(3);
+        marketEntity.setMarketCode(6003);
         marketEntity.setName("天津市场");
-        marketEntity.setMarketCode("006003");
         marketService.save(marketEntity);
-        marketEntity.setId(4);
+        marketEntity.setMarketCode(6004);
         marketEntity.setName("东北市场");
-        marketEntity.setMarketCode("006004");
         marketService.save(marketEntity);
-        marketEntity.setId(5);
+        marketEntity.setMarketCode(6005);
         marketEntity.setName("河北市场");
-        marketEntity.setMarketCode("006005");
         marketService.save(marketEntity);
-        marketEntity.setId(6);
         marketEntity.setName("深圳市场");
-        marketEntity.setMarketCode("006006");
+        marketEntity.setMarketCode(6006);
         marketService.save(marketEntity);
-        marketEntity.setId(7);
+        marketEntity.setMarketCode(6666);
         marketEntity.setName("总部");
         marketService.save(marketEntity);
         //初始化门店状态

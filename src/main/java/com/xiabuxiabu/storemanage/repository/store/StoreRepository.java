@@ -1,4 +1,3 @@
-/*
 package com.xiabuxiabu.storemanage.repository.store;
 import com.xiabuxiabu.storemanage.entity.store.Store;
 import org.springframework.data.domain.Page;
@@ -13,4 +12,3 @@ public interface StoreRepository extends JpaRepository<Store,Integer> {
     Page<Store> findAll(Specification<Store> specification);
     Page<Store> findAll(Specification<Store> specification,Pageable pageable);
  }
-*/

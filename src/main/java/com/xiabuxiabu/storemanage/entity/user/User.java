@@ -19,6 +19,10 @@ public class User {
     @OneToOne
     @JoinColumn(name = "status")
     private PublicStatus publicStatus;
+    @OneToOne
+    @JoinColumn(name = "type")
+    private UserType userType;
+
     @ManyToMany(targetEntity = Role.class,fetch = FetchType.EAGER)
     @JoinTable(name = "user_role",joinColumns = @JoinColumn(name = "user_id"),inverseJoinColumns = @JoinColumn(name = "role_id"))
     @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
@@ -27,6 +31,14 @@ public class User {
     @OneToOne
     @JoinColumn(name = "market")
     private MarketEntity marketEntity;
+
+    public UserType getUserType() {
+        return userType;
+    }
+
+    public void setUserType(UserType userType) {
+        this.userType = userType;
+    }
 
     public MarketEntity getMarketEntity() {
         return marketEntity;

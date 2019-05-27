@@ -17,22 +17,11 @@ public class Role {
     @OneToOne
     @JoinColumn(name = "status")
     private PublicStatus publicStatus;
-    @OneToOne
-    @JoinColumn(name = "type")
-    private RoleType roleType;
+
     @ManyToMany(targetEntity = Permission.class,fetch = FetchType.EAGER)
     @JoinTable(name = "role_permission",joinColumns = @JoinColumn(name = "role_id"),inverseJoinColumns = @JoinColumn(name = "permission_id"))
     @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private Set<Permission> permissions;
-
-    public RoleType getRoleType() {
-        return roleType;
-    }
-
-    public void setRoleType(RoleType roleType) {
-        this.roleType = roleType;
-    }
-
     public int getId() {
         return id;
     }

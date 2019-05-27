@@ -55,7 +55,7 @@
                         $("tbody").append('<tr>' +
                             '<td>' + data.content[i].username + '</td>' +
                             '<td>' + data.content[i].name + '</td>' +
-                            '<td>' + data.content[i].roles[0].roleType.name + '</td>' +
+                            '<td>' + data.content[i].userType.name + '</td>' +
                             '<td>' + data.content[i].publicStatus.name + '</td>' +
                             '<td>'+data.content[i].marketEntity.name+'</td>'+
                             '<td><button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].id + ')" ' +
@@ -139,15 +139,15 @@
                 <!--加载角色列表-->
                 $(function () {
                     $.ajax({
-                        url:"/person/roleTypeList",
+                        url:"/person/roleList",
                         type:"GET",
                         dataType:"JSON",
                         success:function (data) {
                             //console.log(data);
                             for(i=0;i<data.length;i++){
-                                $("select#roleTypeSelect").append(
-                                    '<option id="' + data[i].name + '" value="' + data[i].id + '">' + data[i].name + '</option>'
-                                );
+                                    $("select#roleTypeSelect").append(
+                                        '<option id="' + data[i].name + '" value="' + data[i].id + '">' + data[i].name + '</option>'
+                                    );
                             }
                         },
                         error:function () {
@@ -183,7 +183,7 @@
                         success:function (data) {
                             for (var i = 0; i < data.length; i++) {
                                 $("select#marketEntity").append(
-                                    '<option id="' + data[i].name + '" value="' + data[i].id + '">' + data[i].name + '</option>'
+                                    '<option id="' + data[i].name + '" value="' + data[i].marketCode + '">' + data[i].name + '</option>'
                                 )
                             }
                         },
@@ -227,7 +227,7 @@
                     <!--加载角色列表-->
                     $(function () {
                         $.ajax({
-                            url:"/person/roleList",
+                            url:"/person/roleList",   ///person/roleTypeList
                             type:"GET",
                             dataType:"JSON",
                             success:function (data) {
@@ -271,7 +271,7 @@
                             success:function (data) {
                                 for (var i = 0; i < data.length; i++) {
                                     $("select#upmarketEntity").append(
-                                        '<option id="' + data[i].name + '" value="' + data[i].id + '">' + data[i].name + '</option>'
+                                        '<option id="' + data[i].name + '" value="' + data[i].marketCode + '">' + data[i].name + '</option>'
                                     )
                                 }
                             },
@@ -291,6 +291,8 @@
                     var roleTypeName=data.roles[0].name;
                     //所属市场名
                     var marketName = data.marketEntity.name;
+                    //人员类型
+                    var userType = data.userType.name;
                     <!--对下拉框的数据进行回显-->
                     if (publicStatusName == "启用") {
                         $("#uppublicStatus").find("option:contains('启用')").attr("selected", true);
@@ -303,15 +305,15 @@
                         type:"GET",
                         dataType:"JSON",
                         success:function (data) {
-                            console.log(data);
-                            for (i=0;i<data.length;i++){
+                            //console.log(data);
+                            for(i=0;i<data.length;i++){
                                 if(roleTypeName==data[i].name){
                                     $("#uproleTypeSelect").find("option:contains('"+data[i].name+"')").attr("selected", true);
                                 }
                             }
                         },
                         error:function () {
-                             alert("角色类型回显失败");
+                            alert("角色列表加载失败");
                         }
                     });
                     //回显市场
@@ -320,12 +322,28 @@
                         type:"GET",
                         dataType:"JSON",
                         success:function (data) {
-                            console.log(data);
+                           // console.log(data);
                             for (var i = 0; i <data.length ; i++) {
                                 if(marketName == data[i].name){
                                    $("#upmarketEntity").find("option:contains('"+data[i].name+"')").attr("selected",true);
                                 }
                             }
+                        }
+                    });
+                    //回显人员类型
+                    $.ajax({
+                        url:"/person/userTypeList",
+                        dataType:"JSON",
+                        type:"GET",
+                        success:function (data) {
+                            for (var i = 0; i <data.length ; i++) {
+                                if(userType==data[i].name){
+                                    $("#userType").find("option:contains('"+data[i].name+"')").attr("selected",true);
+                                }
+                            }
+                        },
+                        error:function () {
+                            alert("人员类型列表添加失败");
                         }
                     })
 
@@ -335,11 +353,7 @@
                 }
             });
         }
-        //提交修改的数据
-        /*$(document).on("click","#updateBtn",function () {
-            $("#formData").attr("action","/person/updateSave");
-            $("#formData").submit();
-        });*/
+
         //搜索按钮添加事件
         $(document).on("click","#searchButton",function () {
             page.currPage=1;
@@ -353,7 +367,7 @@
                 dataType: "JSON",
                 data: {"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
                 success:function (data) {
-                    console.log(data);
+                    //console.log(data);
                     //初始化按钮，即第一次网页面上添加按钮
                     if (data.totalPages > page.pageLength) {
                         addButtons(page.startPage, page.pageLength);
@@ -367,7 +381,7 @@
                         $("tbody").append('<tr>' +
                             '<td>' + data.content[i].username + '</td>' +
                             '<td>' + data.content[i].name + '</td>' +
-                            '<td>' + data.content[i].roles[0].roleType.name + '</td>' +
+                            '<td>' + data.content[i].userType.name + '</td>' +
                             '<td>' + data.content[i].publicStatus.name + '</td>' +
                             '<td>'+data.content[i].marketEntity.name+'</td>'+
                             '<td><button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].id + ')" ' +
@@ -407,7 +421,7 @@
                         $("tbody").append('<tr>' +
                             '<td>' + data.content[i].username + '</td>' +
                             '<td>' + data.content[i].name + '</td>' +
-                            '<td>' + data.content[i].roles[0].roleType.name + '</td>' +
+                            '<td>' + data.content[i].userType.name + '</td>' +
                             '<td>' + data.content[i].publicStatus.name + '</td>' +
                             '<td>'+data.content[i].marketEntity.name+'</td>'+
                             '<td><button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].id + ')" ' +
@@ -447,7 +461,7 @@
                         $("tbody").append('<tr>' +
                             '<td>' + data.content[i].username + '</td>' +
                             '<td>' + data.content[i].name + '</td>' +
-                            '<td>' + data.content[i].roles[0].roleType.name + '</td>' +
+                            '<td>' + data.content[i].userType.name + '</td>' +
                             '<td>' + data.content[i].publicStatus.name + '</td>' +
                             '<td>'+data.content[i].marketEntity.name+'</td>'+
                             '<td><button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].id + ')" ' +
@@ -485,7 +499,7 @@
                         $("tbody").append('<tr>' +
                             '<td>' + data.content[i].username + '</td>' +
                             '<td>' + data.content[i].name + '</td>' +
-                            '<td>' + data.content[i].roles[0].roleType.name + '</td>' +
+                            '<td>' + data.content[i].userType.name + '</td>' +
                             '<td>' + data.content[i].publicStatus.name + '</td>' +
                             '<td>'+data.content[i].marketEntity.name+'</td>'+
                             '<td><button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].id + ')" ' +
@@ -498,6 +512,23 @@
                 }
             });
         });
+        //追加人员类型
+        $(function () {
+            $.ajax({
+                url:"/person/userTypeList",
+                dataType:"JSON",
+                type:"GET",
+                success:function (data) {
+                    for (var i = 0; i <data.length ; i++) {
+                        $("select#userType").append('' +
+                            '<option id="'+data[i].name+'" value="'+data[i].id+'">'+data[i].name+'</option>')
+                    }
+                },
+                error:function () {
+                    alert("人员类型列表添加失败");
+                }
+            })
+        })
     </script>
 
 </head>
@@ -522,7 +553,7 @@
            <tr>
                <th>用户名</th>
                <th>中文名</th>
-               <th>角色类型</th>
+               <th>人员类型</th>
                <th>状态</th>
                <th>所属市场</th>
                <th>操作</th>
@@ -552,6 +583,8 @@
                                   required="true"/>
                            <label for="mail">邮箱</label>
                            <input class="form-control" type="text" placeholder="邮箱" name="mail" id="mail" required="true"/>
+                           <label for="userType">人员类型</label>
+                           <select class="form-control" id="userType" name="userType"></select>
                        </div>
                        <div class="modal-footer" id="footer"></div>
                    </div>

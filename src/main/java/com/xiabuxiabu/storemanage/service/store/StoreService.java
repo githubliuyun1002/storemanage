@@ -1,4 +1,3 @@
-/*
 package com.xiabuxiabu.storemanage.service.store;
 
 import com.xiabuxiabu.storemanage.entity.store.Store;
@@ -19,13 +18,13 @@ public class StoreService {
     @Autowired
     private StoreRepository storeRepository;
     public Page<Store> findAll(int page,int size,String values){
-        Sort sort = new Sort(Sort.Direction.ASC,"id");
+        Sort sort = new Sort(Sort.Direction.ASC,"storeId");
         Pageable pageable = PageRequest.of(page-1,size,sort);
         if(values!=null){
             return storeRepository.findAll(new Specification<Store>() {
                 @Override
                 public Predicate toPredicate(Root<Store> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
-                    Path<String> name = root.get("name");  //餐厅名称进行修改
+                    Path<String> name = root.get("storeName");  //餐厅名称进行搜素
                     criteriaQuery.where(criteriaBuilder.like(name,"%"+ values +"%"));
                     return null;
                 }
@@ -42,4 +41,3 @@ public class StoreService {
     }
 
 }
-*/
