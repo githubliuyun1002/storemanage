@@ -12,33 +12,60 @@ import java.util.Set;
 
 * @Description:    java类门店实体类
 */
-
 @Entity
 public class Store {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int storeId;
-    private String storeCode;  //门店编码
-    private String storeName;  //门店名称
-    private String address;     //地址
-
+    private String storeCode;           //门店编码
+    private String storeName;           //门店名称
+    private String address;             //地址
     @OneToOne
     @JoinColumn(name = "marketCode")
-    private MarketEntity marketCode;
-    private String marger;     //(有些门店没有门店经理，再列表中展示时需要判断)
-
+    private MarketEntity marketCode;   //所属市场
+    private String marger;             //(有些门店没有门店经理，再列表中展示时需要判断)
     //门店状态
     @OneToOne
     @JoinColumn(name = "storeStatus")
     private StoreStatus storeStatus;
-
+    //开店日期
     @Temporal(TemporalType.DATE)
     private Date openDate;
-
+    //闭店日期
+    @Temporal(TemporalType.DATE)
+    private Date closeDate;
+    //带宽信息
+    @OneToOne
+    @JoinColumn(name = "widthband")
+    private WidthBand widthBand;
     //设置门店的设备(items)
     @ManyToMany(targetEntity = Items.class,fetch = FetchType.EAGER)
     @JoinTable(name = "store_items",joinColumns = @JoinColumn(name = "store_id"),inverseJoinColumns = @JoinColumn(name = "items_id"))
     private Set<Items> itemsSet;
+
+    public WidthBand getWidthBand() {
+        return widthBand;
+    }
+
+    public void setWidthBand(WidthBand widthBand) {
+        this.widthBand = widthBand;
+    }
+
+    public StoreStatus getStoreStatus() {
+        return storeStatus;
+    }
+
+    public void setStoreStatus(StoreStatus storeStatus) {
+        this.storeStatus = storeStatus;
+    }
+
+    public Date getCloseDate() {
+        return closeDate;
+    }
+
+    public void setCloseDate(Date closeDate) {
+        this.closeDate = closeDate;
+    }
 
     public int getStoreId() {
         return storeId;

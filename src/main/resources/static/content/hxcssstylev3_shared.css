@@ -1,0 +1,392 @@
+﻿body,div,ul,ol,li,h1,h2,h3,h4,h5,h6,form,fieldset,img,span,iframe,select,input,textarea,p,table,tr,td,th{margin:0px;padding:0px;}
+fieldset,img{border:0px;}
+table {border-collapse:collapse;border-spacing:0px;}
+ii,ul,ol{list-style:none;}
+textarea,input,select,body,span,div,td {font-size:12px;}
+input,select{vertical-align:middle;height:20px;padding-left:2px;} /*为了兼容hxwebj控件元素*/
+div,span,input,textarea,table,tr,td,iframe,label { box-sizing:border-box;}
+
+html {overflow:auto;}
+body {font-family:Verdana,Tahoma,Arial,sans-serif,微软雅黑;border:none;overflow:initial;min-height:100%;}
+
+a { COLOR: blue; FONT-WEIGHT: bold; TEXT-DECORATION: none;	}
+a:hover	{ COLOR: red; }
+a:visited	{ COLOR: blue; }
+
+.hxbgcolor_transparent {background-color:Transparent}
+.hxborder_none {border:none}
+
+.hxtbl_datalist_frame {}
+.hxtbl_datalist_frame thead tr { font-weight: bold;cursor:pointer;}
+.hxtbl_datalist_frame td { padding:2px 0px 2px 0px;vertical-align:middle;}
+
+
+/*按钮容器样式：hxbtn_container，颜色风格无关定义, height:决定按钮容器高度 */
+.hxbtn_container {text-align:center;height:28px;vertical-align:middle;cursor:pointer;}
+
+/*按钮容器中的img统一高度16px，顶部留白5px，确保大致显示在垂直居中位置*/
+.hxbtn_container img {margin-top:5px;vertical-align:top;}
+
+/*按钮文本样式，vertical-align:middle指示在hxbtn_container容器中垂直居中 */
+.hxbtn_text {font-size:12px;height:26px;line-height:26px;vertical-align:middle;}
+
+/*标准按钮样式，标准高度28px*/
+.hxbtn_std {border:solid 1px #BBBBBB;color:#242424;height:28px;background:url(../images/hxpub_bg_1pixel_grey_h28.png) repeat-x 0px -2px;}
+
+/*按钮附加修饰样式：hxbtn_imagetext_mode用于 常规image_text按钮（border为透明色）, hxbtn_imagetext_mode_ie6用于兼容ie6目的(ie6不支持border-color:transparent，所以使用了白色边框) */
+.hxbtn_imagetext_mode {border:solid 1px transparent;}
+.hxbtn_imagetext_mode_ie6 {border:solid 1px white;}
+
+
+
+
+.hxinputbox { height:28px;line-height:1;padding-left:2px;padding-right:1px; border-radius:2px;} 
+*html .hxinputbox {padding-top:6px;}/*IE兼容性视图模式修订*/
+
+.hxcheckbox,.hxradiobox,.hxfilebox {vertical-align:middle;height:28px;line-height:28px;}
+.hxfilebox img {vertical-align:top;margin-top:8px;}
+.hxinputbox_dropdown_btn {vertical-align:top;margin-top:10px;}
+.hxinputbox_dropdown_btn_mobile {vertical-align:top;margin-top:4px;width:20px;height:20px;}
+
+
+/*文本标题和内容样式, 使用vertical-align:top以便和字段input元素并排显示时垂直对齐；使用line-height:22px以便在单行文本模式下文字垂直居中*/
+.hxtxt_caption, .hxtxt_content {font-size:12px;color:#6d7079;height:28px;line-height:28px;vertical-align:top;}
+.hxtxt_required_flag {font-size:12px;color:red;height:28px;line-height:28px;font-weight:bold;vertical-align:top;}
+.hxtxt_list_column_caption {font-size:12px;height:18px;line-height:18px;}
+
+
+/*文本附加修饰样式类，标记粗体显示。注：附加修饰样式类尽可能在后面定义，这样才能覆盖前面的相同属性的默认样式设置*/
+.hxtxt_bold {font-weight:bold;} 
+
+/* 附加文本修饰样式类，标记允许折行 */
+.hxtxt_wrap {overflow:visible;word-break:break-all;text-overflow:clip;white-space:normal;} 
+ /* 附加文本修饰样式类，标记不允许折行 */
+.hxtxt_nowrap {overflow:hidden;word-break:keep-all;text-overflow:ellipsis;white-space:nowrap;}
+
+.hxtxt_hyperlink {color:blue;font-weight:bold;cursor:pointer;} /* 附加文本修饰样式类，文本超链接样式文本，和按钮超链接样式不同 */
+
+.hxtxt_disabled { color:#a0a0a0;text-shadow:1px 1px 0 white;}
+
+.hxcontainer_shadow { border:#BBBBBB 1px solid; box-shadow:0 0 3px #909090;}
+*html .hxcontainer_shadow { filter:progid:DXImageTransform.Microsoft.Shadow(color=#BBBBBB,direction=120,strength=3);}
+
+#hx_datalist_prefix_column_head {padding:0px;}/*无padding以方便设置特定背景色*/
+
+
+/*预定义页面标题和内容块标题样式类*/
+.hxtxt_page_title {font-size:18px;height:28px;line-height:28px;color:#333333;} /*height:28px确保和查询视图定义区域高度相等以利布局*/
+.hxtxt_section_title {font-size:14px;font-weight:400; height:16px;line-height:16px;color:#767676;}
+
+
+.hxscrollbar {SCROLLBAR-FACE-COLOR: #ffffff; scrollbar-3dlight-color: #ffffff; SCROLLBAR-TRACK-COLOR: #ffffff; SCROLLBAR-DARKSHADOW-COLOR: #ffffff; scrollbar-shadow-color: #BBBBBB; SCROLLBAR-HIGHLIGHT-COLOR: #BBBBBB; SCROLLBAR-ARROW-COLOR: #BBBBBB; }
+
+.hxwebjs_web_dialog_container {border:1px solid #bbbbbb;}
+.hxwebjs_web_dialog_title { font-weight:bold;background-color:white;font-weight:bold;border-bottom:1px solid #bbbbbb;padding-left:16px;padding-top:2px; }
+.hxwebjs_web_dialog_close_button {} 
+.hxwebjs_web_dialog_decoration_icon {}
+
+
+.hxfld_container .hximg_range_field_seperate_line {vertical-align:top; margin-top:14px;}
+
+
+
+
+.hxmastermenuarea_leftside #hxmastermenuitem_container {vertical-align:top;}
+.hxmastermenuarea_leftside .hxmastermenuitem_icon_with_text {vertical-align:top;margin-top:6px;margin-left:16px;}
+.hxmastermenuarea_leftside .hxmastermenuitem_text_with_icon {margin-left:12px;font-weight:bold;vertical-align:top;color:White;height:28px;line-height:28px;}
+
+.hxmastermenuarea_leftside .hxmastermenuitem_icon_only {vertical-align:top;margin-top:6px;margin-left:22px;}
+.hxmastermenuarea_leftside .hxmastermenuitem_text_only {margin-left:16px;font-weight:bold;color:White;vertical-align:top;height:28px;line-height:28px;}
+
+.hxmastermenuarea_topside #hxmastermenuitem_container {vertical-align:top;}
+.hxmastermenuarea_topside .hxmastermenuitem_icon_with_text {vertical-align:top;margin-top:6px;}
+.hxmastermenuarea_topside .hxmastermenuitem_text_with_icon {margin-left:8px;font-weight:bold;vertical-align:top;color:White;height:28px;line-height:28px;}
+
+.hxmastermenuarea_topside .hxmastermenuitem_icon_only {vertical-align:top;margin-top:6px;}
+.hxmastermenuarea_topside .hxmastermenuitem_text_only {font-weight:bold;color:White;vertical-align:top;height:28px;line-height:28px;}
+
+#hxwebjs_window_top_tip_message_content_div { padding:4px 8px 4px 8px;border-bottom-left-radius:4px;border-bottom-right-radius:4px;font-weight:bold;font-size:16px;}
+#hxwebjs_window_top_tip_message_content_div.success {color:White;background-color:Green;}
+#hxwebjs_window_top_tip_message_content_div.failure {color:White;background-color:Red;}
+#hxwebjs_window_top_tip_message_content_div.warning {color:black;background-color:Yellow;}
+#hxwebjs_window_top_tip_message_content_div.info {color:White;background-color:Blue;}
+
+#hxwebdatacontrol_popup_dataarea td {padding:0px}
+#hxwebdatacontrol_popup_dataarea .mobile_mode .hxwebdatacontrol_dataline td {font-size:16px;padding-top:4px;padding-bottom:4px;}
+#hxwebdatacontrol_popup_dataarea .mobile_mode .hxwebdatacontrol_dataline_hover td {font-size:16px;padding-top:4px;padding-bottom:4px;}
+#hxwebdatacontrol_popup_controlarea td {padding:0px}
+
+/*HXWebMessageBox相关样式*/
+#hxwebmessageboxcontrol__container
+{
+  position:absolute;
+  border: 1px solid #ccc;
+  background-color:#fff;
+  z-index:100110; /*比缺省对话框100000高10个点*/
+}
+
+#hxwebmessageboxcontrol__title
+{
+    position:absolute;
+    left:30px;right:30px;top:30px;height:50px;
+    font-size:18px;font-weight:bold;
+}
+
+#hxwebmessageboxcontrol__textarea
+{
+  position:absolute;
+  left:30px;width:calc(100% - 60px);top:80px;height:calc(100% - 160px);
+  border: 1px solid #ccc;
+  overflow:auto;
+  font-size:14px;
+}
+
+#hxwebmessageboxcontrol__ok_btn
+{
+  position:absolute;
+  right:120px;width:70px;bottom:30px;
+}
+
+#hxwebmessageboxcontrol__closebtn, #hxwebmessageboxcontrol__cancel_btn
+{
+  position:absolute;
+  right:30px;width:70px;bottom:30px;
+}
+
+.hxicon_prevpage {background:url(../images/hxpub_bg_icons.png) no-repeat -140px -140px;width:9px;height:9px; cursor:pointer;}
+.hxicon_prevpage_disabled {background:url(../images/hxpub_bg_icons.png) no-repeat -140px -150px;width:9px;height:9px;cursor:default}
+.hxicon_nextpage {background:url(../images/hxpub_bg_icons.png) no-repeat -150px -140px;width:9px;height:9px; cursor:pointer;}
+.hxicon_nextpage_disabled {background:url(../images/hxpub_bg_icons.png) no-repeat -150px -150px;width:9px;height:9px;cursor:default}
+.hxicon_firstpage {background:url(../images/hxpub_bg_icons.png) no-repeat -160px -140px;width:9;height:9px; cursor:pointer;}
+.hxicon_firstpage_disabled {background:url(../images/hxpub_bg_icons.png) no-repeat -160px -150px;width:9px;height:9px;cursor:default}
+.hxicon_lastpage {background:url(../images/hxpub_bg_icons.png) no-repeat -170px -140px;width:9px;height:9px; cursor:pointer;}
+.hxicon_lastpage_disabled {background:url(../images/hxpub_bg_icons.png) no-repeat -170px -150px;width:9px;height:9px;cursor:default}
+
+
+.hxicon_sort_asc {background:url(../images/hxpub_bg_icons.png) no-repeat -10px -160px;width:9px;height:9px;cursor:pointer;}
+.hxicon_sort_desc {background:url(../images/hxpub_bg_icons.png) no-repeat 0px -160px;width:9px;height:9px;cursor:pointer;}
+.hxicon_sort_hide {display:none}
+
+.hxicon_dropdown {background:url(../images/hxpub_bg_icons.png) no-repeat -20px -170px;width:9px;height:9px;cursor:pointer;}
+.hxicon_dropdown_inside {background:url(../images/hxpub_bg_icons.png) no-repeat -18px -170px;width:9px;height:9px;cursor:pointer;}
+.hxicon_dropdown_circle {background:url(../images/hxpub_bg_icons.png) no-repeat -220px -160px;width:20px;height:20px;cursor:pointer;}
+
+
+
+
+.hxicon_add {border:0px;cursor:pointer;background:url(../images/hxpub_bg_icons.png);background-position:-220px -60px;height:16px;width:16px;}
+.hxicon_edit {border:0px;cursor:pointer;background:url(../images/hxpub_bg_icons.png);background-position:-20px -160px;height:9px;width:9px;}
+
+.hxicon_delete_narrow {border:0px;cursor:pointer;background:url(../images/hxpub_bg_icons.png);background-position:-60px 0px;height:10px;width:10px;}
+.hxicon_delete {border:0px;cursor:pointer;background:url(../images/hxpub_bg_icons.png);background-position:-220px -80px;height:16px;width:16px;}
+.hxicon_delete_chosen {border:0px;cursor:pointer;background:url(../images/hxpub_bg_icons.png);background-position:-220px -120px;height:16px;width:16px;}
+.hxicon_remove {border:0px;cursor:pointer;background:url(../images/hxpub_bg_icons.png);background-position:-200px -220px;height:16px;width:11px;}
+.hxicon_remove_chosen {border:0px;cursor:pointer;background:url(../images/hxpub_bg_icons.png);background-position:-220px -100px;height:16px;width:16px;}
+
+.hxicon_active {border:0px;cursor:pointer;background:url(../images/hxpub_bg_icons.png);background-position:-200px -200px;height:15px;width:16px;}
+.hxicon_inactive {border:0px;cursor:pointer;background:url(../images/hxpub_bg_icons.png);background-position:-200px -180px;height:15px;width:16px;}
+
+.hxicon_closewin {border:0px;cursor:pointer;background:url(../images/hxpub_bg_icons.png);background-position:-200px -160px;height:15px;width:15px;}
+
+.hxicon_create {border:0px;cursor:pointer;background:url(../images/hxpub_bg_icons.png);background-position:-160px -160px;height:11px;width:11px;}
+.hxicon_stop {border:0px;cursor:pointer;background:url(../images/hxpub_bg_icons.png);background-position:-140px -160px;height:12px;width:12px;}
+
+.hxicon_edit_details {border:0px;cursor:pointer;background:url(../images/hxpub_bg_icons.png);background-position:-20px -20px;height:16px;width:16px;}
+.hxicon_refresh {border:0px;cursor:pointer;background:url(../images/hxpub_bg_icons.png);background-position:-60px -160px;height:11px;width:11px;}
+.hxicon_search {border:0px;cursor:pointer;background:url(../images/hxpub_bg_icons.png);background-position:-160px -100px;height:14px;width:14px;}
+.hxicon_search_r {border:0px;cursor:pointer;background:url(../images/hxpub_bg_icons.png);background-position:-220px -40px;height:12px;width:13px;}
+
+.hxicon_paste { background:url(../images/hxpub_bg_icons.png) no-repeat 0px -220px;width:16px;height:16px;}
+.hxicon_copy { background:url(../images/hxpub_bg_icons.png) no-repeat -20px -220px;width:16px;height:16px;}
+.hxicon_cut { background:url(../images/hxpub_bg_icons.png) no-repeat -40px -220px;width:16px;height:16px;}
+
+.hxicon_save { background:url(../images/hxpub_bg_icons.png) no-repeat -160px -220px;width:14px;height:14px;}
+.hxicon_save_all { background:url(../images/hxpub_bg_icons.png) no-repeat -180px -220px;width:14px;height:14px;}
+
+.hxicon_showmore {border:0px;cursor:pointer;background:url(../images/hxpub_bg_icons.png);background-position:-30px -170px;height:9px;width:9px;}
+.hxicon_hidemore {border:0px;cursor:pointer;background:url(../images/hxpub_bg_icons.png);background-position:-30px -130px;height:9px;width:9px;}
+.hxicon_showmore2 { background:url(../images/hxpub_bg_icons.png) no-repeat -200px -260px; width:14px;height:16px;}
+
+.hxicon_export_to_excel { background:url(../images/hxpub_bg_icons.png) no-repeat -60px -220px;width:16px;height:16px;}
+.hxicon_export_chosen { background:url(../images/hxpub_bg_icons.png) no-repeat -220px -140px;width:16px;height:16px;}
+
+.hxicon_print_preview { background:url(../images/hxpub_bg_icons.png) no-repeat 0px -20px;width:16px;height:16px;}
+
+.hxicon_workflow_agree { background:url(../images/hxpub_bg_icons.png) no-repeat -200px 0px;width:11px;height:14px;}
+.hxicon_workflow_deny { background:url(../images/hxpub_bg_icons.png) no-repeat -200px -20px;width:11px;height:14px;}
+.hxicon_workflow_to_additional { background:url(../images/hxpub_bg_icons.png) no-repeat -200px -40px;width:11px;height:14px;}
+.hxicon_workflow_return { background:url(../images/hxpub_bg_icons.png) no-repeat -200px -60px;width:11px;height:14px;}
+
+.hxicon_workflow_submit { background:url(../images/hxpub_bg_icons.png) no-repeat -220px 0px;width:16px;height:16px;}
+.hxicon_workflow_cancel { background:url(../images/hxpub_bg_icons.png) no-repeat -220px -20px;width:16px;height:16px;}
+
+
+.hxicon_calendar {border:0px;cursor:pointer;background:url(../images/hxpub_bg_icons.png);background-position:-100px -60px;height:16px;width:16px;}
+.hxicon_document { background:url(../images/hxpub_bg_icons.png) no-repeat -180px -80px;width:12px;height:14px;}
+.hxicon_attachment {border:0px;cursor:pointer;background:url(../images/hxpub_bg_icons.png);background-position:-100px 0px;height:12px;width:8px;}
+.hxicon_home { background:url(../images/hxpub_bg_icons.png) no-repeat -20px -180px;width:16px;height:16px;}
+.hxicon_star { background:url(../images/hxpub_bg_icons.png) no-repeat -20px -120px;width:9px;height:9px;}
+.hxicon_flowchart { background:url(../images/hxpub_bg_icons.png) no-repeat -200px -80px;width:13px;height:15px;}
+
+.hxicon_person_blue { background:url(../images/hxpub_bg_icons.png) no-repeat -180px -140px;width:12px;height:13px;}
+.hxicon_person_yellow { background:url(../images/hxpub_bg_icons.png) no-repeat -180px -160px;width:12px;height:13px;}
+.hxicon_persons { background:url(../images/hxpub_bg_icons.png) no-repeat -180px -180px;width:16px;height:15px;}
+
+.hxicon_folder_closed { background:url(../images/hxpub_bg_icons.png) no-repeat -180px -40px;width:16px;height:12px;}
+.hxicon_folder_opened { background:url(../images/hxpub_bg_icons.png) no-repeat -180px -60px;width:16px;height:12px;}
+
+.hxicon_indicator_r {border:0px;cursor:pointer;background:url(../images/hxpub_bg_icons.png);background-position:-100px -160px;height:16px;width:16px;}
+.hxicon_indicator_l {border:0px;cursor:pointer;background:url(../images/hxpub_bg_icons.png);background-position:-120px -160px;height:16px;width:16px;}
+
+.hxicon_traffic_light_green { background:url(../images/hxpub_bg_icons.png) no-repeat -200px -140px;width:16px;height:16px;}
+.hxicon_traffic_light_yellow { background:url(../images/hxpub_bg_icons.png) no-repeat -200px -120px;width:16px;height:16px;}
+.hxicon_traffic_light_red { background:url(../images/hxpub_bg_icons.png) no-repeat -200px -100px;width:16px;height:16px;}
+
+.hxicon_treeview_hline {border:0px; background:url(../images/hxpub_bg_icons.png) no-repeat -60px -180px;width:17px;height:18px;}
+.hxicon_treeview_first {border:0px;background:url(../images/hxpub_bg_icons.png) no-repeat -80px -180px;width:17px;height:18px;}
+.hxicon_treeview_last  {border:0px;background:url(../images/hxpub_bg_icons.png) no-repeat -140px -180px;width:17px;height:18px;}
+.hxicon_treeview_middle{border:0px;background:url(../images/hxpub_bg_icons.png) no-repeat -160px -180px;width:17px;height:18px;}
+.hxicon_treeview_minus_first{border:0px;background:url(../images/hxpub_bg_icons.png) no-repeat -0px -200px;width:17px;height:18px;}
+.hxicon_treeview_minus_hline{border:0px; background:url(../images/hxpub_bg_icons.png) no-repeat -20px -200px;width:17px;height:18px;}
+.hxicon_treeview_minus_last{border:0px;background:url(../images/hxpub_bg_icons.png) no-repeat -40px -200px;width:17px;height:18px;}
+.hxicon_treeview_minus_middle{border:0px; background:url(../images/hxpub_bg_icons.png) no-repeat -60px -200px;width:17px;height:18px;}
+.hxicon_treeview_plus_first{border:0px; background:url(../images/hxpub_bg_icons.png) no-repeat -80px -200px;width:17px;height:18px;}
+.hxicon_treeview_plus_hline{border:0px; background:url(../images/hxpub_bg_icons.png) no-repeat -100px -200px;width:17px;height:18px;}
+.hxicon_treeview_plus_last{border:0px; background:url(../images/hxpub_bg_icons.png) no-repeat -120px -200px;width:17px;height:18px;}
+.hxicon_treeview_plus_middle{border:0px; background:url(../images/hxpub_bg_icons.png) no-repeat -140px -200px;width:17px;height:18px;}
+.hxicon_treeview_vline{border:0px; background:url(../images/hxpub_bg_icons.png) no-repeat -160px -200px;width:17px;height:18px;}
+
+.hxicon_treeview_img_folder_closed{ background:url(../images/hxpub_bg_icons.png) no-repeat -100px -180px;width:15px;height:13px;}
+.hxicon_treeview_img_folder_opened{ background:url(../images/hxpub_bg_icons.png) no-repeat -120px -180px;width:15px;height:13px;}
+
+.hxicon_treeview_hline_24 {border:0px; background:url(../images/hxpub_bg_big_icons.png) no-repeat 0px -250px;width:24px;height:24px;}
+.hxicon_treeview_first_24 {border:0px;background:url(../images/hxpub_bg_big_icons.png) no-repeat -25px -250px;width:24px;height:24px;}
+.hxicon_treeview_last_24  {border:0px;background:url(../images/hxpub_bg_big_icons.png) no-repeat -50px -250px;width:24px;height:24px;}
+.hxicon_treeview_middle_24{border:0px;background:url(../images/hxpub_bg_big_icons.png) no-repeat -75px -250px;width:24px;height:24px;}
+.hxicon_treeview_minus_first_24{border:0px;background:url(../images/hxpub_bg_big_icons.png) no-repeat 0px -275px;width:24px;height:24px;}
+.hxicon_treeview_minus_hline_24{border:0px; background:url(../images/hxpub_bg_big_icons.png) no-repeat -25px -275px;width:24px;height:24px;}
+.hxicon_treeview_minus_last_24{border:0px;background:url(../images/hxpub_bg_big_icons.png) no-repeat -50px -275px;width:24px;height:24px;}
+.hxicon_treeview_minus_middle_24{border:0px; background:url(../images/hxpub_bg_big_icons.png) no-repeat -75px -275px;width:24px;height:24px;}
+.hxicon_treeview_plus_first_24{border:0px; background:url(../images/hxpub_bg_big_icons.png) no-repeat -100px -275px;width:24px;height:24px;}
+.hxicon_treeview_plus_hline_24{border:0px; background:url(../images/hxpub_bg_big_icons.png) no-repeat -125px -275px;width:24px;height:24px;}
+.hxicon_treeview_plus_last_24{border:0px; background:url(../images/hxpub_bg_big_icons.png) no-repeat -150px -275px;width:24px;height:24px;}
+.hxicon_treeview_plus_middle_24{border:0px; background:url(../images/hxpub_bg_big_icons.png) no-repeat -175px -275px;width:24px;height:24px;}
+.hxicon_treeview_vline_24{border:0px; background:url(../images/hxpub_bg_big_icons.png) no-repeat -100px -250px;width:24px;height:24px;}
+
+.hxicon_tab_close_tag {background:url(../images/hxpub_bg_icons.png) no-repeat -190px -200px;width:5px;height:5px; cursor:pointer;}
+.hxicon_tab_close_tag_1 {background:url(../images/hxpub_bg_icons.png) no-repeat -190px -210px;width:8px;height:8px; cursor:pointer;}
+
+.hxicon_record_status_draft {background:url(../images/hxpub_bg_big_icons.png) no-repeat -152px -127px;width:16px;height:16px;}
+.hxicon_record_status_active {background:url(../images/hxpub_bg_big_icons.png) no-repeat -178px -102px;width:16px;height:16px;}
+.hxicon_record_status_inactived {background:url(../images/hxpub_bg_big_icons.png) no-repeat -152px -102px;width:16px;height:16px;}
+
+.hxicon_gender_female {background:url(../images/hxpub_bg_icons.png) no-repeat -120px -240px;width:16px;height:16px;}
+.hxicon_gender_male {background:url(../images/hxpub_bg_icons.png) no-repeat -140px -240px;width:16px;height:16px;}
+
+.hxicon_team { background:url(../images/hxpub_bg_icons.png) no-repeat -160px -240px;width:16px;height:16px;}
+
+.hxicon_locked { background:url(../images/hxpub_bg_icons.png) no-repeat -180px -240px;width:16px;height:16px;}
+.hxicon_unlocked { background:url(../images/hxpub_bg_icons.png) no-repeat -200px -240px;width:16px;height:16px;}
+
+.hxicon_hideblock { background:url(../images/hxpub_bg_icons.png) no-repeat -220px -240px;width:16px;height:16px;}
+.hxicon_showblock { background:url(../images/hxpub_bg_icons.png) no-repeat -240px -240px;width:16px;height:16px;}
+
+.hxicon_hand_point_to_right {background:url(../images/hxpub_bg_icons.png) no-repeat 0px -260px;width:20px;height:16px;}
+.hxicon_hand_point_to_left {background:url(../images/hxpub_bg_icons.png) no-repeat -20px -260px;width:20px;height:16px;}
+.hxicon_cndtn_parenthesis_l {background:url(../images/hxpub_bg_icons.png) no-repeat -40px -260px;width:20px;height:19px;}
+.hxicon_cndtn_parenthesis_r {background:url(../images/hxpub_bg_icons.png) no-repeat -60px -260px;width:20px;height:19px;}
+.hxicon_cndtn_or {background:url(../images/hxpub_bg_icons.png) no-repeat -80px -260px;width:20px;height:19px;}
+.hxicon_cndtn_and {background:url(../images/hxpub_bg_icons.png) no-repeat -100px -260px;width:20px;height:19px;}
+.hxicon_cndtn_parenthesis_l_disabled {background:url(../images/hxpub_bg_icons.png) no-repeat -120px -260px;width:20px;height:19px;}
+.hxicon_cndtn_parenthesis_r_disabled {background:url(../images/hxpub_bg_icons.png) no-repeat -140px -260px;width:20px;height:19px;}
+.hxicon_cndtn_or_disabled {background:url(../images/hxpub_bg_icons.png) no-repeat -160px -260px;width:20px;height:19px;}
+.hxicon_cndtn_and_disabled {background:url(../images/hxpub_bg_icons.png) no-repeat -180px -260px;width:20px;height:19px;}
+
+.hxicon_node { background:url(../images/hxpub_bg_icons.png) no-repeat -220px -260px; width:14px;height:15px;}
+
+.hxicon_file_pdf { background:url(../images/hxpub_bg_icons.png) no-repeat -260px -160px; width:16px;height:16px;}
+.hxicon_file_ppt { background:url(../images/hxpub_bg_icons.png) no-repeat -260px -180px; width:16px;height:16px;}
+.hxicon_file_xls { background:url(../images/hxpub_bg_icons.png) no-repeat -260px -200px; width:16px;height:16px;}
+.hxicon_file_doc { background:url(../images/hxpub_bg_icons.png) no-repeat -260px -220px; width:16px;height:16px;}
+.hxicon_file_web { background:url(../images/hxpub_bg_icons.png) no-repeat -260px -240px; width:16px;height:16px;}
+
+.hxicon_invert_go_home {background:url(../images/hxpub_bg_icons.png) no-repeat -240px 0px;width:16px;height:16px;}
+.hxicon_invert_exit_system {background:url(../images/hxpub_bg_icons.png) no-repeat -260px -120px;width:16px;height:16px;}
+.hxicon_invert_system_setting {background:url(../images/hxpub_bg_icons.png) no-repeat -260px -140px;width:16px;height:16px;}
+.hxicon_invert_head_placeholder {background:url(../images/hxpub_bg_icons.png) no-repeat -220px -200px;width:40px;height:40px;}
+
+.hxicon_invert_common_1_person {background:url(../images/hxpub_bg_icons.png) no-repeat -240px -20px;width:16px;height:16px;}
+.hxicon_invert_common_2_money {background:url(../images/hxpub_bg_icons.png) no-repeat -240px -40px;width:16px;height:16px;}
+.hxicon_invert_common_3_computers {background:url(../images/hxpub_bg_icons.png) no-repeat -240px -60px;width:16px;height:16px;}
+/* 和hxicon_invert_common_3_computers相同，作为默认主菜单项图标 */
+.hxicon_master_menu_item_dft_icon {background:url(../images/hxpub_bg_icons.png) no-repeat -240px -60px;width:16px;height:16px;}
+.hxicon_invert_common_4_tool {background:url(../images/hxpub_bg_icons.png) no-repeat -240px -80px;width:16px;height:16px;}
+.hxicon_invert_common_5_plus {background:url(../images/hxpub_bg_icons.png) no-repeat -240px -100px;width:16px;height:16px;}
+.hxicon_invert_common_6_cycle {background:url(../images/hxpub_bg_icons.png) no-repeat -240px -120px;width:16px;height:16px;}
+.hxicon_invert_common_7_earch {background:url(../images/hxpub_bg_icons.png) no-repeat -240px -140px;width:16px;height:16px;}
+.hxicon_invert_common_8_inbox {background:url(../images/hxpub_bg_icons.png) no-repeat -240px -160px;width:16px;height:16px;}
+.hxicon_invert_common_9_doc {background:url(../images/hxpub_bg_icons.png) no-repeat -240px -180px;width:16px;height:16px;}
+.hxicon_invert_common_10 {background:url(../images/hxpub_bg_icons.png) no-repeat -260px 0px;width:16px;height:16px;}
+.hxicon_invert_common_11_mobile {background:url(../images/hxpub_bg_icons.png) no-repeat -260px -20px;width:16px;height:16px;}
+.hxicon_invert_common_12_screen {background:url(../images/hxpub_bg_icons.png) no-repeat -260px -40px;width:16px;height:16px;}
+.hxicon_invert_common_13_chart {background:url(../images/hxpub_bg_icons.png) no-repeat -260px -60px;width:16px;height:16px;}
+.hxicon_invert_common_14 {background:url(../images/hxpub_bg_icons.png) no-repeat -260px -80px;width:16px;height:16px;}
+.hxicon_invert_common_15 {background:url(../images/hxpub_bg_icons.png) no-repeat -260px -100px;width:16px;height:16px;}
+
+.hxicon50_shortcut_button_01 {background:url(../images/hxpub_bg_big_icons.png) no-repeat    0px -200px;width:50px;height:50px;}
+.hxicon50_shortcut_button_02 {background:url(../images/hxpub_bg_big_icons.png) no-repeat  -50px -200px;width:50px;height:50px;}
+.hxicon50_shortcut_button_03 {background:url(../images/hxpub_bg_big_icons.png) no-repeat -100px -200px;width:50px;height:50px;}
+.hxicon50_shortcut_button_04 {background:url(../images/hxpub_bg_big_icons.png) no-repeat -150px -200px;width:50px;height:50px;}
+.hxicon50_shortcut_button_05 {background:url(../images/hxpub_bg_big_icons.png) no-repeat -200px -200px;width:50px;height:50px;}
+.hxicon50_shortcut_button_06 {background:url(../images/hxpub_bg_big_icons.png) no-repeat -250px -200px;width:50px;height:50px;}
+.hxicon50_shortcut_button_07 {background:url(../images/hxpub_bg_big_icons.png) no-repeat -300px -200px;width:50px;height:50px;}
+.hxicon50_shortcut_button_08 {background:url(../images/hxpub_bg_big_icons.png) no-repeat -350px -200px;width:50px;height:50px;}
+.hxicon50_shortcut_button_09 {background:url(../images/hxpub_bg_big_icons.png) no-repeat -200px -150px;width:50px;height:50px;}
+.hxicon50_shortcut_button_10 {background:url(../images/hxpub_bg_big_icons.png) no-repeat -250px -150px;width:50px;height:50px;}
+.hxicon50_shortcut_button_11 {background:url(../images/hxpub_bg_big_icons.png) no-repeat -300px -150px;width:50px;height:50px;}
+
+
+/*以下class为冗余定义，以支持HXWebJS控件中原来使用的className的元素正确显示*/
+.hxbtn_prevpage {background:url(../images/hxpub_bg_icons.png) no-repeat -140px -140px;width:9px;height:9px; cursor:pointer;}
+.hxbtn_prevpage_disabled {background:url(../images/hxpub_bg_icons.png) no-repeat -140px -150px;width:9px;height:9px;cursor:default}
+.hxbtn_nextpage {background:url(../images/hxpub_bg_icons.png) no-repeat -150px -140px;width:9px;height:9px; cursor:pointer;}
+.hxbtn_nextpage_disabled {background:url(../images/hxpub_bg_icons.png) no-repeat -150px -150px;width:9px;height:9px;cursor:default}
+.hxbtn_firstpage {background:url(../images/hxpub_bg_icons.png) no-repeat -160px -140px;width:9;height:9px; cursor:pointer;}
+.hxbtn_firstpage_disabled {background:url(../images/hxpub_bg_icons.png) no-repeat -160px -150px;width:9px;height:9px;cursor:default}
+.hxbtn_lastpage {background:url(../images/hxpub_bg_icons.png) no-repeat -170px -140px;width:9px;height:9px; cursor:pointer;}
+.hxbtn_lastpage_disabled {background:url(../images/hxpub_bg_icons.png) no-repeat -170px -150px;width:9px;height:9px;cursor:default}
+
+.hxbtn_goto_page_no { color:Black; cursor:pointer; FONT-WEIGHT: bold;}
+.hxbtn_goto_page_no_hover { color:red; cursor:pointer; FONT-WEIGHT: bold;}
+.hxbtn_goto_page_no_selected {cursor:default; color:Black; font-weight:normal;}
+.hxbtn_goto_page_no_hide { display:none }
+
+.hxbtn_sort_asc {background:url(../images/hxpub_bg_icons.png) no-repeat -10px -160px;width:9px;height:9px;cursor:pointer;}
+.hxbtn_sort_desc {background:url(../images/hxpub_bg_icons.png) no-repeat 0px -160px;width:9px;height:9px;cursor:pointer;}
+.hxbtn_sort_hide {display:none}
+
+.hxbtn_dropdown {background:url(../images/hxpub_bg_icons.png) no-repeat -20px -170px;width:9px;height:9px;cursor:pointer;margin-left:2px;}
+.hxbtn_dropdown_big {background:url(../images/hxpub_bg_icons.png) no-repeat -180px -200px;width:10px;height:10px;cursor:pointer;margin-left:2px;}
+
+.hxbtn_blue {text-align:center; font-size:12px; color:#242424!important;height:22px;cursor:pointer;border:solid 1px #4a95c9;background:url(../images/hxpub_bg_1pixel_blue.png) repeat-x 0px 0px; width: 100%;} /* border:solid 1px #bbbbbb; gray border */
+.hxbtn_green {text-align:center; font-size:12px; color:#242424!important;height:22px;cursor:pointer;border:solid 1px #2c9222;background-image:url(../images/hxpub_bg_1pixel_green.png); width: 100%;}
+.hxbtn_orange {text-align:center; font-size:12px; color:#242424!important;height:22px;cursor:pointer;border:solid 1px #bbbbbb;background:url(../images/hxpub_bg_1pixel_orange.gif) repeat-x 0px 0px; width: 100%;}
+
+
+.hxbtn_add {border:0px;cursor:pointer;background:url(../images/hxpub_bg_icons.png);background-position:-80px 0px;height:10px;width:10px;}
+.hxbtn_edit {border:0px;cursor:pointer;background:url(../images/hxpub_bg_icons.png);background-position:-20px -160px;height:9px;width:9px;}
+.hxbtn_delete {border:0px;cursor:pointer;background:url(../images/hxpub_bg_icons.png);background-position:-60px 0px;height:10px;width:10px;}
+.hxbtn_create {border:0px;cursor:pointer;background:url(../images/hxpub_bg_icons.png);background-position:-160px -160px;height:11px;width:11px;}
+.hxbtn_stop {border:0px;cursor:pointer;background:url(../images/hxpub_bg_icons.png);background-position:-140px -160px;height:12px;width:12px;}
+.hxbtn_edit_details {border:0px;cursor:pointer;background:url(../images/hxpub_bg_icons.png);background-position:-20px -20px;height:16px;width:16px;}
+.hxbtn_attachment {border:0px;cursor:pointer;background:url(../images/hxpub_bg_icons.png);background-position:-100px 0px;height:12px;width:8px;}
+
+.hxbtn_refresh {border:0px;cursor:pointer;background:url(../images/hxpub_bg_icons.png);background-position:-60px -160px;height:11px;width:11px;}
+.hxbtn_search {border:0px;cursor:pointer;background:url(../images/hxpub_bg_icons.png);background-position:-160px -100px;height:12px;width:12px;}
+.hxbtn_showmore {border:0px;cursor:pointer;background:url(../images/hxpub_bg_icons.png);background-position:-30px -170px;height:9px;width:9px;}
+.hxbtn_hidemore {border:0px;cursor:pointer;background:url(../images/hxpub_bg_icons.png);background-position:-30px -130px;height:9px;width:9px;}
+.hxbtn_showcalendar {border:0px;cursor:pointer;background:url(../images/hxpub_bg_icons.png);background-position:-100px -60px;height:16px;width:16px;vertical-align:middle;margin-left:2px;}
+.hxbtn_indicator_right {border:0px;cursor:pointer;background:url(../images/hxpub_bg_icons.png);background-position:-100px -160px;height:16px;width:16px;vertical-align:middle;margin-left:2px;}
+.hxbtn_indicator_left {border:0px;cursor:pointer;background:url(../images/hxpub_bg_icons.png);background-position:-120px -160px;height:16px;width:16px;vertical-align:middle;margin-left:2px;}
+
+.hxbtn_small_indicator_right {background:url(../images/hxpub_bg_icons.png) no-repeat -150px -140px;width:9px;height:9px; cursor:pointer;}

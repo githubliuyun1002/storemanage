@@ -1,4 +1,3 @@
-/*
 package com.xiabuxiabu.storemanage.service.store;
 
 import com.xiabuxiabu.storemanage.entity.store.PayMethod;
@@ -19,4 +18,3 @@ public class PayMethodService {
         return payMethodRepository.findById(id).get();
     }
 }
-*/

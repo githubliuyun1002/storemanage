@@ -1,4 +1,3 @@
-/*
 package com.xiabuxiabu.storemanage.service.store;
 
 import com.xiabuxiabu.storemanage.entity.store.WidthBand;
@@ -16,6 +15,4 @@ public class WidthBandService {
     public WidthBand findById(int id){
         return widthBandRepository.findById(id).get();
     }
-
 }
-*/

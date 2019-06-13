@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>门店修改设备回显页面</title>
+    <link th:href="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css}" rel="stylesheet"/>
+    <script th:src="@{https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js}"></script>
+    <script th:src="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+    <link hx_element_type="css_shared" href="/content/hxcssstylev3_shared.css" type="text/css" rel="stylesheet">
+    <link hx_element_type="css_theme" href="/content/hxcssstylev3_blue.css" type="text/css" rel="stylesheet">
+    <link href="/content/project_customized.css" type="text/css" rel="stylesheet">
+    <script>
+        $(function () {
+            var storeId = $("#store_id").val();
+            $.ajax({
+                url:"/store/findById",
+                data:{"storeId":storeId},
+                dataType:"JSON",
+                type:"GET",
+                success:function (data) {
+                    //若有设置了宽带信息,进行宽带数据填充
+                    $("#storeCode").val(data.storeCode);
+                    $("#storeName").val(data.storeName);
+                    $("#address").val(data.address);
+                    $("#marketCode").val(data.marketCode.name);
+                    $("#marger").val(data.marger);
+                    $("#storeStatus").val(data.storeStatus.statusName);
+                    $("#openDate").val(data.openDate);
+                    $("#closeDate").val(data.closeDate);
+                    $("#marketCodeHidden").val(data.marketCode.marketCode);  //市场编码
+                    $("#storeStatusHidden").val(data.storeStatus.statusId);  //门店状态
+                    if(data.widthBand!=null){
+                        var widthContent=
+                            "<tr>" +
+                            "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">运营商</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input readonly=\"readonly\" type=\"text\"  name=\"servicePerson\"  id=\"servicePerson\" class=\"hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly\"  style=\"text-align:left;width:100%;overflow-y:auto\"></span></td>" +
+                            "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">接入方式</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input readonly=\"readonly\"  type=\"text\"  name=\"accessMethod\"  id=\"accessMethod\" class=\"hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly\"  style=\"text-align:left;width:100%;overflow-y:auto\"></span></td>" +
+                            "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">付款方式</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input readonly=\"readonly\" type=\"text\"  name=\"payMethod\"  id=\"payMethod\" class=\"hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly\"  style=\"text-align:left;width:100%;overflow-y:auto\"></span></td>" +
+                            "</tr>" +
+                            "<tr>" +
+                            "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">付款金额</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input readonly=\"readonly\" type=\"text\"  name=\"payMoney\"  id=\"payMoney\" class=\"hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly\"  style=\"text-align:left;width:100%;overflow-y:auto\"></span></td>" +
+                            "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">宽带账号</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input readonly=\"readonly\" type=\"text\"  name=\"identity\"  id=\"identity\" class=\"hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly\"  style=\"text-align:left;width:100%;overflow-y:auto\"></span></td>" +
+                            "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">宽带密码</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input readonly=\"readonly\" type=\"text\"  name=\"password\"  id=\"password\" class=\"hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly\"  style=\"text-align:left;width:100%;overflow-y:auto\"></span></td>" +
+                            "</tr>" +
+                            "<tr>" +
+                            "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">宽带带宽</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input readonly=\"readonly\" type=\"text\"  name=\"tapewidth\"  id=\"tapewidth\" class=\"hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly\"  style=\"text-align:left;width:100%;overflow-y:auto\"></span></td>" +
+                            "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">到期日期</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input readonly=\"readonly\" type=\"text\"  name=\"endDate\"  id=\"endDate\" class=\"hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly\"  style=\"text-align:left;width:100%;overflow-y:auto\"></span></td>" +
+                            "</tr>";
+                        $("#contentshow").append(widthContent);
+                        $("#servicePerson").val(data.widthBand.servicePerson.serviceName);
+                        $("#accessMethod").val(data.widthBand.accessMethod.accessName);
+                        $("#payMethod").val(data.widthBand.payMethod.method);
+                        $("#payMoney").val(data.widthBand.payMoney);
+                        $("#identity").val(data.widthBand.identity);
+                        $("#password").val(data.widthBand.password);
+                        $("#tapewidth").val(data.widthBand.tapewidth);
+                        $("#endDate").val(data.widthBand.endDate);
+                    }
+                    if(data.itemsSet!=null){
+                        var newArr =[];
+                        for (var i = 0; i < data.itemsSet.length; i++) {
+                            if(newArr.indexOf(data.itemsSet[i].className)==-1){
+                                newArr.push(data.itemsSet[i].className);
+                            }
+                        }
+                        for (var k = 0; k <newArr.length ; k++) {
+                            $("#itemsContent").append(
+                                '<div class="page_section_content_area>'+
+                                '<div class="page_section_title_area">' +
+                                '<span id="span'+k+'" class="hxtxt_nowrap hxtxt_section_title" style=";text-align:left;display:inline-block;width:100%;">'+newArr[k]+'</span>' +
+                                '</div>'+
+                                '<table class="hxtbl_datalist_frame" style="table-layout:fixed;width:100%">' +
+                                '<thead>' +
+                                '<tr class="hxbgcolor_datalist_head">' +
+                                '<td align="center" width="4%">' +
+                                '<span style=";display:none">' +
+                                '<span style="display:inline-block;width:100%;" class="hxbtn_container datalist_line_add"></span>' +
+                                '</span>' +
+                                '</td>' +
+                                '<td align="center"  width="19%">' +
+                                '<span class="hxtxt_list_column_caption hxbold hxtxt_nowrap">设备名称</span>' +
+                                '</td>' +
+                                '<td align="center"  width="19%">' +
+                                '<span class="hxtxt_list_column_caption hxbold hxtxt_nowrap">设备型号</span>' +
+                                '</td>' +
+                                '<td align="center"  width="19%">' +
+                                '<span class="hxtxt_list_column_caption hxbold hxtxt_nowrap">设备数量</span>' +
+                                '</td>' +
+                                '<td align="center"  width="19%">' +
+                                '<span class="hxtxt_list_column_caption hxbold hxtxt_nowrap">是否通过</span>' +
+                                '</td>' +
+                                '</tr>' +
+                                '</thead>' +
+                                '<tbody id="tbody'+k+'"></tbody>' +
+                                '</table>'+
+                                '</div>');
+                            //设置分类的div
+                            for (var p = 0; p <data.itemsSet.length ; p++) {
+                                var show = $("#span"+k).text();
+                                if(show==data.itemsSet[p].className){
+                                    $("#tbody"+k).append('' +
+                                        '<tr class="hxbgcolor_itemline_normal">' +
+                                        '<td align="center" width="4%">' +
+                                        '<span style=";display:none">' +
+                                        '<span style="display:inline-block;width:100%;" class="hxbtn_container"></span>' +
+                                        '</span>' +
+                                        '</td>' +
+                                        '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="hidden" name="id" value="'+data.itemsSet[p].id+'"><input type="text" readonly="readonly" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly"  name="equipName" value="'+data.itemsSet[p].equipName+'" style="text-align:left;width:100%;overflow-y:auto"></span></td>' +
+                                        '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="hidden" name="itemId" value="'+data.itemsSet[p].item.itemId+'"><input type="text" name="name" value="'+data.itemsSet[p].item.name+'" readonly="readonly" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly"   style="text-align:left;width:100%;overflow-y:auto"></span></td>' +
+                                        '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="text"  name="num" readonly="readonly" value="'+data.itemsSet[p].num+'" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly" style="text-align:left;width:100%;overflow-y:auto"></span></td>' +
+                                        '<td align="center" width="19%"><label class="radio-inline"><input type="hidden" name="className" value="'+data.itemsSet[p].className+'"><input type="radio"  value="1" name="'+data.itemsSet[p].item.itemId+data.itemsSet[p].item.name+'">是</label><label class="radio-inline"><input type="radio" value="2" name="'+data.itemsSet[p].item.itemId+data.itemsSet[p].item.name+'">否</label><span id="'+data.itemsSet[p].item.itemId+data.itemsSet[p].item.name+'"></span></td>'+
+                                        '</tr>');
+                                }
+                            }
+
+                        }
+                    }
+
+                },
+                error:function () {
+                    alert("修改页面回显数据失败");
+                }
+            })
+        });
+        //提交表单
+        function saveform() {
+            //拼接字符串进行提交(store门店信息进行提交)
+            var submitContent="{\"storeId\":\""+$("#storeId").val()+"\",\"storeCode\":\""+$("#storeCode").val()+"\",\"storeName\":\""+$("#storeName").val()+"\",\"address\":\""+$("#address").val()+"\"," +
+                "\"marger\":\""+$("#marger").val()+"\"," +
+                "\"openDate\":\""+$("#openDate").val()+"\"," +
+                "\"closeDate\":\""+$("#closeDate").val()+"\"," +
+                "\"marketCode\":{\"marketCode\":\""+$("#marketCodeHidden").val()+"\",\"name\":\""+$("#marketCode").val()+"\"}" +
+                "}";
+            //选择页面中所有的radio按钮,进行拼接
+            var radioArrays = $('input[type=radio]').length/2;
+            var radioChecked  = $("input:radio:checked");
+            if(radioChecked.length==0){
+                alert("请对设备明细进行检查");
+
+            }else{
+                if(radioChecked.length<radioArrays){
+                    alert("请检查页面选项是否填写完整");
+                    $.each(radioChecked,function () {
+                        var value = $(this).attr("name");
+                        $("#"+value+"").append('' +
+                            '<span style="color: red;font-weight: bold">已选择</span>');
+
+                    });
+                }
+                if(radioChecked.length==radioArrays){
+                    //循环页面中所有选中的radio
+                    var itemsSet="[";
+                    for (var i = 0; i <radioChecked.length ; i++) {
+                        //将js-->jQuery对象$(obj)
+                        var tr= $(radioChecked[i]).parent().parent().parent();
+                        var  tdArr =  tr.find("td");
+                        var id= tdArr.eq(1).find("input[type='hidden']").val();
+                        var equipName = tdArr.eq(1).find("input[name='equipName']").val();
+                        var itemId = tdArr.eq(2).find("input[type='hidden']").val();
+                        var name = tdArr.eq(2).find("input[name='name']").val();
+                        var num = tdArr.eq(3).find("input[name='num']").val();
+                        var sign = tdArr.eq(4).find("input[type='radio']:checked").val();
+                        var className = tdArr.eq(4).find("input[name='className']").val();
+                        itemsSet+="{\"className\":\""+className+"\",\"equipName\":\""+equipName+"\",\"id\":"+id+"," +
+                            "\"item\":{\"itemId\":"+itemId+",\"name\":\""+name+"\",\"sign\":\""+sign+"\"}," +
+                            "\"num\":"+num+"" ;
+                        if(i==radioChecked.length-1){
+                            itemsSet+="}"
+                        }else{
+                            itemsSet+="},";
+                        }
+                    }
+                    itemsSet+="]";
+                    $.ajax({
+                        url:"/store/toupdate",
+                        type:"GET",
+                        data:{"store":submitContent,"itemsSet":itemsSet},
+                        dataType:"JSON",
+                        async:false,
+                        success:function (data) {
+                            console.log("data------>"+data);
+                            if(data.code="1"){
+                                window.location.href="/store/home";
+                            }
+
+                        }
+                    })
+
+                }
+            }
+        }
+        function goback() {
+            history.go(-1);
+        }
+    </script>
+</head>
+<body class="hxbgcolor_webpage">
+    <div id="ContentPageDisplayArea" class="page_content_container hide_menu">
+        <input type="hidden"  th:value="${storeId}" id="store_id">
+        <!--表头信息展示-->
+        <table style="table-layout:fixed;width:100%;margin-top:12px;">
+            <tbody>
+            <tr>
+                <td width="50%">
+                    <div hx_element_type="text" id="WebPageTitleContainer" style="">
+                        <span hx_text_webpart__cnt="1" class="hxtxt_nowrap hxtxt_page_title" style=";text-align:left;display:inline-block;width:100%;">门店信息修改展示列表</span>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <!--门店基本信息、宽带列表展示
+        门店的基本信息来自BOH,门店的基本信息不需要更改-->
+        <div class="page_section_container hxcontainer_shadow">
+            <img class="page_section_title_decorated hxbgcolor_datalist_head" src="./content/hxpub_clear.gif">
+            <div class="page_section_title_area" hx_element_type="text">
+                <span class="hxtxt_nowrap hxtxt_section_title" style=";text-align:left;display:inline-block;width:100%;">门店信息展示</span>
+            </div>
+            <!--<form th:action="@{/store/toupdate}" method="post" id="showform">-->
+                <input type="hidden"  th:value="${storeId}" name="storeId" id="storeId">
+                <div class="page_section_content_area">
+                         <table style="table-layout:fixed;width:100%;">
+                                <tbody id="contentshow">
+                                <tr>
+                                    <td class="hxfld_container"><label class="hxtxt_caption hxtxt_nowrap" style="display:inline-block;width:24%;padding-right:10px;text-align:left">门店编码</label><span style="display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;"><input type="text" name="storeCode"  id="storeCode" readonly="readonly" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly"  style="text-align:left;width:100%;overflow-y:auto"></span></td>
+                                    <td class="hxfld_container"><label class="hxtxt_caption hxtxt_nowrap" style="display:inline-block;width:24%;padding-right:10px;text-align:left">门店名称</label><span style="display:inline-block;width:76%;z-index:100;padding-right:18px;;padding-left:1px;margin-left:-1px;"><input type="text"  name="storeName" id="storeName" readonly="readonly" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly" style="text-align:left;width:100%;overflow-y:auto"/></span></td>
+                                    <td class="hxfld_container"><label class="hxtxt_caption hxtxt_nowrap" style="display:inline-block;width:24%;padding-right:10px;text-align:left">门店经理</label><span style="display:inline-block;width:76%;z-index:100;padding-right:18px;;padding-left:1px;margin-left:-1px;"><input type="text"  name="marger" id="marger" readonly="readonly" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly"  style="text-align:left;width:100%;overflow-y:auto"/></span></td>
+                                </tr>
+                                <tr>
+                                    <td class="hxfld_container"><label class="hxtxt_caption hxtxt_nowrap" style="display:inline-block;width:24%;padding-right:10px;text-align:left">所属市场</label><span style="display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;"><input type="hidden" name="marketCode" id="marketCodeHidden"><input id="marketCode" type="text" readonly="readonly" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly"  style="text-align:left;width:100%;overflow-y:auto"></span></td>
+                                    <td class="hxfld_container"><label class="hxtxt_caption hxtxt_nowrap" style="display:inline-block;width:24%;padding-right:10px;text-align:left">开店日期</label><span style="display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;"><input type="text"  name="openDate"    id="openDate" readonly="readonly"  class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly"  style="text-align:left;width:100%;overflow-y:auto"></span></td>
+                                    <td class="hxfld_container"><label class="hxtxt_caption hxtxt_nowrap" style="display:inline-block;width:24%;padding-right:10px;text-align:left">闭店日期</label><span style="display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;"><input type="text"  name="closeDate"   id="closeDate" readonly="readonly"  class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly"  style="text-align:left;width:100%;overflow-y:auto"></span></td>
+                                </tr>
+                                <tr>
+                                    <td hx_element_type="field" class="hxfld_container"><label class="hxtxt_caption hxtxt_nowrap" style="display:inline-block;width:24%;padding-right:10px;text-align:left">门店状态</label><span style="display:inline-block;width:76%;z-index:100;padding-right:18px;;padding-left:1px;margin-left:-1px;"><input type="hidden" name="storeStatus" id="storeStatusHidden"><input type="text"  name="storeStatus" id="storeStatus" readonly="readonly"  class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly"  style="text-align:left;width:100%;overflow-y:auto"></span></td>
+                                    <td hx_element_type="field" class="hxfld_container" colspan="2"><label class="hxtxt_caption hxtxt_nowrap" style="display:inline-block;width:12%;padding-right:10px;text-align:left">门店地址</label><span style="display:inline-block;width:88%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;"><input type="text" name="address" id="address" readonly="readonly" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly" style="text-align:left;width:100%;overflow-y:auto"></span></td>
+                                </tr>
+                                </tbody>
+                         </table>
+                </div>
+                    <!--追加内容的时候，追加的是class="page_section_content_area"-->
+                <div id="itemsContent"></div>
+                <button type="button" onclick="goback()" style="float: right" class="btn btn-primary">关闭</button>
+                <button type="button"  onclick="saveform()" style="margin-left: 800px"  class="btn btn-primary">保存</button>
+            <!--</form>-->
+        </div>
+    </div>
+</body>
+</html>

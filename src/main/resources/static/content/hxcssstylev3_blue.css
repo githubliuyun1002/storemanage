@@ -1,0 +1,125 @@
+﻿
+.hxbgcolor_webpage {background-color:#E8EBF0;}
+.hxbgcolor_titlebar {background-color:#F9FCFE;}
+.hxbgcolor_mastermenuarea {background-color:#005c99;}
+.hxbgcolor_mastermenuarea_welcome_area {background-color:#01406b;}
+.hxbgcolor_mastermenuarea_bottom_area {background-color:#004377;}
+
+.hxbgcolor_shortcut_big_button_1 {background-color:#48C3D3;}
+.hxbgcolor_shortcut_big_button_2 {background-color:#019fc2;}
+.hxbgcolor_shortcut_big_button_3 {background-color:#b23f3f;}
+.hxbgcolor_shortcut_big_button_4 {background-color:#d9531e;}
+.hxbgcolor_shortcut_big_button_5 {background-color:#f4901e;}
+
+.hxbgcolor_cnt_block_head {background:url(../images/hxpub_bg_cnt_block_blue.png) repeat-x 0px 0px;}
+.hxbgcolor_datalist_head {background-color:#32b1e6;color:White;}
+#hx_datalist_prefix_column_head .hxbtn_container {background-color:#004ca2;}
+
+.hxbgcolor_itemline_normal {background-color:white;}
+.hxbgcolor_itemline_interval {background-color:ivory;}
+.hxbgcolor_itemline_hover {background-color:#32b1e6;cursor:pointer;}
+.hxbgcolor_itemline_highlight {background-color:green;}
+
+.hxbgcolor_inputbox_readonly {background-color:#F8F9FB;}
+.hxbgcolor_inputbox {background-color:white;}
+
+/*边框样式*/
+.hxborder_inputbox {border:solid 1px #EBEBEB;}
+.hxborder_underline {border-bottom:solid 1px #87ADD1;}
+.hxborder_popupcontrol {border:solid 1px #32b1e6}
+
+/*按钮样式：用于常规button或者image_text_button, 和hxbtn_container一起使用; hxbtn_style_1为深色背景，hxbtn_style_1为浅色背景，hxbtn_style_3为深灰色背景 */
+.hxbtn_style_1 {border:solid 1px #004ca2;color:White;background-color:#004ca2;}
+.hxbtn_style_2 {border:solid 1px #32b1e6;color:White;background-color:#32b1e6;}
+.hxbtn_style_3 {border:solid 1px #7f8287;color:White;background-color:#7f8287;}
+
+/*按钮样式：hxbtn_imagetext:hover用于IE9/10/11 (ie6不支持class:hover特性) */
+.hxbtn_imagetext_mode:hover {border:solid 1px #87ADD1;}
+
+/* 菜单控件和默认Menu Web部件相关样式*/
+.hxwebpopupmenucontrol_menuitem { background-color:white;layout-grid-mode:line;color:black; border:none; cursor:pointer;FONT-SIZE:12px;font-weight:bold; text-overflow:ellipsis;overflow:hidden;word-break:keep-all;FONT-WEIGHT:bold;vertical-align:text-bottom;}
+.hxwebpopupmenucontrol_menuitem_hover {  background-color:white;layout-grid-mode:line;color:#005c99; border:none; cursor:pointer;FONT-SIZE:12px;font-weight:bold; text-overflow:ellipsis;overflow:hidden;word-break:keep-all;FONT-WEIGHT:bold;vertical-align:text-bottom;}
+.hxwebpopupmenucontrol_menuitem_split_line {border-top:solid 1px #99999;}
+
+.hxmastermenuitem_current {background-color:#48c3d3;}
+.hxmastermenuitem_hover {background-color:#25ace4;}
+
+.hxmastermenu_popupchildmenu_level_1 {background-color:#25ace4;}
+.hxmastermenu_popupchildmenu_level_1 .hxwebpopupmenucontrol_menuitem { background-color:#25ace4;layout-grid-mode:line;color:white; border:none; cursor:pointer;FONT-SIZE:12px;font-weight:bold; text-overflow:ellipsis;overflow:hidden;word-break:keep-all;FONT-WEIGHT:bold;vertical-align:text-bottom;}
+.hxmastermenu_popupchildmenu_level_1 .hxwebpopupmenucontrol_menuitem_hover {  background-color:white;layout-grid-mode:line;color:#005c99; border:none; cursor:pointer;FONT-SIZE:12px;font-weight:bold; text-overflow:ellipsis;overflow:hidden;word-break:keep-all;FONT-WEIGHT:bold;vertical-align:text-bottom;}
+.hxmastermenu_popupchildmenu_level_1 .hxwebpopupmenucontrol_menuitem_split_line {border-top:solid 1px white;}
+
+.hxmastermenu_popupchildmenu_level_2 .hxmastermenu_popupchildmenu_level_3 {background-color:White;}
+.hxmastermenu_popupchildmenu_level_2 .hxwebpopupmenucontrol_menuitem, .hxmastermenu_popupchildmenu_level_3 .hxwebpopupmenucontrol_menuitem 
+        { background-color:white;layout-grid-mode:line;color:black; border:none; cursor:pointer;FONT-SIZE:12px;font-weight:bold; text-overflow:ellipsis;overflow:hidden;word-break:keep-all;FONT-WEIGHT:bold;vertical-align:text-bottom;}
+.hxmastermenu_popupchildmenu_level_2 .hxwebpopupmenucontrol_menuitem_hover, .hxmastermenu_popupchildmenu_level_3 .hxwebpopupmenucontrol_menuitem_hover 
+    {  background-color:white;layout-grid-mode:line;color:#005c99; border:none; cursor:pointer;FONT-SIZE:12px;font-weight:bold; text-overflow:ellipsis;overflow:hidden;word-break:keep-all;FONT-WEIGHT:bold;vertical-align:text-bottom;}
+
+.hxmastermenu_popupchildmenu_level_2 .hxwebpopupmenucontrol_menuitem_split_line, .hxmastermenu_popupchildmenu_level_3 .hxwebpopupmenucontrol_menuitem_split_line  {border-top:1px solid #999999;}
+
+.hxmastermenu_popupchildmenu_level_2__partlyline_for_hide,.hxmastermenu_popupchildmenu_level_3__partlyline_for_hide  {background-color:White;}
+
+/*以下为颜色相关图标样式*/
+.hxicon20_calendar {background:url(../images/hxpub_bg_icons.png) no-repeat 0px -240px;width:20px;height:20px;}
+.hxicon16_personal_message {background:url(../images/hxpub_bg_icons.png) no-repeat -20px -240px;width:16px;height:16px;}
+.hxicon16_public_bulletin  {background:url(../images/hxpub_bg_icons.png) no-repeat -40px -240px;width:16px;height:16px;}
+
+/*以下为PopupFlexibleControl相关样式*/
+.hxpopupcontrol_container {border:solid 1px #bbbbbb;background-color:white;}
+.hxpopupcontrol_headline {background-color:DarkBlue;color:White;font-weight:bold;}
+
+#hxwebcontrol_popupcalendar__container .hxpopupcontrol_headline td {border-bottom:solid 1px darkblue;}
+.hxwebcontrol_popupcalendar__currentmonth_cell { color:Black;}
+.hxwebcontrol_popupcalendar__othermonth_cell { color:DarkGray;}
+.hxwebcontrol_popupcalendar__today_cell { border:solid 1px red;color:Black;}
+.hxwebcontrol_popupcalendar__defaultdate_cell { background-color:DarkBlue;color:White;}
+
+
+/*以下为标准Web控件相关样式*/
+#hxwebdatacontrol_popup_dataarea {background-color:white;border:solid 1px #87ADD1;SCROLLBAR-FACE-COLOR: #ffffff; scrollbar-3dlight-color: #ffffff; SCROLLBAR-TRACK-COLOR: #ffffff; SCROLLBAR-DARKSHADOW-COLOR: #ffffff; scrollbar-shadow-color: #BBBBBB; SCROLLBAR-HIGHLIGHT-COLOR: #BBBBBB; SCROLLBAR-ARROW-COLOR: #BBBBBB; }
+#hxwebdatacontrol_popup_controlarea {overflow:hidden;background:url(../images/hxpub_bg_cnt_block_blue.png) repeat-x 0px 0px;border-style:solid; border-color:#87ADD1; border-left-width:1px;border-top-width:0px;border-right-width:1px;border-bottom-width:1px}
+.hxwebdatacontrol_dataline {background-color:White;}
+.hxwebdatacontrol_dataline_hover {background-color:#99ccff;}
+.hxwebdatacontrol_button {text-align:center; color:#242424!important;padding-top:0px; height:18px;cursor:pointer;border:solid 1px #bbbbbb;background:url(../images/hxpub_bg_1pixel_orange.gif) repeat-x 0px 0px; width: 100%;}
+
+#hxwebpopupcalendarcontrol_calendar_area {border:solid 1px #BBBBBB;background-color:white}
+#hxwebpopupcalendarcontrol_calendar_topicline {background-color:DarkBlue;color:White;font-weight:bold;vertical-align:middle}
+#hxwebpopupcalendarcontrol_calendar_headline {text-align:center;color:DarkBlue;}
+#hxwebpopupcalendarcontrol_calendar_headline td {border-bottom:solid 1px darkblue;}
+#hxwebpopupcalendarcontrol_calendar_area .hxwebpopupcalendarcontrol_currentmonth_cell { color:Black;}
+#hxwebpopupcalendarcontrol_calendar_area .hxwebpopupcalendarcontrol_othermonth_cell { color:DarkGray;}
+#hxwebpopupcalendarcontrol_calendar_area .hxwebpopupcalendarcontrol_today_cell { border:solid 1px red;color:Black;}
+#hxwebpopupcalendarcontrol_calendar_area .hxwebpopupcalendarcontrol_defaultdate_cell { background-color:DarkBlue;color:White;}
+
+#hxwebpopuptimepickercontrol_area {border:solid 1px #BBBBBB;background-color:white}
+#hxwebpopuptimepickercontrol_area_topicline {background-color:DarkBlue;color:White;font-weight:bold;vertical-align:middle}
+#hxwebpopuptimepickercontrol_area_headline  {color:DarkBlue;}
+#hxwebpopuptimepickercontrol_area_headline td {border-bottom:solid 1px darkblue;}
+
+#hxwebpopuptimepickercontrol_area .hxwebpopuptimepickercontrol_area_dataline td {text-align:center;cursor:pointer;background-color:lightyellow;}
+#hxwebpopuptimepickercontrol_area .hxwebpopuptimepickercontrol_area_dataline .hxwebpopuptimepickercontrol_hour_cell { text-align:center;cursor:pointer; background-color:#add8e6; }
+
+#hxwebpopuptimepickercontrol_area .hxwebpopuptimepickercontrol_choosed_hour {color:red;}
+#hxwebpopuptimepickercontrol_area .hxwebpopuptimepickercontrol_choosed_minute {color:red;}
+
+
+#hxwebpopupmonthpickercontrol_area {border:1px solid #BBBBBB;background-color:white}
+#hxwebpopupmonthpickercontrol_area_topicline {background-color:DarkBlue;color:White;font-weight:bold;vertical-align:middle}
+#hxwebpopupmonthpickercontrol_bottom_line {overflow:hidden;background:url(../images/hxpub_bg_cnt_block_blue.png) repeat-x 0px 0px;border-top:solid 1px #BBBBBB;}
+#hxwebpopupmonthpickercontrol_area .hxwebpopupmonthpickercontrol_todayperiod_cell { border:solid 1px red;color:Black; }
+#hxwebpopupmonthpickercontrol_area .hxwebpopupmonthpickercontrol_defaultperiod_cell { background-color:DarkBlue;color:White; }
+#hxwebpopupmonthpickercontrol_area .hxwebpopupmonthpickercontrol_area_dataline {text-align:center;cursor:pointer;background-color:white;}
+#hxwebpopupmonthpickercontrol_area .hxwebpopupmonthpickercontrol_month_cell {text-align:center;cursor:pointer;background-color:lightyellow;}
+
+
+#hxwebpopuptreeviewcontrol_popup_treeviewarea {background-color:white;border:solid 1px #BBBBBB;overflow:auto;SCROLLBAR-FACE-COLOR: #ffffff; scrollbar-3dlight-color: #ffffff; SCROLLBAR-TRACK-COLOR: #ffffff; SCROLLBAR-DARKSHADOW-COLOR: #ffffff; scrollbar-shadow-color: #BBBBBB; SCROLLBAR-HIGHLIGHT-COLOR: #BBBBBB; SCROLLBAR-ARROW-COLOR: #BBBBBB;}
+#hxwebpopuptreeviewcontrol_popup_controlarea {overflow:hidden;background:url(../images/hxpub_bg_cnt_block_blue.png) repeat-x 0px 0px;border-style:solid; border-color:#BBBBBB; border-left-width:1px;border-top-width:0px;border-right-width:1px;border-bottom-width:1px}
+.hxwebtreeviewcontrol_area {overflow:auto;SCROLLBAR-FACE-COLOR: #ffffff; scrollbar-3dlight-color: #ffffff; SCROLLBAR-TRACK-COLOR: #ffffff; SCROLLBAR-DARKSHADOW-COLOR: #ffffff; scrollbar-shadow-color: #BBBBBB; SCROLLBAR-HIGHLIGHT-COLOR: #BBBBBB; SCROLLBAR-ARROW-COLOR: #BBBBBB;}
+.hxwebtreeviewcontrol_root_node_normal	{ COLOR: black;    BACKGROUND-COLOR:transparent;	FONT-WEIGHT: bold; }
+.hxwebtreeviewcontrol_root_node_hover	{ COLOR:black;  BACKGROUND-COLOR:#CCCCCC;   FONT-WEIGHT: bold; cursor:pointer;	}
+.hxwebtreeviewcontrol_root_node_click	{ COLOR: darkorange;    BACKGROUND-COLOR:transparent;	FONT-WEIGHT: bold; }
+.hxwebtreeviewcontrol_child_node_normal	{ COLOR: black;    BACKGROUND-COLOR:transparent;  PADDING-LEFT: 16px;  }
+.hxwebtreeviewcontrol_child_node_hover	{ COLOR: black;  BACKGROUND-COLOR: #ccc; PADDING-LEFT: 16px; cursor:pointer;	}
+.hxwebtreeviewcontrol_child_node_click	{ COLOR: darkorange; BACKGROUND-COLOR:transparent;    PADDING-LEFT: 16px; cursor:default	}
+
+

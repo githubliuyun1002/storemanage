@@ -1,6 +1,7 @@
 package com.xiabuxiabu.storemanage.service.equip;
 
 import com.xiabuxiabu.storemanage.entity.equip.Classification;
+import com.xiabuxiabu.storemanage.entity.equip.EquipName;
 import com.xiabuxiabu.storemanage.entity.result.ResultByClassAndEquipName;
 import com.xiabuxiabu.storemanage.repository.equip.ClassificationRepository;
 
@@ -35,8 +36,11 @@ public class ClassificationService {
                 @Override
                 public Predicate toPredicate(Root<Classification> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
                     Path<String> name = root.get("name");
-                    criteriaQuery.where(criteriaBuilder.like(name, "%" + values + "%"));
-
+                    //  Path<EquipName> equipNamePath = root.get("equipNames");
+                    Predicate p1 = criteriaBuilder.like(name, "%" + values + "%");
+                    //  Predicate p2 = criteriaBuilder.like(equipNamePath.get("name"),"%" + values + "%");
+                    //   Predicate p = criteriaBuilder.or(p1, p2);
+                    criteriaQuery.where(p1);
                     return null;
                 }
             },pageable);

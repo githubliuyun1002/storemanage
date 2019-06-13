@@ -56,7 +56,6 @@ public class Classification {
 
     @Override
     public String toString() {
-
         return JSONObject.toJSONString(this,true);
     }
 }

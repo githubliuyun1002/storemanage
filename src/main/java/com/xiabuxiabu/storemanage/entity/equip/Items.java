@@ -12,11 +12,13 @@ public class Items {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-    private String name;   //设备分类（网络设备，通讯设备的不同展示）
+    private String className;   //设备类型（网络设备，通讯设备的不同展示）
+    private String equipName;    //设备名称
     @OneToOne
     @JoinColumn(name = "item")
     private Item item;
     private int num;
+    public Items(){}
 
     public int getId() {
         return id;
@@ -34,12 +36,20 @@ public class Items {
         this.item = item;
     }
 
-    public String getName() {
-        return name;
+    public String getClassName() {
+        return className;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setClassName(String className) {
+        this.className = className;
+    }
+
+    public String getEquipName() {
+        return equipName;
+    }
+
+    public void setEquipName(String equipName) {
+        this.equipName = equipName;
     }
 
     public int getNum() {

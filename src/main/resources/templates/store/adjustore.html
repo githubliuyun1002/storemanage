@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en"
       xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>门店列表页面</title>
+    <title>待调整门店页面</title>
     <link th:href="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css}" rel="stylesheet"/>
     <script th:src="@{https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js}"></script>
     <script th:src="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js}"></script>
@@ -33,24 +33,16 @@
             endPage: 4,
             pageSize: 5
         };
+        //填充门店信息
         $(function () {
-            var userType = $("#userType").val();
-            if(userType=="系统管理员"){
-                $("#theadShow").append(
-                    '<th>操作</th>'
-                );
-            }
-        });
-        //填充页面
-        $(function () {
+            //填充页面
             $.ajax({
-                url:"/store/findAllList",
+                url:"/store/adjustList",
                 data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": ""},
                 type:"GET",
                 dataType:"JSON",
                 success:function (data) {
                     page.totalPage = data.totalPages;
-
                     if (data.totalPages > page.pageLength) {
                         addButtons(page.startPage, page.pageLength);
                     } else {
@@ -59,27 +51,23 @@
                     pageIteration(page.currPage);
                     isDisabled(page.currPage, data.totalPages);
                     var tableContent="";
-                    var userType = $("#userType").val();
                     for (var i = 0; i <data.content.length ; i++) {
                         tableContent="<tr>" +
                             "<td><a style=\"text-decoration: none;color: black\" href=\"/store/content?id="+data.content[i].storeId+"\">"+data.content[i].storeName+"</a></td>" +
                             "<td>"+data.content[i].storeCode+"</td>"+
-                            "<td>"+data.content[i].marketCode.name+"</td>";
-                        if(data.content[i].storeStatus.statusName=="待选择"){
-                            tableContent+="<td><code>"+data.content[i].storeStatus.statusName+"</code></td>";
-                        }else{
-                            tableContent+="<td>"+data.content[i].storeStatus.statusName+"</td>";
-                        }
-                        if(userType=="系统管理员"){
-                            tableContent+="<td><button class=\"btn btn-default\" onclick=\"window.location.href='/store/update?id="+data.content[i].storeId+"'\" >" +
-                                "<span class=\"glyphicon glyphicon-pencil\" aria-hidden=\"true\"></span>" +
-                                "查看</button>" +
-                                "</td>"+
-                                "</tr>";
-                        }
+                            "<td>"+data.content[i].marketCode.name+"</td>" +
+                            "<td style=\"color: red;font-weight: bold\">"+data.content[i].storeStatus.statusName+"</td>" +
+                            "<td><button class=\"btn btn-default\" onclick=\"window.location.href='/store/update?id="+data.content[i].storeId+"'\" >" +
+                            "<span class=\"glyphicon glyphicon-pencil\" aria-hidden=\"true\"></span>" +
+                            "查看</button>" +
+                            "</td>"+
+                            "</tr>";
                         $("tbody").append(tableContent);
-
                     }
+
+                },
+                error:function () {
+                    alert("页面数据填充失败");
                 }
             })
         });
@@ -92,7 +80,7 @@
             var searchName = $('#search').val();
             $("tbody").html("");
             $.ajax({
-                url:"/store/findAllList",
+                url:"/store/adjustList",
                 data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
                 type:"GET",
                 dataType:"JSON",
@@ -105,29 +93,25 @@
                     pageIteration(page.currPage);
                     isDisabled(page.currPage, data.totalPages);
                     var tableContent="";
-                    var userType = $("#userType").val();
                     for (var i = 0; i <data.content.length ; i++) {
                         tableContent="<tr>" +
                             "<td><a style=\"text-decoration: none;color: black\" href=\"/store/content?id="+data.content[i].storeId+"\">"+data.content[i].storeName+"</a></td>" +
                             "<td>"+data.content[i].storeCode+"</td>"+
-                            "<td>"+data.content[i].marketCode.name+"</td>";
-                        if(data.content[i].storeStatus.statusName=="待选择"){
-                            tableContent+="<td><code>"+data.content[i].storeStatus.statusName+"</code></td>";
-                        }else{
-                            tableContent+="<td>"+data.content[i].storeStatus.statusName+"</td>";
-                        }
-                        if(userType=="系统管理员"){
-                            tableContent+="<td><button class=\"btn btn-default\" onclick=\"window.location.href='/store/update?id="+data.content[i].storeId+"'\" >" +
-                                "<span class=\"glyphicon glyphicon-pencil\" aria-hidden=\"true\"></span>" +
-                                "查看</button>" +
-                                "</td>"+
-                                "</tr>";
-                        }
+                            "<td>"+data.content[i].marketCode.name+"</td>" +
+                            "<td style=\"color: red;font-weight: bold\">"+data.content[i].storeStatus.statusName+"</td>" +
+                            "<td><button class=\"btn btn-default\" onclick=\"window.location.href='/store/update?id="+data.content[i].storeId+"'\" >" +
+                            "<span class=\"glyphicon glyphicon-pencil\" aria-hidden=\"true\"></span>" +
+                            "查看</button>" +
+                            "</td>"+
+                            "</tr>";
                         $("tbody").append(tableContent);
-
                     }
+                },
+                error:function () {
+                    alert("搜索按钮事件加载失败");
                 }
-            });
+            })
+
         });
 
         //对上一页添加事件
@@ -139,7 +123,7 @@
             pageIteration(page.currPage);
             isDisabled(page.currPage, page.totalPage);
             $.ajax({
-                url:"/store/findAllList",
+                url:"/store/adjustList",
                 data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
                 type:"GET",
                 dataType:"JSON",
@@ -152,33 +136,27 @@
                     pageIteration(page.currPage);
                     isDisabled(page.currPage, data.totalPages);
                     var tableContent="";
-                    var userType = $("#userType").val();
                     for (var i = 0; i <data.content.length ; i++) {
                         tableContent="<tr>" +
                             "<td><a style=\"text-decoration: none;color: black\" href=\"/store/content?id="+data.content[i].storeId+"\">"+data.content[i].storeName+"</a></td>" +
                             "<td>"+data.content[i].storeCode+"</td>"+
-                            "<td>"+data.content[i].marketCode.name+"</td>";
-                        if(data.content[i].storeStatus.statusName=="待选择"){
-                            tableContent+="<td><code>"+data.content[i].storeStatus.statusName+"</code></td>";
-                        }else{
-                            tableContent+="<td>"+data.content[i].storeStatus.statusName+"</td>";
-                        }
-                        if(userType=="系统管理员"){
-                            tableContent+="<td><button class=\"btn btn-default\" onclick=\"window.location.href='/store/update?id="+data.content[i].storeId+"'\" >" +
-                                "<span class=\"glyphicon glyphicon-pencil\" aria-hidden=\"true\"></span>" +
-                                "查看</button>" +
-                                "</td>"+
-                                "</tr>";
-                        }
+                            "<td>"+data.content[i].marketCode.name+"</td>" +
+                            "<td style=\"color: red;font-weight: bold\">"+data.content[i].storeStatus.statusName+"</td>" +
+                            "<td><button class=\"btn btn-default\" onclick=\"window.location.href='/store/update?id="+data.content[i].storeId+"'\" >" +
+                            "<span class=\"glyphicon glyphicon-pencil\" aria-hidden=\"true\"></span>" +
+                            "查看</button>" +
+                            "</td>"+
+                            "</tr>";
                         $("tbody").append(tableContent);
-
                     }
+
                 }
-            });
+
+            })
         });
 
         //对页码添加事件
-        $(document).on("click", ".page-btn", function () {
+        $(document).on("click", ".page-btn", function (){
             searchName = $('#search').val();
             $this = $(this);
             $("tbody").html("");
@@ -187,7 +165,7 @@
             pageIteration(page.currPage);
             isDisabled(page.currPage, page.totalPage);
             $.ajax({
-                url:"/store/findAllList",
+                url:"/store/adjustList",
                 data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
                 type:"GET",
                 dataType:"JSON",
@@ -200,34 +178,29 @@
                     pageIteration(page.currPage);
                     isDisabled(page.currPage, data.totalPages);
                     var tableContent="";
-                    var userType = $("#userType").val();
                     for (var i = 0; i <data.content.length ; i++) {
                         tableContent="<tr>" +
                             "<td><a style=\"text-decoration: none;color: black\" href=\"/store/content?id="+data.content[i].storeId+"\">"+data.content[i].storeName+"</a></td>" +
                             "<td>"+data.content[i].storeCode+"</td>"+
-                            "<td>"+data.content[i].marketCode.name+"</td>";
-                        if(data.content[i].storeStatus.statusName=="待选择"){
-                            tableContent+="<td><code>"+data.content[i].storeStatus.statusName+"</code></td>";
-                        }else{
-                            tableContent+="<td>"+data.content[i].storeStatus.statusName+"</td>";
-                        }
-                        if(userType=="系统管理员"){
-                            tableContent+="<td><button class=\"btn btn-default\" onclick=\"window.location.href='/store/update?id="+data.content[i].storeId+"'\" >" +
-                                "<span class=\"glyphicon glyphicon-pencil\" aria-hidden=\"true\"></span>" +
-                                "查看</button>" +
-                                "</td>"+
-                                "</tr>";
-                        }
+                            "<td>"+data.content[i].marketCode.name+"</td>" +
+                            "<td style=\"color: red;font-weight: bold\">"+data.content[i].storeStatus.statusName+"</td>" +
+                            "<td><button class=\"btn btn-default\" onclick=\"window.location.href='/store/update?id="+data.content[i].storeId+"'\" >" +
+                            "<span class=\"glyphicon glyphicon-pencil\" aria-hidden=\"true\"></span>" +
+                            "查看</button>" +
+                            "</td>"+
+                            "</tr>";
                         $("tbody").append(tableContent);
-
                     }
+                },
+                error:function () {
+                    alert("搜索按钮事件加载失败");
                 }
             });
 
         });
 
         //对下一页添加事件
-        $(document).on("click", "#page .next", function () {
+        $(document).on("click", "#page .next", function (){
             searchName = $('#search').val();
             page.currPage = parseInt(page.currPage) + 1;
             $("tbody").html("");
@@ -235,7 +208,7 @@
             pageIteration(page.currPage);
             isDisabled(page.currPage, page.totalPage);
             $.ajax({
-                url:"/store/findAllList",
+                url:"/store/adjustList",
                 data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
                 type:"GET",
                 dataType:"JSON",
@@ -248,51 +221,28 @@
                     pageIteration(page.currPage);
                     isDisabled(page.currPage, data.totalPages);
                     var tableContent="";
-                    var userType = $("#userType").val();
                     for (var i = 0; i <data.content.length ; i++) {
                         tableContent="<tr>" +
                             "<td><a style=\"text-decoration: none;color: black\" href=\"/store/content?id="+data.content[i].storeId+"\">"+data.content[i].storeName+"</a></td>" +
                             "<td>"+data.content[i].storeCode+"</td>"+
-                            "<td>"+data.content[i].marketCode.name+"</td>";
-                        if(data.content[i].storeStatus.statusName=="待选择"){
-                            tableContent+="<td><code>"+data.content[i].storeStatus.statusName+"</code></td>";
-                        }else{
-                            tableContent+="<td>"+data.content[i].storeStatus.statusName+"</td>";
-                        }
-                        if(userType=="系统管理员"){
-                            tableContent+="<td><button class=\"btn btn-default\" onclick=\"window.location.href='/store/update?id="+data.content[i].storeId+"'\" >" +
-                                "<span class=\"glyphicon glyphicon-pencil\" aria-hidden=\"true\"></span>" +
-                                "查看</button>" +
-                                "</td>"+
-                                "</tr>";
-                        }
+                            "<td>"+data.content[i].marketCode.name+"</td>" +
+                            "<td style=\"color: red;font-weight: bold\">"+data.content[i].storeStatus.statusName+"</td>" +
+                            "<td><button class=\"btn btn-default\" onclick=\"window.location.href='/store/update?id="+data.content[i].storeId+"'\" >" +
+                            "<span class=\"glyphicon glyphicon-pencil\" aria-hidden=\"true\"></span>" +
+                            "查看</button>" +
+                            "</td>"+
+                            "</tr>";
                         $("tbody").append(tableContent);
-
-                    }
-
-                }
-            })
-        });
-
-         //对新增门店，填充门店的所属市场
-        $(function () {
-            $.ajax({
-                url:"/store/marketAll",
-                dataType:"JSON",
-                type:"GET",
-                success:function (data) {
-                    for (var i = 0; i < data.length; i++) {
-                        if(data[i].name!="总部"){
-                            $("select#marketCodeSave").append('' +
-                            '<option id="'+data[i].name+'" value="'+data[i].marketCode+'">'+data[i].name+'</option>')
-                        }
                     }
                 },
                 error:function () {
-                    alert("市场填充失败");
+                    alert("搜索按钮事件加载失败");
                 }
-            })
+            });
+
         });
+
+
         //添加分页插件，根据总页数来添加按钮
         function addButtons(startPage, pageLength) {
             $("#page").html(" ");
@@ -334,19 +284,12 @@
             }
             $("#page .page-btn").removeClass("curr-page").parent().find("[data-pageno=" + currPage + "]").addClass("curr-page");
         }
-
+v
     </script>
 </head>
 <body>
   <div class="container">
-      <!--人员类型-->
-      <input class="form-control" type="hidden" id="userType" th:value="${session.userType}">
-      <div class="col-md-7 col-xs-12">
-          <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal" id="add"
-                  data-backdrop="static" data-keyboard="false"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增餐厅
-          </button>
-      </div>
-      <div class="col-md-5 col-xs-12">
+      <div class="col-md-5 col-xs-12" style="float: right;">
           <div class="input-group">
               <input type="text" id="search" class="form-control" placeholder="输入门店名称/编码/市场/进行搜索">
               <span class="input-group-btn">
@@ -357,48 +300,18 @@
       <table class="table table-striped">
           <caption>门店列表展示信息</caption>
           <thead>
-          <tr id="theadShow">
+          <tr>
               <th>门店名称</th>
               <th>门店编码</th>
               <th>所属市场</th>
               <th>门店状态</th>
+              <th>操作</th>
           </tr>
           </thead>
           <tbody>
           </tbody>
       </table>
       <div id="page"></div>
-      <!--新增门店模块-->
-      <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-          <form method="post" id="formDate" th:action="@{/store/saveStore}">
-              <div class="modal-dialog">
-                  <div class="modal-content">
-                      <div class="modal-header">
-                          <h4 class="modal-title">新增门店</h4>
-                      </div>
-                      <div class="modal-body">
-                          <label for="storeCode">餐厅编码</label>
-                          <input class="form-control" type="text" placeholder="餐厅编码" name="storeCode" id="storeCode" required="true"/>
-                          <label for="storeName">餐厅名称</label>
-                          <input class="form-control" type="text" placeholder="餐厅名称" name="storeName" id="storeName" required="true"/>
-                          <label for="address">餐厅地址</label>
-                          <input class="form-control" type="text" placeholder="餐厅地址" name="address" id="address" required="true"/>
-                          <label for="marger">门店经理</label>
-                          <input class="form-control" type="text" placeholder="门店经理" name="marger" id="marger" required="true"/>
-                          <label>所属市场</label>
-                          <select class="form-control" id="marketCodeSave" name="marketCode"></select>
-                          <label for="openDate">开店日期</label>
-                          <input class="form-control" type="date" name="openDate" id="openDate" placeholder="开店日期"/>
-                      </div>
-                      <div class="modal-footer">
-                          <button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
-                          <button type="submit" class="btn btn-primary">提交</button>
-                      </div>
-                  </div>
-              </div>
-          </form>
-      </div>
-
   </div>
 </body>
 </html>

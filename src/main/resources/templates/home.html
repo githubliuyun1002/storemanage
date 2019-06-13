@@ -12,6 +12,28 @@
     <script src="home/pintuer.js"></script>
     <link rel="stylesheet" href="home/pintuer.css">
     <link rel="stylesheet" href="home/admin.css">
+    <style>
+        #iframeshow{
+            width: 100%;
+            border: 0;
+            overflow: hidden;
+        }
+    </style>
+    <script>
+        function setIframeHeight(iframe) {
+            if (iframe) {
+                var iframeWin = iframe.contentWindow || iframe.contentDocument.parentWindow;
+                if (iframeWin.document.body) {
+                    iframe.height = iframeWin.document.documentElement.scrollHeight || iframeWin.document.body.scrollHeight;
+                }
+            }
+        };
+        window.onload = function () {
+            setIframeHeight(document.getElementById('iframeshow'));
+
+        };
+
+    </script>
     <script>
         $(function () {
             var loginName=$("#loginName").val();
@@ -22,10 +44,16 @@
                 dataType: "JSON",
                 success: function (data) {
                     var roleName = data.userType.name;
+                    //分角色展示：市场IT、系统管理员、
                     if(roleName=="市场IT"){
                          $("#person").hide();
-                    }
+                         $("#storeAppend").append('' +
+                             '<li><a href="/store/adjustment" target="right"><span class="icon-caret-right"></span>待调整门店</a></li>');
+                    }else if(roleName=="系统管理员"){
+                        $("#storeAppend").append('' +
+                             '<li><a href="/report/reportTable" target="right"><span class="icon-caret-right"></span>已确认门店</a></li>');
 
+                    }
                 },
                 error:function () {
                     alert("主菜单加载失败");
@@ -80,7 +108,7 @@
         </div>
         <div id="store">
             <h2><span class="icon-pencil-square-o"></span>门店管理</h2>
-            <ul>
+            <ul id="storeAppend">
                 <li><a href="/store/home" target="right"><span class="icon-caret-right"></span>门店信息</a></li>
             </ul>
         </div>
@@ -114,7 +142,7 @@
     <li><a href="/info" target="right" id="a_leader_txt">公告信息</a></li>
  </ul>
  <div class="admin">
-    <iframe scrolling="auto" rameborder="0" src="/info" name="right" width="100%" height="100%"></iframe>
+    <iframe id="iframeshow" rameborder="0" src="/info" name="right" width="100%" height="100%"></iframe>
  </div>
  <div style="text-align:center;"></div>
 </body>

@@ -1,0 +1,108 @@
+﻿.menu_bar_container {position:fixed;_position:absolute;left:0px;top:0px;bottom:0px;width:160px;height:100%;z-index:1000;}
+
+/*内容区左右各留25px空白，通过left:185px（160px的菜单区域宽度+25px留白）;right:25px;实现，但IE5Quirks模式下不支持该方式，所以使用width:expression(...)计算内容区宽度（容器宽度 - 210(185+25)） */
+.page_content_container {position:absolute; left:185px;right:25px;width:expression(this.parentNode.offsetWidth-210);height:auto; }
+
+/*隐藏模式下，内容区左右各留白25px*/
+.page_content_container.hide_menu {left:25px;width:expression(this.parentNode.offsetWidth-50);}
+
+/*菜单栏内容样式*/
+.menu_bar_container .menu_bar_logo_area {height:56px;background-color:White;}
+.menu_bar_container .menu_bar_logo_area img {margin-left:1px;margin-top:1px;} /*原始logo尺寸：54*40*/
+.menu_bar_container .menu_bar_welcome_area {top:54px;height:90px;}
+.menu_bar_container .menu_bar_welcome_area .hxicon_invert_head_placeholder {left:60px;top:16px;}
+.menu_bar_container .menu_bar_welcome_area #lblWelcomeUserNameArea {left:20px;top:60px;width:120px;}
+.menu_bar_container .menu_bar_content_area {top:146px;}
+.menu_bar_container .menu_bar_bottom_area {height:40px;}
+.menu_bar_container .menu_bar_bottom_area .hxicon_invert_exit_system {position:absolute;left:16px;top:12px;cursor:pointer;}
+.menu_bar_container .menu_bar_bottom_area #lblExitSystemButtonText {position:absolute;left:38px;top:6px;}
+.menu_bar_container .menu_bar_bottom_area .hxicon_invert_system_setting {position:absolute;left:90px;top:12px;cursor:pointer;}
+.menu_bar_container .menu_bar_bottom_area #lblPersonalSettingButtonText {position:absolute;left:112px;top:6px;}
+.menu_bar_container .menu_bar_bottom_area .hxicon_invert_go_home {position:absolute;left:90px;top:12px;cursor:pointer;}
+.menu_bar_container .menu_bar_bottom_area #lblGoHomeButtonText {position:absolute;left:112px;top:6px;}
+
+.menu_bar_welcome_area .hxtxt_content, .menu_bar_bottom_area .hxtxt_content {color:White;}
+
+#WebPageMenuBarHideButton {z-index:2000;position:absolute;left:142px;top:5px;cursor:pointer;}
+#WebPageMenuBarShowButton {z-index:2000;position:absolute;left:2px;top:52px;display:none;cursor:pointer;}
+
+/*内容区域内的各个内容段默认样式*/
+.page_section_container { position:relative; margin-top:10px; background:white; width:100%; padding:30px 20px 16px 20px;}
+.page_section_title_decorated {position:absolute;left:20px;top:10px;background-color:#ea8831;width:3px;height:16px;}
+.page_section_title_area {position:absolute;left:30px;top:10px;}
+
+.page_section_content_area { position:relative;width:100%;border-top:solid 1px #D5D5D5;padding-top:4px;}
+.page_section_content_area td {padding:4px 0px 4px 0px; vertical-align:middle;}
+
+.hxmastermenuitem_current {background-color:black;}
+.hxmastermenuitem_hover {background-color:#ea8831;}
+
+.hxbgcolor_mastermenuarea {background-color:#ea9d31;}
+.hxbgcolor_mastermenuarea_welcome_area {background-color:#ea8831;}
+.hxbgcolor_mastermenuarea_bottom_area {background-color:#ea8831;}
+
+.hxmastermenu_popupchildmenu_level_1 {background-color:#ea9d31;}
+.hxmastermenu_popupchildmenu_level_1 .hxwebpopupmenucontrol_menuitem { background-color:#ea9d31;layout-grid-mode:line;color:white; border:none; cursor:pointer;FONT-SIZE:12px;font-weight:bold; text-overflow:ellipsis;overflow:hidden;word-break:keep-all;FONT-WEIGHT:bold;vertical-align:text-bottom;}
+.hxmastermenu_popupchildmenu_level_1 .hxwebpopupmenucontrol_menuitem_hover {  background-color:white;layout-grid-mode:line;color:#005c99; border:none; cursor:pointer;FONT-SIZE:12px;font-weight:bold; text-overflow:ellipsis;overflow:hidden;word-break:keep-all;FONT-WEIGHT:bold;vertical-align:text-bottom;}
+.hxmastermenu_popupchildmenu_level_1 .hxwebpopupmenucontrol_menuitem_split_line {border-top:solid 1px white;}
+
+.hxmastermenu_popupchildmenu_level_2 .hxmastermenu_popupchildmenu_level_3 {background-color:#ea9d31;}
+.hxmastermenu_popupchildmenu_level_2 .hxwebpopupmenucontrol_menuitem, .hxmastermenu_popupchildmenu_level_3 .hxwebpopupmenucontrol_menuitem 
+        { background-color:#ea9d31;layout-grid-mode:line;color:black; border:none; cursor:pointer;FONT-SIZE:12px;font-weight:bold; text-overflow:ellipsis;overflow:hidden;word-break:keep-all;FONT-WEIGHT:bold;vertical-align:text-bottom;}
+.hxmastermenu_popupchildmenu_level_2 .hxwebpopupmenucontrol_menuitem_hover, .hxmastermenu_popupchildmenu_level_3 .hxwebpopupmenucontrol_menuitem_hover 
+    {  background-color:#ea9d31;layout-grid-mode:line;color:#005c99; border:none; cursor:pointer;FONT-SIZE:12px;font-weight:bold; text-overflow:ellipsis;overflow:hidden;word-break:keep-all;FONT-WEIGHT:bold;vertical-align:text-bottom;}
+
+.hxmastermenu_popupchildmenu_level_2 .hxwebpopupmenucontrol_menuitem_split_line, .hxmastermenu_popupchildmenu_level_3 .hxwebpopupmenucontrol_menuitem_split_line  {border-top:1px solid #999999;}
+
+.hxmastermenu_popupchildmenu_level_2__partlyline_for_hide,.hxmastermenu_popupchildmenu_level_3__partlyline_for_hide  {background-color:#ea8831;}
+.hxbgcolor_datalist_head {background-color:#4E99CC;color:White;}
+
+#hx_datalist_prefix_column_head .hxbtn_container{
+    background-color:#ea8831;
+}
+
+.hxbtn_style_1 {
+    border: solid 1px #ea8831;
+    background-color: #ea8831;
+    color: white;
+}
+
+.page_section_title_btn{
+    left:200px;
+    position:absolute;
+    top:1px;
+}
+
+.page_section_title_area_desc{
+    color:#ff0000;
+    left:100px;
+    position:absolute;
+    top:10px;
+}
+
+.warning{
+    color:red;
+}
+
+.input_warning {border:1px solid red;}
+
+.hidden{
+    display:none;
+}
+
+.extra_img_center{
+    margin-left:5px; 
+    vertical-align:middle;
+}
+
+/*解决长文本弹出输入框提交后不显示箭头的BUG*/
+img[hx_is_popup_textarea_choose_button='1']{
+    visibility:visible !important;
+}
+
+/*列表页面fixed模式滚动条位置在列表数据区域内*/
+.fixed_scroll {
+    overflow-x:scroll;
+}
+
+

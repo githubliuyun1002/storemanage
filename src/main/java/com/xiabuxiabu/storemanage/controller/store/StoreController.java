@@ -1,24 +1,26 @@
-/*
 package com.xiabuxiabu.storemanage.controller.store;
 
-
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.xiabuxiabu.storemanage.entity.equip.Item;
+import com.xiabuxiabu.storemanage.entity.equip.Items;
 import com.xiabuxiabu.storemanage.entity.publicutil.MarketEntity;
 import com.xiabuxiabu.storemanage.entity.store.*;
-
+import com.xiabuxiabu.storemanage.service.equip.ItemService;
 import com.xiabuxiabu.storemanage.service.publicutil.MarketService;
 import com.xiabuxiabu.storemanage.service.store.*;
+import net.bytebuddy.asm.Advice;
+import net.sf.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import net.sf.json.JSONObject;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.jws.WebParam;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -28,299 +30,241 @@ import java.util.*;
 public class StoreController {
     @Autowired
     private StoreService storeService;
-    @Autowired
-    private MarketService marketService;
+    @Autowired    //宽带运营商
+    private ServicePersonService servicePersonService;
+    @Autowired     //接入方式
+    private AccessMethodService accessMethodService;
+    @Autowired     //付款方式
+    private PayMethodService payMethodService;
+    @Autowired     //保存宽带信息
+    private WidthBandService widthBandService;
+    @Autowired     //门店所选的设备items
+    private ItemsService itemsService;
     @Autowired
     private StoreStatusService storeStatusService;
     @Autowired
-    private ServicePersonService servicePersonService;
+    private MarketService marketService;
     @Autowired
-    private AccessMethodService accessMethodService;
-    @Autowired
-    private PayMethodService payMethodService;
-    @Autowired
-    private WidthBandService widthBandService;
-    @Autowired
-    private StoreChangeService storeChangeService;
+    private ItemService itemService;   //item设备型号
 
-    */
-/* * 初始化转换日期类，将输入框中String类型的值，转化为Date类型的值。
+    /**
+     * 初始化转换日期类，将输入框中String类型的值，转化为Date类型的值。
      * 并设置相应的日期类型
-     *
      * @param binder
-     * @param request CustomDateEditor为自定义日期编辑器*//*
-
+     * @param request CustomDateEditor为自定义日期编辑器
+     */
     @InitBinder
     public void initBinder(WebDataBinder binder, WebRequest request) {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
     }
+    /**
+     * 门店展示首页信息
+     * @return
+     */
     @RequestMapping("/home")
-    public String home(){
+    public String store(){
         return "/store/home";
     }
-     */
-/**
-     * 查询List数据
-      * *//*
-
-
-
-    @RequestMapping("/findAll")
+    @RequestMapping("/findAllList")
     @ResponseBody
-    public Page<Store> findAll(@RequestParam("page")int page, @RequestParam("pageSize") int pageSize, @RequestParam("searchName") String searchName){
-        return  storeService.findAll(page,pageSize,searchName);
+    public Page<Store> findAllList(@RequestParam("page")int page, @RequestParam("pageSize") int pageSize, @RequestParam("searchName") String searchName){
+        return storeService.findAll(page,pageSize,searchName);
     }
-*/
-/**
-     * 为门店添加具体设备的界面*//*
 
-
-
-    @RequestMapping("/equipsets")
-    public ModelAndView equipsets(@RequestParam("id") int id,ModelAndView modelAndView){
-        Store store = storeService.findById(id);
-        //将java对象转化为json对象
-        JSONObject jsonObject = JSONObject.fromObject(store.toString());
-        modelAndView.setViewName("/store/store_equip");
-        modelAndView.addObject("StoreMsg",jsonObject);
-        modelAndView.addObject("StoreId",id);
+    /**
+     * 门店具体信息展示页面
+     * @param id
+     * @param modelAndView
+     * @return
+     */
+    @RequestMapping("/content")
+    public ModelAndView content(int id,ModelAndView modelAndView){
+        modelAndView.setViewName("/store/content");
+        modelAndView.addObject("storeId",id);
         return modelAndView;
     }
+
+    /**
+     * 门店查询
+     * @param storeId
+     * @return
+     */
     @RequestMapping("/findById")
     @ResponseBody
-    public Store findById(@RequestParam("id") int id){
-
-        return storeService.findById(id);
+    public Store findById(int storeId){
+        return storeService.findById(storeId);
     }
-*/
-/*@RequestMapping("/addEquip")
-    public ModelAndView addEquip(ModelAndView modelAndView, StoreType storeType,int store_status){
-        System.out.println("storeType--->"+storeType);
-        if(storeType!=null){
-            int storeId = storeType.getStoreId();
-            int typeId = storeType.getTypeId();
-            Store store = storeService.findById(storeId);
-            StoreStatus storeStatus = storeStatusService.findById(store_status);
-            store.setStoreStatus(storeStatus);
-            System.out.println("store--->"+store);
-            JSONObject storeObj = JSONObject.fromObject(store.toString());
-            modelAndView.addObject("StoreMsg",storeObj);
-            modelAndView.addObject("StoreId",store.getId());
-            StoreType storeType1 = storeTypeService.findStore(storeId,typeId);
-          //  System.out.println(storeTypeService.findStore(storeId,typeId)!=null);
-            if(storeType1!=null){
-                 storeType.setId(storeType1.getId());
-            }
-            storeTypeService.save(storeType);
+
+    /**
+     * 为门店添加宽带设备
+     * @param storeId
+     * @param widthBand
+     * @param modelAndView
+     * @return
+     */
+    @RequestMapping("/width")
+    public ModelAndView widthSave(int storeId, WidthBand widthBand, ModelAndView modelAndView){
+        Store store = storeService.findById(storeId);
+        WidthBand saveWidthBand =  widthBandService.save(widthBand);
+        store.setWidthBand(saveWidthBand);
+        storeService.save(store);
+        modelAndView.setViewName("/store/content");
+        modelAndView.addObject("storeId",storeId);
+        return modelAndView;
+        //hibernate中的持久化对象，瞬时对象，脱管对象的区别。
+    }
+    /**
+     * 向门店中添加设备 items
+     * @param modelAndView
+     * @param storeId
+     * @param items
+     * @return
+     */
+    @RequestMapping("/additem")
+    public ModelAndView addItem(ModelAndView modelAndView, int storeId,int storeStatus,Items items){
+        Store store  =  storeService.findById(storeId);
+        StoreStatus storeStatusEntity =  storeStatusService.findById(storeStatus);
+        store.setStoreStatus(storeStatusEntity);   //设置门店状态为待审核
+        if(store.getItemsSet().size()!=0){
+            Set<Items> oldItmsSet = store.getItemsSet();
+            Items saveItems = itemsService.save(items);
+            oldItmsSet.add(saveItems);
+            store.setItemsSet(oldItmsSet);
+            storeService.save(store);
+        }else{
+            Items saveItems =  itemsService.save(items);
+            Set<Items> newItemsSet = new HashSet<>();
+            newItemsSet.add(saveItems);
+            store.setItemsSet(newItemsSet);
+            storeService.save(store);
         }
-         modelAndView.setViewName("/store/store_equip");
-         return  modelAndView;
-    }*//*
-
-    */
-/*@RequestMapping("/storeTypeList")
-    @ResponseBody
-    public List<StoreType> storeTypeList(@RequestParam("storeId") int storeId){
-        return storeTypeService.findTypeByStoreId(storeId);
+        modelAndView.setViewName("/store/content");
+        modelAndView.addObject("storeId",storeId);
+        return modelAndView;
     }
-    @RequestMapping("/findByTypeId")
-    @ResponseBody
-    public TypeEntity findByTypeId(@RequestParam("typeId") int typeId){
-        return  typeService.findById(typeId);
-    }*//*
-
+    /**
+     * 手动添加门店信息
+     */
     @RequestMapping("/saveStore")
     public String saveStore(Store store){
-        System.out.println("store--->"+store);
+        //需要给一个默认的餐厅的状态(待选择)
+        StoreStatus storeStatus = storeStatusService.findById(1);
+        store.setStoreStatus(storeStatus);
         storeService.save(store);
         return "redirect:/store/home";
     }
-
-    @RequestMapping("/marketList")
+    /**
+     * 宽带运营商List
+     * @return
+     */
+    @RequestMapping("/serviceperson")
     @ResponseBody
-    public List<MarketEntity> marketList(){
-
-        return marketService.findAll();
-    }
-    @RequestMapping("/storeStatusList")
-    @ResponseBody
-    public List<StoreStatus> storeStatusList(){
-
-        return  storeStatusService.findAll();
-    }
-    @RequestMapping("/servicePersonList")
-    @ResponseBody
-    public List<ServicePerson> servicePersonList(){
-
+    public List<ServicePerson> findAllService(){
         return servicePersonService.findAll();
     }
-    @RequestMapping("/accessMethodList")
-    @ResponseBody
-    public List<AccessMethod> accessMethodList(){
 
+    /**
+     * 宽带接入方式List
+     * @return
+     */
+    @RequestMapping("/accessmethod")
+    @ResponseBody
+    public List<AccessMethod> findAllAccess(){
         return accessMethodService.findAll();
     }
-    @RequestMapping("/payMethodList")
+
+    /**
+     * 宽带付款方式List
+     * @return
+     */
+    @RequestMapping("/paymethod")
     @ResponseBody
-    public List<PayMethod> payMethodList(){
-
-        return  payMethodService.findAll();
+    public List<PayMethod> fingAllPayMethod(){
+        return payMethodService.findAll();
+    }
+    @RequestMapping("/marketAll")
+    @ResponseBody
+    public List<MarketEntity> marketAll(){
+        return marketService.findAll();
     }
 
-    @RequestMapping("/storeWidth")
-    public ModelAndView storeWidth(ModelAndView modelAndView,WidthBand widthBand,int storeId)  {
-        Store store = storeService.findById(storeId);
-        widthBandService.save(widthBand);
-        store.setWidthBand(widthBand);
-        store = storeService.save(store);
-        JSONObject storeObj = JSONObject.fromObject(store.toString());
-        System.out.println("store--->"+storeObj);
-        modelAndView.addObject("StoreMsg",storeObj);
-        modelAndView.addObject("StoreId",store.getId());
-        modelAndView.setViewName("/store/store_equip");
-        return modelAndView;
-    }
-*/
-/**
-     * 回显餐厅信息*//*
-
-
-
+    /**
+     * 修改页面回显
+     * @param id
+     * @param modelAndView
+     * @return
+     */
     @RequestMapping("/update")
-    @ResponseBody
-    public  ModelAndView update(int id,ModelAndView modelAndView){
-        Store store = storeService.findById(id);
-        modelAndView.addObject("storeObj",store);
-        modelAndView.setViewName("/store/store_update");
+    public ModelAndView update(int id,ModelAndView modelAndView){
+        modelAndView.setViewName("/store/storeupdate");
+        modelAndView.addObject("storeId",id);
         return modelAndView;
     }
-*/
-/*
-*
-     * 执行修改餐厅信息
-*//*
-
-
-
     @RequestMapping("/toupdate")
-    public String toupdate(Store store, WidthBand widthBand){
-        if(widthBand.getWid()!=0){
-            if(widthBandService.findById(widthBand.getWid())!=null){
-                widthBandService.save(widthBand);
-            }
-            if(storeService.findById(store.getId())!=null){
-                store.setWidthBand(widthBand);
-                storeService.save(store);
-            }
-        }else{
-            if(storeService.findById(store.getId())!=null){
-                storeService.save(store);
+    @ResponseBody
+    public Map<String,Object> toupdate(String store,String itemsSet){
+        //转换为json对象
+        Store jsonStore  = JSON.parseObject(store,Store.class);
+        //对set中的数据更新
+        Set<Items> items = new HashSet<>(JSONObject.parseArray(itemsSet,Items.class));
+        Store saveStore = storeService.findById(jsonStore.getStoreId());
+        if(saveStore.getItemsSet().size()!=0){
+            for (Items itemsJSON: items) {
+                for (Items itemsDB:saveStore.getItemsSet()) {
+                    if(itemsDB.getId()==itemsJSON.getId()){
+                        Items itemsDemo = itemsService.findById(itemsDB.getId());
+                        itemsDemo.setId(itemsJSON.getId());
+                        itemsDemo.setClassName(itemsJSON.getClassName());
+                        itemsDemo.setEquipName(itemsJSON.getEquipName());
+                        if(itemsDemo.getItem()!=null){
+                            if(itemsDemo.getItem().getItemId()==itemsJSON.getItem().getItemId()){
+                                Item item = itemService.findById(itemsDemo.getItem().getItemId());
+                                item.setItemId(itemsJSON.getItem().getItemId());
+                                item.setName(itemsJSON.getItem().getName());
+                                item.setSign(itemsJSON.getItem().getSign());
+                                itemService.save(item);
+                                itemsDemo.setItem(item);
+                            }
+                        }
+                        itemsDemo.setNum(itemsJSON.getNum());
+                        itemsService.save(itemsDemo);
+                        saveStore.getItemsSet().add(itemsDemo);
+                    }
+                }
             }
         }
-        return "redirect:/store/home";
+        List<String> signList = new ArrayList<>();
+        for (Items setItems:items) {
+            signList.add(setItems.getItem().getSign());
+        }
+        //包含2说明需要市场IT调整
+        if(signList.contains("2")){
+            saveStore.setStoreStatus(storeStatusService.findById(3));  //状态为待调整
+        }else{
+            saveStore.setStoreStatus(storeStatusService.findById(4));  //状态为已确认
+        }
+        storeService.save(saveStore);
+        Map<String,Object> map = new HashMap<String,Object>();
+        map.put("code","1");
+        return map;
+    }
+    //待调整页面显示
+    @RequestMapping("/adjustment")
+    public String adjustment(){
+        return "/store/adjustore";   //adjustore
+    }
+    @RequestMapping("/adjustList")
+    @ResponseBody
+    public Page<Store> adjustList(@RequestParam("page")int page, @RequestParam("pageSize") int pageSize, @RequestParam("searchName") String searchName){
+        return storeService.adjustList(page,pageSize,searchName);
     }
 
-*/
-/**
-     * 显示设别变更界面
-     * @param typeId
-     * @param storeId
-     * @param id
-     * @param modelAndView
-     * @return*//*
-
-
-   */
-/* @RequestMapping("/equipChange")
-    @ResponseBody
-    public ModelAndView equipChange(int typeId,int storeId,int id,ModelAndView modelAndView){
-        StoreType storeType = storeTypeService.findById(id);
-        Store store = storeService.findById(storeId);
-        TypeEntity type = typeService.findById(typeId);
-        modelAndView.addObject("type",type);
-        modelAndView.addObject("store",store);
-        modelAndView.addObject("storeType",storeType);
-        modelAndView.setViewName("/store/store_TypeChange");
-        return  modelAndView;
-    }*//*
 
 
 
-*/
-/**
-     * 设置变更
-     * @param modelAndView
-     * @param id
-     * @param num
-     * @param
-     * @return*//*
 
-
-    */
-/*@RequestMapping("/storeTypeChange")
-    public ModelAndView storeTypeChange(ModelAndView modelAndView,int id,int num,StoreChange storeChange){
-        StoreType storeType = storeTypeService.findById(id);
-        Store store = storeService.findById(storeType.getStoreId());
-        JSONObject jsonObject = JSONObject.fromObject(store.toString());
-        modelAndView.addObject("StoreMsg",jsonObject);
-        modelAndView.addObject("StoreId",store.getId());
-        storeType.setNum(num);
-        storeTypeService.save(storeType);
-        modelAndView.setViewName("/store/store_equip");
-        System.out.println("storeChange------>"+storeChange);
-        storeChange.setStoreId(storeType.getStoreId());
-        storeChangeService.save(storeChange);
-        return modelAndView;
-    }*//*
-
-
-*/
-/**
-     * 变更历史查询页面*//*
-
-
-
-   */
-/* @RequestMapping("/historySearch")
-    public ModelAndView historySearch(int storeId,ModelAndView modelAndView){
-
-        modelAndView.addObject("storeId",storeId);
-        modelAndView.setViewName("/store/store_history");
-        return modelAndView;
-    }
-    @RequestMapping("/storeChangeList")
-    @ResponseBody
-    public List<StoreChange> storeChangeList(int storeId){
-        return storeChangeService.findByStoreId(storeId);
-    }*//*
-
-*/
-/**
-     * 信息推送页面
-
-
-    @RequestMapping("/store_Message")
-    public String store_Message(){
-        return "/store/store_Message";
-    }*//*
-
-*/
-/*
-*
-     * 信息推送页面数据展示
-*//*
-
-
-
-*/
-/*@RequestMapping("/storeMesData")
-    @ResponseBody
-    public Page<Store> storeMesData(@RequestParam("page")int page, @RequestParam("pageSize") int pageSize){
-
-    }*//*
 
 
 
 }
-*/

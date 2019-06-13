@@ -29,6 +29,7 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
         User user = userRepository.findByName(authentication.getName());
         HttpSession  session = httpServletRequest.getSession();
         session.setAttribute("userName",user.getUsername());
+        session.setAttribute("userType",user.getUserType().getName());
         httpServletResponse.sendRedirect("/home");
     }
 }
