@@ -34,6 +34,8 @@ public class Store {
     //闭店日期
     @Temporal(TemporalType.DATE)
     private Date closeDate;
+    //设置闭店标志
+    private String closeSign;
     //带宽信息
     @OneToOne
     @JoinColumn(name = "widthband")
@@ -42,6 +44,13 @@ public class Store {
     @ManyToMany(targetEntity = Items.class,fetch = FetchType.EAGER)
     @JoinTable(name = "store_items",joinColumns = @JoinColumn(name = "store_id"),inverseJoinColumns = @JoinColumn(name = "items_id"))
     private Set<Items> itemsSet;
+    public String getCloseSign() {
+        return closeSign;
+    }
+
+    public void setCloseSign(String closeSign) {
+        this.closeSign = closeSign;
+    }
 
     public WidthBand getWidthBand() {
         return widthBand;

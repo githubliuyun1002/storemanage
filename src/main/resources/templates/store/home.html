@@ -78,7 +78,6 @@
                                 "</tr>";
                         }
                         $("tbody").append(tableContent);
-
                     }
                 }
             })
@@ -293,6 +292,24 @@
                 }
             })
         });
+
+        //对门店操作按钮添加点击事件。操作页面按钮，进行闭店操作和门店基本信息的修改
+        function storeOperationFun(){
+            $.ajax({
+                url:"/store/storeClose",
+                dataType:"JSON",
+                type:"GET",
+                success:function (data) {
+                    //用于接受页面返回的
+                    if(data.code=="1"){
+                        window.location.href="/store/storeClosePage";
+                    }
+                },
+                error:function () {
+                    alert("页面操作按钮添加失败");
+                }
+            })
+        }
         //添加分页插件，根据总页数来添加按钮
         function addButtons(startPage, pageLength) {
             $("#page").html(" ");
@@ -345,6 +362,9 @@
           <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal" id="add"
                   data-backdrop="static" data-keyboard="false"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增餐厅
           </button>
+          <button type="button" class="btn btn-default" onclick="storeOperationFun()" id="storeOperation">
+              <span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> 门店操作
+          </button>
       </div>
       <div class="col-md-5 col-xs-12">
           <div class="input-group">
@@ -370,7 +390,7 @@
       <div id="page"></div>
       <!--新增门店模块-->
       <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-          <form method="post" id="formDate" th:action="@{/store/saveStore}">
+          <form method="post" id="formDate" th:action="@{/store/saveStore}" th:autocomplete="off">
               <div class="modal-dialog">
                   <div class="modal-content">
                       <div class="modal-header">

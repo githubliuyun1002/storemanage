@@ -52,7 +52,6 @@
                        $("tbody").append(
                            '<tr>' +
                            '<td>'+data.content[i].name+'</td>' +
-                           '<td>'+data.content[i].roleType.name+'</td>'+
                            '<td>'+data.content[i].publicStatus.name+'</td>' +
                            '<td id="td'+i+'"></td>' +
                            '<td>' +
@@ -109,12 +108,13 @@
             });
         });
         <!--对角色类型进行填充-->
-        $(function () {
+       /* $(function () {
             $.ajax({
-               url:"/person/roleTypeList",
+               url:"/person/userTypeList",
                type:"GET",
                dataType:"JSON",
                success:function (roleType) {
+                   console.log("role---->"+roleType);
                    for (var i = 0; i <roleType.length ; i++) {
                        $("select#roleType").append(
                            '<option id="'+roleType[i].name+'" value="'+roleType[i].id+'">'+roleType[i].name+'</option>'
@@ -125,7 +125,7 @@
                     alert("角色列表填充失败");
                 }
             })
-        });
+        });*/
         //新增角色
         $(function () {
             $("#add").click(function () {
@@ -207,7 +207,7 @@
                     for (i=0;i<data.content.length;i++) {
                         $("tbody").append('<tr>' +
                             '<td>'+data.content[i].name+'</td>' +
-                            '<td>'+data.content[i].roleType.name+'</td>'+
+                          /*  '<td>'+data.content[i].roleType.name+'</td>'+*/
                             '<td>'+data.content[i].publicStatus.name+'</td>' +
                             '<td id="td'+i+'"></td>' +
                             '<td><button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].id + ')" data-target="#myModal">修改</button></td>'+
@@ -249,7 +249,7 @@
                     for (i=0;i<data.content.length;i++) {
                         $("tbody").append('<tr>' +
                             '<td>'+data.content[i].name+'</td>' +
-                            '<td>'+data.content[i].roleType.name+'</td>'+
+                           /* '<td>'+data.content[i].roleType.name+'</td>'+*/
                             '<td>'+data.content[i].publicStatus.name+'</td>' +
                             '<td id="td'+i+'"></td>' +
                             '<td><button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].id + ')" ' +
@@ -292,7 +292,7 @@
                     for (i=0;i<data.content.length;i++) {
                         $("tbody").append('<tr>' +
                             '<td>'+data.content[i].name+'</td>' +
-                            '<td>'+data.content[i].roleType.name+'</td>'+
+                           /* '<td>'+data.content[i].roleType.name+'</td>'+*/
                             '<td>'+data.content[i].publicStatus.name+'</td>' +
                             '<td id="td'+i+'"></td>' +
                             '<td><button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].id + ')" ' +
@@ -336,7 +336,7 @@
                     for (i=0;i<data.content.length;i++) {
                         $("tbody").append('<tr>' +
                             '<td>'+data.content[i].name+'</td>' +
-                            '<td>'+data.content[i].roleType.name+'</td>'+
+                            /*'<td>'+data.content[i].roleType.name+'</td>'+*/
                             '<td>'+data.content[i].publicStatus.name+'</td>' +
                             '<td id="td'+i+'"></td>' +
                             '<td><button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].id + ')" ' +
@@ -417,7 +417,6 @@
         <thead>
         <tr>
             <th>角色名</th>
-            <th>角色类型</th>
             <th>状态</th>
             <th>角色权限</th>
             <th>操作</th>
@@ -428,7 +427,7 @@
     </table>
     <div id="page"></div>
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <form th:action="@{/role/save}" method="post" id="formData">
+        <form th:action="@{/role/save}" th:autocomplete="off" method="post" id="formData">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -438,8 +437,8 @@
                         <label for="name">角色名</label>
                         <input class="form-control" type="text" placeholder="角色名" name="name" id="name"
                                required="true"/>
-                        <label for="roleType">角色类型</label>
-                        <select class="form-control" id="roleType" placeholder="角色类型" name="roleType"></select>
+                       <!-- <label for="roleType">角色类型</label>
+                        <select class="form-control" id="roleType" placeholder="角色类型" name="roleType"></select>-->
                         <label>角色状态</label>
                         <select class="form-control" id="publicStatus" name="publicStatus">
                         </select>

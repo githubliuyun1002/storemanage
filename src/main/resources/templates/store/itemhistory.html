@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link th:href="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css}" rel="stylesheet"/>
+    <script th:src="@{https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js}"></script>
+    <script th:src="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+    <style>
+        #page {
+            margin-top: 10px;
+        }
+
+        #page .curr-page {
+            background-color: #337AB7;
+            color: white;
+        }
+
+        #page .page-btn:hover, #page .prev:hover, #page .next:hover {
+            background-color: #337AB7;
+            color: white;
+        }
+    </style>
+    <script>
+        var page = {
+            currPage: 1,
+            totalPage: 0,
+            pageLength: 4,
+            startPage: 1,
+            endPage: 4,
+            pageSize: 5
+        };
+        function renderTime(date) {
+            var dateee = new Date(date).toJSON();
+            return new Date(+new Date(dateee) + 8 * 3600 * 1000).toISOString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '')
+        }
+        //对页面数据进行填充(填充List页面)
+       $(function () {
+           $.ajax({
+               url:"/record/itemHistoryList",
+               type:"GET",
+               data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": ""},
+               dataType:"JSON",
+               success:function (data) {
+                  // console.log("1111--->"+JSON.stringify(data.content[0]));
+                   page.totalPage = data.totalPages;
+                   if (data.totalPages > page.pageLength) {
+                       addButtons(page.startPage, page.pageLength);
+                   } else {
+                       addButtons(page.startPage, data.totalPages);
+                   }
+                   pageIteration(page.currPage);
+                   isDisabled(page.currPage, data.totalPages);
+                   //对页面元素进行去重
+                   var result=[];
+                   var obj={};
+                   for (var i = 0; i <data.content.length ; i++) {
+                       if(!obj[data.content[i].storeCode]){
+                           result.push(data.content[i]);
+                           obj[data.content[i].storeCode] = true;
+                       }
+                   }
+                   for (var j = 0; j <result.length ; j++) {
+                       for (var k = 0; k <result[j].itemsSet.length ; k++) {
+                           if(result[j].itemsSet[k].personName!=null){
+                               $("tbody").append('<tr>' +
+                                   '<td>'+result[j].storeName+'</td>' +
+                                   '<td>'+result[j].storeCode+'</td>' +
+                                   '<td>'+result[j].marketCode.name+'</td>' +
+                                   '<td>'+result[j].itemsSet[k].item.name+'</td>' +
+                                   '<td>'+result[j].itemsSet[k].personName+'</td>' +
+                                   '<td>'+renderTime(result[j].itemsSet[k].updateTime)+'</td>' +
+                                   '<td>数量由<code>'+result[j].itemsSet[k].origin+'</code>改为<code>'+result[j].itemsSet[k].num+'</code></td>' +
+                                   '</tr>');
+                           }
+
+                       }
+                   }
+               },
+               error:function () {
+                   alert("设备更新历史填充失败");
+               }
+
+           })
+        });
+
+        //对搜索按钮添加事件
+        $(document).on("click","#searchButton",function (){
+            page.currPage=1;
+            page.startPage=1;
+            page.endPage=4;
+            var searchName = $('#search').val();
+            $("tbody").html("");
+            $.ajax({
+                url:"/record/itemHistoryList",
+                type:"GET",
+                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName":searchName},
+                dataType:"JSON",
+                success:function (data) {
+                    if (data.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, data.totalPages);
+                    }
+                    pageIteration(page.currPage);
+                    isDisabled(page.currPage, data.totalPages);
+                    var result=[];
+                    var obj={};
+                    for (var i = 0; i <data.content.length ; i++) {
+                        if(!obj[data.content[i].storeCode]){
+                            result.push(data.content[i]);
+                            obj[data.content[i].storeCode] = true;
+                        }
+                    }
+                    for (var j = 0; j <result.length ; j++) {
+                        for (var k = 0; k <result[j].itemsSet.length ; k++) {
+                            if(result[j].itemsSet[k].personName!=null){
+                                $("tbody").append('<tr>' +
+                                    '<td>'+result[j].storeName+'</td>' +
+                                    '<td>'+result[j].storeCode+'</td>' +
+                                    '<td>'+result[j].marketCode.name+'</td>' +
+                                    '<td>'+result[j].itemsSet[k].item.name+'</td>' +
+                                    '<td>'+result[j].itemsSet[k].personName+'</td>' +
+                                    '<td>'+renderTime(result[j].itemsSet[k].updateTime)+'</td>' +
+                                    '<td>数量由<code>'+result[j].itemsSet[k].origin+'</code>改为<code>'+result[j].itemsSet[k].num+'</code></td>' +
+                                    '</tr>');
+                            }
+
+                        }
+                    }
+
+                }
+            })
+        });
+
+        //上一页添加事件
+        $(document).on("click", "#page .prev", function (){
+            searchName = $('#search').val();
+            page.currPage = parseInt(page.currPage) - 1;
+            curr_page = page.currPage;
+            $("tbody").html("");
+            pageIteration(page.currPage);
+            isDisabled(page.currPage, page.totalPage);
+            $.ajax({
+                url:"/record/itemHistoryList",
+                type:"GET",
+                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName":searchName},
+                dataType:"JSON",
+                success:function (data) {
+                    if (data.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, data.totalPages);
+                    }
+                    pageIteration(page.currPage);
+                    isDisabled(page.currPage, data.totalPages);
+                    var result=[];
+                    var obj={};
+                    for (var i = 0; i <data.content.length ; i++) {
+                        if(!obj[data.content[i].storeCode]){
+                            result.push(data.content[i]);
+                            obj[data.content[i].storeCode] = true;
+                        }
+                    }
+                    for (var j = 0; j <result.length ; j++) {
+                        for (var k = 0; k <result[j].itemsSet.length ; k++) {
+                            if(result[j].itemsSet[k].personName!=null){
+                                $("tbody").append('<tr>' +
+                                    '<td>'+result[j].storeName+'</td>' +
+                                    '<td>'+result[j].storeCode+'</td>' +
+                                    '<td>'+result[j].marketCode.name+'</td>' +
+                                    '<td>'+result[j].itemsSet[k].item.name+'</td>' +
+                                    '<td>'+result[j].itemsSet[k].personName+'</td>' +
+                                    '<td>'+renderTime(result[j].itemsSet[k].updateTime)+'</td>' +
+                                    '<td>数量由<code>'+result[j].itemsSet[k].origin+'</code>改为<code>'+result[j].itemsSet[k].num+'</code></td>' +
+                                    '</tr>');
+                            }
+
+                        }
+                    }
+                }
+            })
+        });
+
+        //对页码添加事件
+        $(document).on("click", ".page-btn", function () {
+            searchName = $('#search').val();
+            $this = $(this);
+            $("tbody").html("");
+            page.currPage = parseInt($this.text());
+            curr_page = page.currPage;
+            pageIteration(page.currPage);
+            isDisabled(page.currPage, page.totalPage);
+            $.ajax({
+                url:"/record/itemHistoryList",
+                type:"GET",
+                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName":searchName},
+                dataType:"JSON",
+                success:function (data) {
+                    if (data.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, data.totalPages);
+                    }
+                    pageIteration(page.currPage);
+                    isDisabled(page.currPage, data.totalPages);
+                    var result=[];
+                    var obj={};
+                    for (var i = 0; i <data.content.length ; i++) {
+                        if(!obj[data.content[i].storeCode]){
+                            result.push(data.content[i]);
+                            obj[data.content[i].storeCode] = true;
+                        }
+                    }
+                    for (var j = 0; j <result.length ; j++) {
+                        for (var k = 0; k <result[j].itemsSet.length ; k++) {
+                            if(result[j].itemsSet[k].personName!=null){
+                                $("tbody").append('<tr>' +
+                                    '<td>'+result[j].storeName+'</td>' +
+                                    '<td>'+result[j].storeCode+'</td>' +
+                                    '<td>'+result[j].marketCode.name+'</td>' +
+                                    '<td>'+result[j].itemsSet[k].item.name+'</td>' +
+                                    '<td>'+result[j].itemsSet[k].personName+'</td>' +
+                                    '<td>'+renderTime(result[j].itemsSet[k].updateTime)+'</td>' +
+                                    '<td>数量由<code>'+result[j].itemsSet[k].origin+'</code>改为<code>'+result[j].itemsSet[k].num+'</code></td>' +
+                                    '</tr>');
+                            }
+
+                        }
+                    }
+
+                }
+            })
+        });
+
+        //对下一页添加事件
+        $(document).on("click", "#page .next", function (){
+            searchName = $('#search').val();
+            page.currPage = parseInt(page.currPage) + 1;
+            $("tbody").html("");
+            curr_page = page.currPage;
+            pageIteration(page.currPage);
+            isDisabled(page.currPage, page.totalPage);
+            $.ajax({
+                url:"/record/itemHistoryList",
+                type:"GET",
+                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName":searchName},
+                dataType:"JSON",
+                success:function (data) {
+                    if (data.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, data.totalPages);
+                    }
+                    pageIteration(page.currPage);
+                    isDisabled(page.currPage, data.totalPages);
+                    var result=[];
+                    var obj={};
+                    for (var i = 0; i <data.content.length ; i++) {
+                        if(!obj[data.content[i].storeCode]){
+                            result.push(data.content[i]);
+                            obj[data.content[i].storeCode] = true;
+                        }
+                    }
+                    for (var j = 0; j <result.length ; j++) {
+                        for (var k = 0; k <result[j].itemsSet.length ; k++) {
+                            if(result[j].itemsSet[k].personName!=null){
+                                $("tbody").append('<tr>' +
+                                    '<td>'+result[j].storeName+'</td>' +
+                                    '<td>'+result[j].storeCode+'</td>' +
+                                    '<td>'+result[j].marketCode.name+'</td>' +
+                                    '<td>'+result[j].itemsSet[k].item.name+'</td>' +
+                                    '<td>'+result[j].itemsSet[k].personName+'</td>' +
+                                    '<td>'+renderTime(result[j].itemsSet[k].updateTime)+'</td>' +
+                                    '<td>数量由<code>'+result[j].itemsSet[k].origin+'</code>改为<code>'+result[j].itemsSet[k].num+'</code></td>' +
+                                    '</tr>');
+                            }
+
+                        }
+                    }
+
+                }
+            })
+        });
+
+
+
+        //添加分页插件，根据总页数来添加按钮
+        function addButtons(startPage, pageLength) {
+            $("#page").html(" ");
+            var _html = "<center><button class='btn btn-default prev' ><<上一页</button> ";
+            for (var i = startPage; i < startPage + pageLength; i++) {
+                _html += "<button class='btn btn-default page-btn' data-pageno=" + i + ">" + i + "</button> ";
+            }
+            _html += " <button class='btn btn-default next'>下一页>></button></center>";
+            $("#page").html(_html);
+        }
+        //分页按钮迭代(最要是对"上一页"和"下一页"是否禁用的判断)
+        function isDisabled(pagenum, totalpage) {
+            if (totalpage == 0 || totalpage == 1) {
+                $("#page .prev").attr("disabled", true);
+                $("#page .next").attr("disabled", true);
+            } else if (pagenum == 1) {
+                $("#page .prev").attr("disabled", true);
+                $("#page .next").removeAttr("disabled");
+            } else if (pagenum == totalpage) {
+                $("#page .next").attr("disabled", true);
+                $("#page .prev").removeAttr("disabled");
+            } else {
+                $("#page .next").removeAttr("disabled");
+                $("#page .prev").removeAttr("disabled");
+            }
+        }
+        //按钮迭代器
+        function pageIteration(currPage) {
+            if (page.currPage != 1 && page.currPage == page.startPage) {
+                page.startPage = page.currPage - page.pageLength / 2;
+                page.endPage = page.currPage + page.pageLength / 2 - 1;
+                addButtons(page.startPage, page.pageLength);
+                $("#page .page-btn").eq(page.pageLength / 2).addClass("curr-page");
+            } else if (page.currPage != page.totalPage && page.currPage == page.endPage) {
+                page.startPage = page.currPage - page.pageLength / 2 + 1;
+                page.endPage = (page.currPage + page.pageLength / 2) >= page.totalPage ? page.totalPage : (page.currPage + page.pageLength / 2);
+                addButtons(page.startPage, page.pageLength / 2 + (page.endPage == page.totalPage ? (page.endPage - page.currPage) : page.pageLength / 2));
+                $("#page .page-btn").eq(page.pageLength / 2 - 1).addClass("curr-page");
+            }
+            $("#page .page-btn").removeClass("curr-page").parent().find("[data-pageno=" + currPage + "]").addClass("curr-page");
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="col-md-5 col-xs-12" style="float:right">
+            <div class="input-group">
+                <input type="text" id="search" class="form-control" placeholder="输入门店名称/编码/市场/进行搜索">
+                <span class="input-group-btn">
+                 <button class="btn btn-primary" id="searchButton">搜 索</button>
+            </span>
+            </div>
+        </div>
+        <table class="table table-striped">
+            <caption>门店设备更新日志展示</caption>
+            <thead>
+                <tr>
+                    <th>门店名称</th>
+                    <th>门店编码</th>
+                    <th>所属市场</th>
+                    <th>设备型号</th>
+                    <th>操作人</th>
+                    <th>操作时间</th>
+                    <th>操作描述</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <div id="page"></div>
+    </div>
+</body>
+</html>

@@ -76,6 +76,12 @@ public class AppliactionInit implements ApplicationRunner {
         storeStatus.setStatusName("已确认");
         storeStatus.setRemarks("管理员审核过，没有问题的");
         storeStatusService.save(storeStatus);
+        //设置门店闭店操作时，首先门店的设备数量请0，然后记录在历史记录中
+        storeStatus.setStatusId(5);
+        storeStatus.setStatusName("已闭店");
+        storeStatus.setRemarks("市场IT、总部管理员可以设置门店闭店");
+        storeStatusService.save(storeStatus);
+
 
 
 

@@ -17,7 +17,6 @@ public class Role {
     @OneToOne
     @JoinColumn(name = "status")
     private PublicStatus publicStatus;
-
     @ManyToMany(targetEntity = Permission.class,fetch = FetchType.EAGER)
     @JoinTable(name = "role_permission",joinColumns = @JoinColumn(name = "role_id"),inverseJoinColumns = @JoinColumn(name = "permission_id"))
     @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)

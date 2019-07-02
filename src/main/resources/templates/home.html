@@ -30,11 +30,11 @@
         };
         window.onload = function () {
             setIframeHeight(document.getElementById('iframeshow'));
-
         };
 
     </script>
     <script>
+        //在js页面中比较两个日期类型变量的大小
         $(function () {
             var loginName=$("#loginName").val();
             $.ajax({
@@ -43,16 +43,29 @@
                 data: {"userName": loginName},
                 dataType: "JSON",
                 success: function (data) {
-                    var roleName = data.userType.name;
-                    //分角色展示：市场IT、系统管理员、
-                    if(roleName=="市场IT"){
-                         $("#person").hide();
-                         $("#storeAppend").append('' +
-                             '<li><a href="/store/adjustment" target="right"><span class="icon-caret-right"></span>待调整门店</a></li>');
-                    }else if(roleName=="系统管理员"){
-                        $("#storeAppend").append('' +
-                             '<li><a href="/report/reportTable" target="right"><span class="icon-caret-right"></span>已确认门店</a></li>');
-
+                    //首先默认所有的div为不展示状态
+                    $("#person").hide();
+                    $("#item").hide();
+                    $("#store").hide();
+                    $("#itstore").hide();
+                    $("#servicePerson").hide();
+                   var roles =  data.roles[0];
+                   var userRoleName = data.userType.name;
+                    for (var i = 0; i < roles.permissions.length; i++) {
+                        var permisName = roles.permissions[i].name;
+                        if(permisName=="人员管理"){
+                            $("#person").show();
+                        }else if(permisName=="门店管理"){
+                            if(userRoleName=="系统管理员"){
+                                $("#store").show();
+                            }else if(userRoleName=="市场IT"){
+                                $("#itstore").show();
+                            }
+                        }else if(permisName=="设备管理"){
+                            $("#item").show();
+                        }else if(permisName=="厂商管理"){
+                            $("#servicePerson").show();
+                        }
                     }
                 },
                 error:function () {
@@ -72,10 +85,11 @@
  <input class="form-control" type="hidden" id="loginName" th:value="${session.userName}">
    <div class="header bg-main">
       <div class="logo margin-big-left fadein-top">
-         <h1><img src="images/呷哺黑logo.png"  height="50" alt="">IT设备管理系统</h1>
+          <h1><img src="images/呷哺黑logo.png"  height="50" alt="">&nbsp;&nbsp;<span style="font-family: STXinwei">IT设备管理系统</span></h1>
       </div>
-      <div class="head-l"><a class="button button-little bg-green" href="">个人信息</a>  &nbsp;&nbsp;
-          <a class="button button-little bg-red" th:href="@{/login}">
+      <div class="head-l">
+          <a class="button button-little bg-green" target="right" th:href="@{/person/personPage}">个人信息</a>  &nbsp;&nbsp;
+          <a class="button button-little bg-red"   th:href="@{/login}">
              <span class="icon-power-off"></span> 退出登录
           </a>
       </div>
@@ -88,8 +102,8 @@
         <div id="person">
             <h2><span class="icon-pencil-square-o"></span>人员管理</h2>
             <ul>
-                <li><a href="/person/home" target="right"><span class="icon-caret-right"></span>人员列表</a></li>
                 <li><a href="/role/home" target="right"><span class="icon-caret-right"></span>角色列表</a></li>
+                <li><a href="/person/home" target="right"><span class="icon-caret-right"></span>人员列表</a></li>
             </ul>
         </div>
         <div id="item">
@@ -108,33 +122,48 @@
         </div>
         <div id="store">
             <h2><span class="icon-pencil-square-o"></span>门店管理</h2>
-            <ul id="storeAppend">
-                <li><a href="/store/home" target="right"><span class="icon-caret-right"></span>门店信息</a></li>
+            <ul>
+                <li><a href="/store/home" target="right"><span class="icon-caret-right"></span>待审批门店</a></li>
+                <li><a href="/record/home" target="right"><span class="icon-caret-right"></span>门店日志</a></li>
+                <li><a href="/report/reportTable" target="right"><span class="icon-caret-right"></span>已确认门店</a></li>
+                <li><a href="/store/storeClosePage" target="right"><span class="icon-caret-right"></span>门店闭店</a></li>
+                <li><a href="/store/reStartPage" target="right"><span class="icon-caret-right"></span>重新开店</a></li>
+            </ul>
+        </div>
+        <div id="itstore">
+            <h2><span class="icon-pencil-square-o"></span>门店管理</h2>
+            <ul>
+                <li><a href="/store/home" target="right"><span class="icon-caret-right"></span>待添加门店</a></li>
+                <li><a href="/store/adjustment" target="right"><span class="icon-caret-right"></span>待调整门店</a></li>
+                <li><a href="/store/storeClosePage" target="right"><span class="icon-caret-right"></span>门店闭店</a></li>
+                <li><a href="/store/reStartPage" target="right"><span class="icon-caret-right"></span>重新开店</a></li>
+            </ul>
+        </div>
+
+        <div id="servicePerson">
+            <h2><span class="icon-pencil-square-o"></span>厂商管理</h2>
+            <ul id="servicePersonAppend">
+                <li><a href="/report/reportTable" target="right"><span class="icon-caret-right"></span>导出列表</a></li>
             </ul>
         </div>
     </div>
-
-
-
 </div>
 <script type="text/javascript">
     $(function(){
         $(".leftnav h2").click(function(){
             $(this).next().slideToggle(200);
             $(this).toggleClass("on");
-        })
+        });
         $(".leftnav ul li a").click(function(){
             $("#a_leader_txt").text($(this).text());
             $(".leftnav ul li a").removeClass("on");
             $(this).addClass("on");
-        })
-
+        });
         $(".icon-home").click(function(){
             $("#a_leader_txt").text("所有公告");
             $(".leftnav ul li a").removeClass("on");
             $(this).addClass("on");
-        })
-
+        });
     });
 </script>
  <ul class="bread">

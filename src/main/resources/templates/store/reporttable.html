@@ -10,21 +10,133 @@
     <script th:src="@{https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js}"></script>
     <script th:src="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js}"></script>
     <style>
-      /*  <!-- td:vertical-align: middle;text-align:center;-->*/
+        #page {
+            margin-top: 10px;
+        }
+        #page .curr-page {
+            background-color: #337AB7;
+            color: white;
+        }
+
+        #page .page-btn:hover, #page .prev:hover, #page .next:hover {
+            background-color: #337AB7;
+            color: white;
+        }
     </style>
     <script>
         <!--填充表头-->
+        var page = {
+            currPage: 1,
+            totalPage: 0,
+            pageLength: 4,
+            startPage: 1,
+            endPage: 4,
+            pageSize: 5
+        };
+       //填充页面html数据
         $(function () {
             var content="";
             $.ajax({
                 url:"/report/findAll",
                 dataType:"JSON",
                 type:"GET",
+                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": ""},
                 success:function (data) {
                     classData=data["classitem"];
-                    console.log("classData---->"+classData);
+                    //前台接收后台传过来的Json类型的数据，需要进行解析JSON.parse();
                     store=JSON.parse(data["store"]);
-                    console.log("store----->"+store);
+                    //用于分页的数据Page<Store>
+                    storePage = data["page"];
+                    page.totalPage = storePage.totalPages;
+                    if (storePage.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, storePage.totalPages);
+                    }
+                    pageIteration(page.currPage);
+                    isDisabled(page.currPage, storePage.totalPages);
+                   // console.log("store----->"+store);
+                    var str="<tr><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店编码</th><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店名称</th>";
+                    var str1="<tr>";
+                    var str2="<tr>";
+                    //在前台统计各个设备类型下，设备型号的数量
+                    var colArray = new Array();
+                    for (var i = 0; i <classData.length ; i++) {
+                        var len = 0;
+                        for (var j = 0; j <classData[i]. equipNames.length ; j++) {
+                            len+=classData[i]. equipNames[j]. itemSet.length;
+                        }
+                        colArray.push(len);
+                    }
+                    for (var i = 0; i <classData.length ; i++) {
+                        str+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+colArray[i]+"'>"+classData[i].name+"</th>";
+                        for (var j = 0; j <classData[i]. equipNames.length; j++) {
+                            str1+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+classData[i]. equipNames[j]. itemSet.length+"'>"+classData[i]. equipNames[j].name+"</th>"
+                            for (var k = 0; k <classData[i]. equipNames[j]. itemSet.length ; k++) {
+                                str2+="<th style=\"vertical-align: middle;text-align:center;\">"+classData[i]. equipNames[j]. itemSet[k].name+"</th>";
+                            }
+                        }
+                    }
+                    str2+="</tr>";
+                    str1+="</tr>";
+                    str+="</tr>";
+                    str+=str1;
+                    str+=str2;
+                    copyHead=str;
+                    $("thead").html(str);
+                    <!--填充表格内容-->
+                    for (var i = 0; i <store.length ; i++) {
+                        content+="<tr>";
+                        content+="<td>"+store[i].storeCode+"</td>";
+                        content+="<td>"+store[i].storeName+"</td>";
+                        for (var k = 0; k <classData.length; k++) {
+                            for (var l = 0; l <classData[k]. equipNames.length ; l++) {
+                                for (var m = 0; m <classData[k]. equipNames[l]. itemSet.length ; m++) {
+                                    if(store[i].items[classData[k]. equipNames[l]. itemSet[m].name]!=null){
+                                        content+="<td>"+store[i].items[classData[k]. equipNames[l]. itemSet[m].name]+"</td>";
+                                    }else {
+                                        content+="<td>0</td>";
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    content+="</tr>";
+                    copyBody=content;
+                    $("tbody").html(content);
+
+                }
+            });
+        });
+
+        //对搜索按钮添加事件
+        $(document).on("click","#searchButton",function (){
+            page.currPage=1;
+            page.startPage=1;
+            page.endPage=4;
+            var searchName = $('#search').val();
+            var content="";
+            $("thead").html("");
+            $("tbody").html("");
+            $.ajax({
+                url:"/report/findAll",
+                dataType:"JSON",
+                type:"GET",
+                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
+                success:function (data) {
+                    classData=data["classitem"];
+                    store=JSON.parse(data["store"]);
+                    //用于分页的数据Page<Store>
+                    storePage = data["page"];
+                    page.totalPage = storePage.totalPages;
+                    if (storePage.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, storePage.totalPages);
+                    }
+                    pageIteration(page.currPage);
+                    isDisabled(page.currPage, storePage.totalPages);
+                    // console.log("store----->"+store);
                     var str="<tr><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店编码</th><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店名称</th>";
                     var str1="<tr>";
                     var str2="<tr>";
@@ -50,7 +162,9 @@
                     str+="</tr>";
                     str+=str1;
                     str+=str2;
+                    copyHead=str;
                     $("thead").html(str);
+                    <!--填充表格内容-->
                     for (var i = 0; i <store.length ; i++) {
                         content+="<tr>";
                         content+="<td>"+store[i].storeCode+"</td>";
@@ -68,20 +182,335 @@
                         }
                     }
                     content+="</tr>";
+                    copyBody=content;
                     $("tbody").html(content);
-                }
 
-            })
+                }
+            });
         });
+
+        //对上一页添加事件
+        $(document).on("click", "#page .prev", function (){
+            searchName = $('#search').val();
+            page.currPage = parseInt(page.currPage) - 1;
+            curr_page = page.currPage;
+            var content="";
+            $("thead").html("");
+            $("tbody").html("");
+            pageIteration(page.currPage);
+            isDisabled(page.currPage, page.totalPage);
+            $.ajax({
+                url:"/report/findAll",
+                dataType:"JSON",
+                type:"GET",
+                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
+                success:function (data) {
+                    classData=data["classitem"];
+                    store=JSON.parse(data["store"]);
+                    //用于分页的数据Page<Store>
+                    storePage = data["page"];
+                    page.totalPage = storePage.totalPages;
+                    if (storePage.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, storePage.totalPages);
+                    }
+                    pageIteration(page.currPage);
+                    isDisabled(page.currPage, storePage.totalPages);
+                    // console.log("store----->"+store);
+                    var str="<tr><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店编码</th><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店名称</th>";
+                    var str1="<tr>";
+                    var str2="<tr>";
+                    var colArray = new Array();
+                    for (var i = 0; i <classData.length ; i++) {
+                        var len = 0;
+                        for (var j = 0; j <classData[i]. equipNames.length ; j++) {
+                            len+=classData[i]. equipNames[j]. itemSet.length;
+                        }
+                        colArray.push(len);
+                    }
+                    for (var i = 0; i <classData.length ; i++) {
+                        str+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+colArray[i]+"'>"+classData[i].name+"</th>";
+                        for (var j = 0; j <classData[i]. equipNames.length; j++) {
+                            str1+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+classData[i]. equipNames[j]. itemSet.length+"'>"+classData[i]. equipNames[j].name+"</th>"
+                            for (var k = 0; k <classData[i]. equipNames[j]. itemSet.length ; k++) {
+                                str2+="<th style=\"vertical-align: middle;text-align:center;\">"+classData[i]. equipNames[j]. itemSet[k].name+"</th>";
+                            }
+                        }
+                    }
+                    str2+="</tr>";
+                    str1+="</tr>";
+                    str+="</tr>";
+                    str+=str1;
+                    str+=str2;
+                    copyHead=str;
+                    $("thead").html(str);
+                    <!--填充表格内容-->
+                    for (var i = 0; i <store.length ; i++) {
+                        content+="<tr>";
+                        content+="<td>"+store[i].storeCode+"</td>";
+                        content+="<td>"+store[i].storeName+"</td>";
+                        for (var k = 0; k <classData.length; k++) {
+                            for (var l = 0; l <classData[k]. equipNames.length ; l++) {
+                                for (var m = 0; m <classData[k]. equipNames[l]. itemSet.length ; m++) {
+                                    if(store[i].items[classData[k]. equipNames[l]. itemSet[m].name]!=null){
+                                        content+="<td>"+store[i].items[classData[k]. equipNames[l]. itemSet[m].name]+"</td>";
+                                    }else {
+                                        content+="<td>0</td>";
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    content+="</tr>";
+                    copyBody=content;
+                    $("tbody").html(content);
+
+                }
+            });
+
+        });
+        //对页码添加事件
+        $(document).on("click", ".page-btn", function (){
+            searchName = $('#search').val();
+            $this = $(this);
+            var content="";
+            $("thead").html("");
+            $("tbody").html("");
+            page.currPage = parseInt($this.text());
+            curr_page = page.currPage;
+            pageIteration(page.currPage);
+            isDisabled(page.currPage, page.totalPage);
+            $.ajax({
+                url:"/report/findAll",
+                dataType:"JSON",
+                type:"GET",
+                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
+                success:function (data) {
+                    classData=data["classitem"];
+                    store=JSON.parse(data["store"]);
+                    //用于分页的数据Page<Store>
+                    storePage = data["page"];
+                    page.totalPage = storePage.totalPages;
+                    if (storePage.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, storePage.totalPages);
+                    }
+                    pageIteration(page.currPage);
+                    isDisabled(page.currPage, storePage.totalPages);
+                    // console.log("store----->"+store);
+                    var str="<tr><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店编码</th><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店名称</th>";
+                    var str1="<tr>";
+                    var str2="<tr>";
+                    var colArray = new Array();
+                    for (var i = 0; i <classData.length ; i++) {
+                        var len = 0;
+                        for (var j = 0; j <classData[i]. equipNames.length ; j++) {
+                            len+=classData[i]. equipNames[j]. itemSet.length;
+                        }
+                        colArray.push(len);
+                    }
+                    for (var i = 0; i <classData.length ; i++) {
+                        str+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+colArray[i]+"'>"+classData[i].name+"</th>";
+                        for (var j = 0; j <classData[i]. equipNames.length; j++) {
+                            str1+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+classData[i]. equipNames[j]. itemSet.length+"'>"+classData[i]. equipNames[j].name+"</th>"
+                            for (var k = 0; k <classData[i]. equipNames[j]. itemSet.length ; k++) {
+                                str2+="<th style=\"vertical-align: middle;text-align:center;\">"+classData[i]. equipNames[j]. itemSet[k].name+"</th>";
+                            }
+                        }
+                    }
+                    str2+="</tr>";
+                    str1+="</tr>";
+                    str+="</tr>";
+                    str+=str1;
+                    str+=str2;
+                    copyHead=str;
+                    $("thead").html(str);
+                    <!--填充表格内容-->
+                    for (var i = 0; i <store.length ; i++) {
+                        content+="<tr>";
+                        content+="<td>"+store[i].storeCode+"</td>";
+                        content+="<td>"+store[i].storeName+"</td>";
+                        for (var k = 0; k <classData.length; k++) {
+                            for (var l = 0; l <classData[k]. equipNames.length ; l++) {
+                                for (var m = 0; m <classData[k]. equipNames[l]. itemSet.length ; m++) {
+                                    if(store[i].items[classData[k]. equipNames[l]. itemSet[m].name]!=null){
+                                        content+="<td>"+store[i].items[classData[k]. equipNames[l]. itemSet[m].name]+"</td>";
+                                    }else {
+                                        content+="<td>0</td>";
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    content+="</tr>";
+                    copyBody=content;
+                    $("tbody").html(content);
+
+                }
+            });
+
+        });
+        //对下一页添加事件
+        $(document).on("click", "#page .next", function (){
+            searchName = $('#search').val();
+            page.currPage = parseInt(page.currPage) + 1;
+            var content="";
+            $("thead").html("");
+            $("tbody").html("");
+            curr_page = page.currPage;
+            pageIteration(page.currPage);
+            isDisabled(page.currPage, page.totalPage);
+            $.ajax({
+                url:"/report/findAll",
+                dataType:"JSON",
+                type:"GET",
+                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
+                success:function (data) {
+                    classData=data["classitem"];
+                    store=JSON.parse(data["store"]);
+                    //用于分页的数据Page<Store>
+                    storePage = data["page"];
+                    page.totalPage = storePage.totalPages;
+                    if (storePage.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, storePage.totalPages);
+                    }
+                    pageIteration(page.currPage);
+                    isDisabled(page.currPage, storePage.totalPages);
+                    // console.log("store----->"+store);
+                    var str="<tr><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店编码</th><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店名称</th>";
+                    var str1="<tr>";
+                    var str2="<tr>";
+                    var colArray = new Array();
+                    for (var i = 0; i <classData.length ; i++) {
+                        var len = 0;
+                        for (var j = 0; j <classData[i]. equipNames.length ; j++) {
+                            len+=classData[i]. equipNames[j]. itemSet.length;
+                        }
+                        colArray.push(len);
+                    }
+                    for (var i = 0; i <classData.length ; i++) {
+                        str+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+colArray[i]+"'>"+classData[i].name+"</th>";
+                        for (var j = 0; j <classData[i]. equipNames.length; j++) {
+                            str1+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+classData[i]. equipNames[j]. itemSet.length+"'>"+classData[i]. equipNames[j].name+"</th>"
+                            for (var k = 0; k <classData[i]. equipNames[j]. itemSet.length ; k++) {
+                                str2+="<th style=\"vertical-align: middle;text-align:center;\">"+classData[i]. equipNames[j]. itemSet[k].name+"</th>";
+                            }
+                        }
+                    }
+                    str2+="</tr>";
+                    str1+="</tr>";
+                    str+="</tr>";
+                    str+=str1;
+                    str+=str2;
+                    copyHead=str;
+                    $("thead").html(str);
+                    <!--填充表格内容-->
+                    for (var i = 0; i <store.length ; i++) {
+                        content+="<tr>";
+                        content+="<td>"+store[i].storeCode+"</td>";
+                        content+="<td>"+store[i].storeName+"</td>";
+                        for (var k = 0; k <classData.length; k++) {
+                            for (var l = 0; l <classData[k]. equipNames.length ; l++) {
+                                for (var m = 0; m <classData[k]. equipNames[l]. itemSet.length ; m++) {
+                                    if(store[i].items[classData[k]. equipNames[l]. itemSet[m].name]!=null){
+                                        content+="<td>"+store[i].items[classData[k]. equipNames[l]. itemSet[m].name]+"</td>";
+                                    }else {
+                                        content+="<td>0</td>";
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    content+="</tr>";
+                    copyBody=content;
+                    $("tbody").html(content);
+
+                }
+            });
+
+
+        });
+         //$.get(请求数据为get方式)
+        /*function outputFun() {
+            var searchName=$('#search').val()
+            $.get("/report/outputExcel",
+                 {"page":page.currPage, "pageSize":page.pageSize, "searchName":searchName,}
+            );
+        }*/
+        function outputFun(){
+            var searchName = $('#search').val();
+            var site="/report/outputExcel?page="+page.currPage+"&pageSize="+page.pageSize+"&searchName="+searchName;
+            $("#linkExcel").attr("href",site);
+            $("#linkExcel").style.display="none";
+        }
+
+        //添加分页插件，根据总页数来添加按钮
+        function addButtons(startPage, pageLength) {
+            $("#page").html(" ");
+            var _html = "<center><button class='btn btn-default prev' ><<上一页</button> ";
+            for (var i = startPage; i < startPage + pageLength; i++) {
+                _html += "<button class='btn btn-default page-btn' data-pageno=" + i + ">" + i + "</button> ";
+            }
+            _html += " <button class='btn btn-default next'>下一页>></button></center>";
+            $("#page").html(_html);
+        }
+        //分页按钮迭代(最要是对"上一页"和"下一页"是否禁用的判断)
+        function isDisabled(pagenum, totalpage) {
+            if (totalpage == 0 || totalpage == 1) {
+                $("#page .prev").attr("disabled", true);
+                $("#page .next").attr("disabled", true);
+            } else if (pagenum == 1) {
+                $("#page .prev").attr("disabled", true);
+                $("#page .next").removeAttr("disabled");
+            } else if (pagenum == totalpage) {
+                $("#page .next").attr("disabled", true);
+                $("#page .prev").removeAttr("disabled");
+            } else {
+                $("#page .next").removeAttr("disabled");
+                $("#page .prev").removeAttr("disabled");
+            }
+        }
+        //按钮迭代器
+        function pageIteration(currPage) {
+            if (page.currPage != 1 && page.currPage == page.startPage) {
+                page.startPage = page.currPage - page.pageLength / 2;
+                page.endPage = page.currPage + page.pageLength / 2 - 1;
+                addButtons(page.startPage, page.pageLength);
+                $("#page .page-btn").eq(page.pageLength / 2).addClass("curr-page");
+            } else if (page.currPage != page.totalPage && page.currPage == page.endPage) {
+                page.startPage = page.currPage - page.pageLength / 2 + 1;
+                page.endPage = (page.currPage + page.pageLength / 2) >= page.totalPage ? page.totalPage : (page.currPage + page.pageLength / 2);
+                addButtons(page.startPage, page.pageLength / 2 + (page.endPage == page.totalPage ? (page.endPage - page.currPage) : page.pageLength / 2));
+                $("#page .page-btn").eq(page.pageLength / 2 - 1).addClass("curr-page");
+            }
+            $("#page .page-btn").removeClass("curr-page").parent().find("[data-pageno=" + currPage + "]").addClass("curr-page");
+        }
     </script>
 </head>
 <body>
   <div class="container">
+      <div class="col-md-7 col-xs-12">
+          <a class="btn btn-default" id="linkExcel" href="#" onclick="outputFun()">导出Excel</a>
+          <div id="dataFile"></div>
+      </div>
+      <div class="col-md-5 col-xs-12">
+          <div class="input-group">
+              <input type="text" id="search" class="form-control" placeholder="输入门店名称/编码/市场/进行搜索">
+              <span class="input-group-btn">
+                 <button class="btn btn-primary" id="searchButton">搜 索</button>
+            </span>
+          </div>
+      </div>
       <table class="table table-bordered" id="myTable" style="text-align: center;">
           <caption>门店设备列表展示</caption>
           <thead></thead>
           <tbody></tbody>
       </table>
+      <div id="page"></div>
   </div>
 </body>
 </html>

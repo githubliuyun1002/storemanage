@@ -17,4 +17,8 @@ public class ServicePersonService {
     public ServicePerson findById(int id){
         return servicePersonRepository.findById(id).get();
     }
+    public ServicePerson findByServiceName(String serviceName){
+        return  servicePersonRepository.findByServiceName(serviceName);
+    }
+
 }

@@ -19,7 +19,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.jws.soap.SOAPBinding;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/person")
@@ -107,11 +109,51 @@ public class UserController {
         userService.updateSave(user);
         return "redirect:/person/home";
     }
+
+    /**
+     * 加载市场信息
+     * @return
+     */
     @RequestMapping("/marketList")
     @ResponseBody
     public List<MarketEntity> marketList(){
         return marketService.findAll();
     }
-
+    /**
+     *个人信息页面
+     */
+    @RequestMapping("/personPage")
+    public String personPage(){
+        return "/user/personMsg";
+    }
+    /**
+     * 检查原始密码是否正确,返回相应的提示信息
+     */
+    @RequestMapping("/check")
+    @ResponseBody
+    public Map<String,Object> check(@RequestParam("id") int id, @RequestParam("password")String password){
+        Map<String,Object> map =new HashMap<>();
+        BCryptPasswordEncoder bcryptPasswordEncoder = new BCryptPasswordEncoder();
+        User user=userService.findById(id);
+        boolean macth= bcryptPasswordEncoder.matches(password,user.getPassword());    //根据加密规则进行解密 matches匹配
+        if(macth){
+            map.put("msg",true);
+        }else{
+            map.put("msg",false);
+        }
+        return map;
+    }
+    /**
+     * 添加修改的密码信息
+     */
+    @RequestMapping("/pwdSave")
+    public String pwdSave(User user){
+        User userDB = userService.findById(user.getId());
+        String password = user.getPassword();
+        password = new BCryptPasswordEncoder().encode(password);
+        userDB.setPassword(password);
+        userService.save(userDB);
+        return "redirect:/person/personPage";
+    }
 
 }

@@ -100,24 +100,40 @@
                             for (var p = 0; p <data.itemsSet.length ; p++) {
                                 var show = $("#span"+k).text();
                                 if(show==data.itemsSet[p].className){
-                                    $("#tbody"+k).append('' +
-                                        '<tr class="hxbgcolor_itemline_normal">' +
-                                        '<td align="center" width="4%">' +
-                                        '<span style=";display:none">' +
-                                        '<span style="display:inline-block;width:100%;" class="hxbtn_container"></span>' +
-                                        '</span>' +
-                                        '</td>' +
-                                        '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="hidden" name="id" value="'+data.itemsSet[p].id+'"><input type="text" readonly="readonly" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly"  name="equipName" value="'+data.itemsSet[p].equipName+'" style="text-align:left;width:100%;overflow-y:auto"></span></td>' +
-                                        '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="hidden" name="itemId" value="'+data.itemsSet[p].item.itemId+'"><input type="text" name="name" value="'+data.itemsSet[p].item.name+'" readonly="readonly" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly"   style="text-align:left;width:100%;overflow-y:auto"></span></td>' +
-                                        '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="text"  name="num" readonly="readonly" value="'+data.itemsSet[p].num+'" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly" style="text-align:left;width:100%;overflow-y:auto"></span></td>' +
-                                        '<td align="center" width="19%"><label class="radio-inline"><input type="hidden" name="className" value="'+data.itemsSet[p].className+'"><input type="radio"  value="1" name="'+data.itemsSet[p].item.itemId+data.itemsSet[p].item.name+'">是</label><label class="radio-inline"><input type="radio" value="2" name="'+data.itemsSet[p].item.itemId+data.itemsSet[p].item.name+'">否</label><span id="'+data.itemsSet[p].item.itemId+data.itemsSet[p].item.name+'"></span></td>'+
-                                        '</tr>');
+                                    //‘1’表示通过
+                                    if(data.itemsSet[p].sign=="1"){
+                                        $("#tbody"+k).append('' +
+                                            '<tr class="hxbgcolor_itemline_normal">' +
+                                            '<td align="center" width="4%">' +
+                                            '<span style=";display:none">' +
+                                            '<span style="display:inline-block;width:100%;" class="hxbtn_container"></span>' +
+                                            '</span>' +
+                                            '</td>' +
+                                            '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="hidden" name="id" value="'+data.itemsSet[p].id+'"><input type="text" readonly="readonly" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly"  name="equipName" value="'+data.itemsSet[p].equipName+'" style="text-align:left;width:100%;overflow-y:auto"></span></td>' +
+                                            '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="hidden" name="itemId" value="'+data.itemsSet[p].item.itemId+'"><input type="text" name="name" value="'+data.itemsSet[p].item.name+'" readonly="readonly" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly"   style="text-align:left;width:100%;overflow-y:auto"></span></td>' +
+                                            '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="text"  name="num" readonly="readonly" value="'+data.itemsSet[p].num+'" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly" style="text-align:left;width:100%;overflow-y:auto"></span></td>' +
+                                            '<td align="center" width="19%"><label class="radio-inline"><input type="hidden" name="className" value="'+data.itemsSet[p].className+'"><input type="radio"  value="1" checked="checked" disabled="true" name="'+data.itemsSet[p].item.itemId+data.itemsSet[p].item.name+'">是</label><label class="radio-inline"><input type="radio" value="2" disabled="true" name="'+data.itemsSet[p].item.itemId+data.itemsSet[p].item.name+'">否</label><span id="'+data.itemsSet[p].item.itemId+data.itemsSet[p].item.name+'"></span></td>'+
+                                            '</tr>');
+                                    }else{
+                                        $("#tbody"+k).append('' +
+                                            '<tr class="hxbgcolor_itemline_normal">' +
+                                            '<td align="center" width="4%">' +
+                                            '<span style=";display:none">' +
+                                            '<span style="display:inline-block;width:100%;" class="hxbtn_container"></span>' +
+                                            '</span>' +
+                                            '</td>' +
+                                            '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="hidden" name="id" value="'+data.itemsSet[p].id+'"><input type="text" readonly="readonly" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly"  name="equipName" value="'+data.itemsSet[p].equipName+'" style="text-align:left;width:100%;overflow-y:auto"></span></td>' +
+                                            '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="hidden" name="itemId" value="'+data.itemsSet[p].item.itemId+'"><input type="text" name="name" value="'+data.itemsSet[p].item.name+'" readonly="readonly" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly"   style="text-align:left;width:100%;overflow-y:auto"></span></td>' +
+                                            '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="text"  name="num" readonly="readonly" value="'+data.itemsSet[p].num+'" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly" style="text-align:left;width:100%;overflow-y:auto;color: red;font-weight: bold"></span></td>' +
+                                            '<td align="center" width="19%"><label class="radio-inline"><input type="hidden" name="className" value="'+data.itemsSet[p].className+'"><input type="radio"  value="1" name="'+data.itemsSet[p].item.itemId+data.itemsSet[p].item.name+'">是</label><label class="radio-inline"><input type="radio" value="2" name="'+data.itemsSet[p].item.itemId+data.itemsSet[p].item.name+'">否</label><span id="'+data.itemsSet[p].item.itemId+data.itemsSet[p].item.name+'"></span></td>'+
+                                            '</tr>');
+                                    }
+
                                 }
                             }
 
                         }
                     }
-
                 },
                 error:function () {
                     alert("修改页面回显数据失败");
@@ -138,7 +154,6 @@
             var radioChecked  = $("input:radio:checked");
             if(radioChecked.length==0){
                 alert("请对设备明细进行检查");
-
             }else{
                 if(radioChecked.length<radioArrays){
                     alert("请检查页面选项是否填写完整");
@@ -164,8 +179,10 @@
                         var sign = tdArr.eq(4).find("input[type='radio']:checked").val();
                         var className = tdArr.eq(4).find("input[name='className']").val();
                         itemsSet+="{\"className\":\""+className+"\",\"equipName\":\""+equipName+"\",\"id\":"+id+"," +
-                            "\"item\":{\"itemId\":"+itemId+",\"name\":\""+name+"\",\"sign\":\""+sign+"\"}," +
-                            "\"num\":"+num+"" ;
+                            "\"item\":{\"itemId\":"+itemId+",\"name\":\""+name+"\"}," +
+                            "\"num\":"+num+"," +
+                            "" +
+                            "\"sign\":\""+sign+"\"" ;
                         if(i==radioChecked.length-1){
                             itemsSet+="}"
                         }else{
@@ -180,7 +197,7 @@
                         dataType:"JSON",
                         async:false,
                         success:function (data) {
-                            console.log("data------>"+data);
+                            //console.log("data------>"+data);
                             if(data.code="1"){
                                 window.location.href="/store/home";
                             }
@@ -205,7 +222,7 @@
             <tr>
                 <td width="50%">
                     <div hx_element_type="text" id="WebPageTitleContainer" style="">
-                        <span hx_text_webpart__cnt="1" class="hxtxt_nowrap hxtxt_page_title" style=";text-align:left;display:inline-block;width:100%;">门店信息修改展示列表</span>
+                        <span hx_text_webpart__cnt="1" class="hxtxt_nowrap hxtxt_page_title" style=";text-align:left;display:inline-block;width:100%;">门店信息确认展示列表</span>
                     </div>
                 </td>
             </tr>
@@ -240,7 +257,7 @@
                                 </tbody>
                          </table>
                 </div>
-                    <!--追加内容的时候，追加的是class="page_section_content_area"-->
+                <!--追加内容的时候，追加的是class="page_section_content_area"-->
                 <div id="itemsContent"></div>
                 <button type="button" onclick="goback()" style="float: right" class="btn btn-primary">关闭</button>
                 <button type="button"  onclick="saveform()" style="margin-left: 800px"  class="btn btn-primary">保存</button>

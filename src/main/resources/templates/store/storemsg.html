@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>门店基本信息修改页面</title>
+    <link th:href="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css}" rel="stylesheet"/>
+    <script th:src="@{https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js}"></script>
+    <script th:src="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+    <script>
+        var page = {
+            currPage: 1,
+            totalPage: 0,
+            pageLength: 4,
+            startPage: 1,
+            endPage: 4,
+            pageSize: 5
+        };
+        //对页面数据进行填充
+        $(function () {
+           var storeId =  $("#store_Id").val();
+           $.ajax({
+               url:"/store/findById",
+               data:{"storeId":storeId},
+               dataType:"JSON",
+               type:"GET",
+               success:function (data) {
+                  /* console.log("门店信息----->"+JSON.stringify(data));*/
+                   $("#storeId").val(data.storeId);
+                   $("#storeCode").val(data.storeCode);
+                   $("#storeName").val(data.storeName);
+                   $("#address").val(data.address);
+                   $("#marger").val(data.marger);
+                   $("#openDate").val(data.openDate);
+                   //回显门店所属市场
+                   var marketName = data.marketCode.name;
+                   $.ajax({
+                       url:"/store/marketAll",
+                       dataType:"JSON",
+                       type:"GET",
+                       success:function (data) {
+                           for (var i = 0; i <data.length ; i++) {
+                               if(marketName==data[i].name){
+                                   $("#marketCode").find("option:contains('"+data[i].name+"')").attr("selected",true);
+                               }
+                           }
+                       },
+                       error:function () {
+                           alert("回显市场信息失败");
+                       }
+                   });
+
+               },
+               error:function () {
+                   alert("修改数据填充失败");
+               }
+
+           })
+        });
+
+        //对门店，填充门店的所属市场
+        $(function () {
+            $.ajax({
+                url:"/store/marketAll",
+                dataType:"JSON",
+                type:"GET",
+                success:function (data) {
+                    for (var i = 0; i < data.length; i++) {
+                        if(data[i].name!="总部"){
+                            $("select#marketCode").append('' +
+                                '<option id="'+data[i].name+'" value="'+data[i].marketCode+'">'+data[i].name+'</option>')
+                        }
+                    }
+                },
+                error:function () {
+                    alert("市场填充失败");
+                }
+            })
+        });
+        //关闭时返回上一级
+        function goback() {
+            history.go(-1);
+        }
+
+    </script>
+</head>
+<body>
+   <div class="container">
+       <input type="hidden"  th:value="${storeId}"  id="store_Id">
+       <div class="panel panel-default">
+           <div class="panel-heading">
+               <h3 class="panel-title"><span class="glyphicon glyphicon-align-justify"></span>门店基本信息修改</h3>
+           </div>
+           <div class="panel-body">
+               <form class="form-horizontal" th:action="@{/store/storeMsgUpdate}">
+                   <div class="form-group">    
+                       <label for="storeCode" class="col-sm-4 control-label">门店编码</label>
+                       <div class="col-sm-5">
+                           <input type="hidden" class="form-control" name="storeId" id="storeId">
+                           <input type="text" class="form-control" name="storeCode" id="storeCode">
+                       </div>
+                   </div>
+                   <div class="form-group">
+                       <label for="storeName" class="col-sm-4 control-label">门店名称</label>
+                       <div class="col-sm-5">
+                           <input type="text" class="form-control" name="storeName" id="storeName">
+                       </div>
+                   </div>
+                   <div class="form-group">
+                       <label for="address" class="col-sm-4 control-label">门店地址</label>
+                       <div class="col-sm-5">
+                           <input type="text" class="form-control" name="address" id="address">
+                       </div>
+                   </div>
+                   <div class="form-group">
+                       <label for="marger" class="col-sm-4 control-label">门店经理</label>
+                       <div class="col-sm-5">
+                           <input type="text" class="form-control" name="marger" id="marger">
+                       </div>
+                   </div>
+                   <div class="form-group">
+                       <label for="marketCode" class="col-sm-4 control-label">所属市场</label>
+                       <div class="col-sm-5">
+                           <select class="form-control" id="marketCode" name="marketCode"></select>
+                       </div>
+                   </div>
+                   <div class="form-group">
+                       <label for="openDate" class="col-sm-4 control-label">开业日期</label>
+                       <div class="col-sm-5">
+                           <input type="text" class="form-control" name="openDate" id="openDate">
+                       </div>
+                   </div>
+                   <div class="form-group" style="margin-left: 400px;">
+                       <button type="submit" class="btn btn-primary">提交</button>
+                       <button type="button" onclick="goback()"  class="btn btn-primary">关闭</button>
+                   </div>
+               </form>
+           </div>
+       </div>
+   </div>
+</body>
+</html>

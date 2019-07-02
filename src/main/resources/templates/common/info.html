@@ -2,246 +2,293 @@
 <html lang="en"
       xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title></title>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>门店宽带展示页面</title>
+    <link th:href="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css}" rel="stylesheet"/>
+    <script th:src="@{https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js}"></script>
+    <script th:src="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js}"></script>
     <script src="/home/jquery.js"></script>
     <script src="/home/pintuer.js"></script>
     <link rel="stylesheet" href="/home/pintuer.css">
     <link rel="stylesheet" href="/home/admin.css">
+    <style>
+        #page {
+            margin-top: 10px;
+        }
+
+        #page .curr-page {
+            background-color: #337AB7;
+            color: white;
+        }
+
+        #page .page-btn:hover, #page .prev:hover, #page .next:hover {
+            background-color: #337AB7;
+            color: white;
+        }
+    </style>
+    <script>
+        var page = {
+            currPage: 1,
+            totalPage: 0,
+            pageLength: 4,
+            startPage: 1,
+            endPage: 4,
+            pageSize: 5
+        };
+        function renderTime(date) {
+            var dateee = new Date(date).toJSON();
+            return new Date(+new Date(dateee) + 8 * 3600 * 1000).toISOString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '')
+        }
+        //填充List页面
+        $(function () {
+            $.ajax({
+                url:"/store/widthList",
+                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": ""},
+                type:"GET",
+                dataType:"JSON",
+                success:function (data) {
+                    page.totalPage = data.totalPages;
+
+                    if (data.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, data.totalPages);
+                    }
+                    pageIteration(page.currPage);
+                    isDisabled(page.currPage, data.totalPages);
+                    for (var i = 0; i <data.content.length ; i++) {
+                            $("tbody").append('' +
+                                '<tr>' +
+                                '<td style="text-align: left;"><font color="#00CC99">'+data.content[i].storeName+'</font></td>' +
+                                '<td width="20%">'+data.content[i].storeCode+'</td>' +
+                                '<td width="20%">'+data.content[i].widthBand.payMethod.method+'</td>' +
+                                '<td width="20%">'+renderTime(data.content[i].widthBand.endDate).slice(0,10)+'</td>' +   //widthBand
+                                '</tr>');
+
+                    }
+
+                },
+                error:function () {
+                    alert("门店宽带信息填充失败");
+                }
+            })
+        });
+        //对搜索按钮添加点击事件
+        $(document).on("click","#searchButton",function (){
+            page.currPage=1;
+            page.startPage=1;
+            page.endPage=4;
+            var searchName = $('#search').val();
+            $("tbody").html("");
+            $.ajax({
+                url:"/store/widthList",
+                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
+                type:"GET",
+                dataType:"JSON",
+                success:function (data) {
+                    if (data.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, data.totalPages);
+                    }
+                    pageIteration(page.currPage);
+                    isDisabled(page.currPage, data.totalPages);
+                    for (var i = 0; i <data.content.length ; i++) {
+                            $("tbody").append('' +
+                                '<tr>' +
+                                '<td style="text-align: left;"><font color="#00CC99">'+data.content[i].storeName+'</font></td>' +
+                                '<td width="20%">'+data.content[i].storeCode+'</td>' +
+                                '<td width="20%">'+data.content[i].widthBand.payMethod.method+'</td>' +
+                                '<td width="20%">'+renderTime(data.content[i].widthBand.endDate).slice(0,10)+'</td>' +   //widthBand
+                                '</tr>');
+                    }
+
+                },
+                error:function () {
+                    alert("搜索事件加载失败");
+                }
+            })
+
+        });
+        //对上一页添加事件
+        $(document).on("click", "#page .prev", function (){
+            var searchName = $('#search').val();
+            page.currPage = parseInt(page.currPage) - 1;
+            curr_page = page.currPage;
+            $("tbody").html("");
+            pageIteration(page.currPage);
+            isDisabled(page.currPage, page.totalPage);
+            $.ajax({
+                url:"/store/widthList",
+                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
+                type:"GET",
+                dataType:"JSON",
+                success:function (data) {
+                    if (data.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, data.totalPages);
+                    }
+                    pageIteration(page.currPage);
+                    isDisabled(page.currPage, data.totalPages);
+                    for (var i = 0; i <data.content.length ; i++) {
+                        $("tbody").append('' +
+                            '<tr>' +
+                            '<td style="text-align: left;"><font color="#00CC99">'+data.content[i].storeName+'</font></td>' +
+                            '<td width="20%">'+data.content[i].storeCode+'</td>' +
+                            '<td width="20%">'+data.content[i].widthBand.payMethod.method+'</td>' +
+                            '<td width="20%">'+renderTime(data.content[i].widthBand.endDate).slice(0,10)+'</td>' +   //widthBand
+                            '</tr>');
+                    }
+                }
+
+            })
+
+        });
+
+        //对页码添加事件
+        $(document).on("click", ".page-btn", function (){
+            searchName = $('#search').val();
+            $this = $(this);
+            $("tbody").html("");
+            page.currPage = parseInt($this.text());
+            curr_page = page.currPage;
+            pageIteration(page.currPage);
+            isDisabled(page.currPage, page.totalPage);
+            $.ajax({
+                url:"/store/widthList",
+                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
+                type:"GET",
+                dataType:"JSON",
+                success:function (data) {
+                    if (data.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, data.totalPages);
+                    }
+                    pageIteration(page.currPage);
+                    isDisabled(page.currPage, data.totalPages);
+                    for (var i = 0; i <data.content.length ; i++) {
+                        $("tbody").append('' +
+                            '<tr>' +
+                            '<td style="text-align: left;"><font color="#00CC99">'+data.content[i].storeName+'</font></td>' +
+                            '<td width="20%">'+data.content[i].storeCode+'</td>' +
+                            '<td width="20%">'+data.content[i].widthBand.payMethod.method+'</td>' +
+                            '<td width="20%">'+renderTime(data.content[i].widthBand.endDate).slice(0,10)+'</td>' +   //widthBand
+                            '</tr>');
+                    }
+                }
+            })
+        });
+
+        //对下一页添加事件
+        $(document).on("click", "#page .next", function (){
+            searchName = $('#search').val();
+            page.currPage = parseInt(page.currPage) + 1;
+            $("tbody").html("");
+            curr_page = page.currPage;
+            pageIteration(page.currPage);
+            isDisabled(page.currPage, page.totalPage);
+            $.ajax({
+                url:"/store/widthList",
+                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
+                type:"GET",
+                dataType:"JSON",
+                success:function (data) {
+                    if (data.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, data.totalPages);
+                    }
+                    pageIteration(page.currPage);
+                    isDisabled(page.currPage, data.totalPages);
+                    for (var i = 0; i <data.content.length ; i++) {
+                        $("tbody").append('' +
+                            '<tr>' +
+                            '<td style="text-align: left;"><font color="#00CC99">'+data.content[i].storeName+'</font></td>' +
+                            '<td width="20%">'+data.content[i].storeCode+'</td>' +
+                            '<td width="20%">'+data.content[i].widthBand.payMethod.method+'</td>' +
+                            '<td width="20%">'+renderTime(data.content[i].widthBand.endDate).slice(0,10)+'</td>' +    //widthBand
+                            '</tr>');
+                    }
+                }
+            })
+        });
+
+        //添加分页插件，根据总页数来添加按钮
+        function addButtons(startPage, pageLength) {
+            $("#page").html(" ");
+            var _html = "<center><button class='btn btn-default prev' ><<上一页</button> ";
+            for (var i = startPage; i < startPage + pageLength; i++) {
+                _html += "<button class='btn btn-default page-btn' data-pageno=" + i + ">" + i + "</button> ";
+            }
+            _html += " <button class='btn btn-default next'>下一页>></button></center>";
+            $("#page").html(_html);
+        }
+        //分页按钮迭代(最要是对"上一页"和"下一页"是否禁用的判断)
+        function isDisabled(pagenum, totalpage) {
+            if (totalpage == 0 || totalpage == 1) {
+                $("#page .prev").attr("disabled", true);
+                $("#page .next").attr("disabled", true);
+            } else if (pagenum == 1) {
+                $("#page .prev").attr("disabled", true);
+                $("#page .next").removeAttr("disabled");
+            } else if (pagenum == totalpage) {
+                $("#page .next").attr("disabled", true);
+                $("#page .prev").removeAttr("disabled");
+            } else {
+                $("#page .next").removeAttr("disabled");
+                $("#page .prev").removeAttr("disabled");
+            }
+        }
+        //按钮迭代器
+        function pageIteration(currPage) {
+            if (page.currPage != 1 && page.currPage == page.startPage) {
+                page.startPage = page.currPage - page.pageLength / 2;
+                page.endPage = page.currPage + page.pageLength / 2 - 1;
+                addButtons(page.startPage, page.pageLength);
+                $("#page .page-btn").eq(page.pageLength / 2).addClass("curr-page");
+            } else if (page.currPage != page.totalPage && page.currPage == page.endPage) {
+                page.startPage = page.currPage - page.pageLength / 2 + 1;
+                page.endPage = (page.currPage + page.pageLength / 2) >= page.totalPage ? page.totalPage : (page.currPage + page.pageLength / 2);
+                addButtons(page.startPage, page.pageLength / 2 + (page.endPage == page.totalPage ? (page.endPage - page.currPage) : page.pageLength / 2));
+                $("#page .page-btn").eq(page.pageLength / 2 - 1).addClass("curr-page");
+            }
+            $("#page .page-btn").removeClass("curr-page").parent().find("[data-pageno=" + currPage + "]").addClass("curr-page");
+        }
+    </script>
 </head>
 <body>
-<form method="post" id="listform">
-  
-  <div class="panel admin-panel">
-   <div class="panel-head">
-       <strong class="icon-reorder">公告列表</strong>
-   </div>
-    <volist name="list" id="vo">
-        </volist><table class="table table-hover text-center">
-      <tbody><tr>
-        
-        <th width="30%" style="text-align: left; padding-left: 20px;">公告主题</th>
-        <th width="20%">发布人</th>
-        <th>发布时间</th>
-      </tr>
-      <tr>
-          <td style="text-align: left;"><font color="#00CC99">地形探测地形探测</font></td>
-          <td>张三</td>
-               <td>2016-07-01</td>
-           </tr>
-   		 <tr>
-          <td style="text-align: left;"><font color="#00CC99">地形探测地形探测</font></td>
-          <td>张三</td>
-            <td>2016-07-01</td>
-         </tr><tr>
-          <td style="text-align: left;"><font color="#00CC99">地形探测地形探测</font></td>
-          <td>张三</td>
-          <td>2016-07-01</td>
-         </tr><tr>
-          <td style="text-align: left;"><font color="#00CC99">地形探测地形探测</font></td>
-          <td>张三</td>
-          <td>2016-07-01</td>
-         
-         </tr><tr>
-          <td style="text-align: left;"><font color="#00CC99">地形探测地形探测</font></td>
-          <td>张三</td>
-          <td>2016-07-01</td>
-         </tr><tr>
-          <td style="text-align: left;"><font color="#00CC99">地形探测地形探测</font></td>
-          <td>张三</td>
-          <td>2016-07-01</td>
-          </tr><tr>
-        
-      </tr>
-      <tr>
-        <td colspan="8">
-            <div class="pagelist">
-                <a href="http://www.17sucai.com/preview/643218/2019-02-28/earthquake1.0/info.html">上一页</a>
-                <span class="current">1</span>
-                <a href="http://www.17sucai.com/preview/643218/2019-02-28/earthquake1.0/info.html">2</a>
-                <a href="http://www.17sucai.com/preview/643218/2019-02-28/earthquake1.0/info.html">3</a>
-                <a href="http://www.17sucai.com/preview/643218/2019-02-28/earthquake1.0/info.html">下一页</a>
-                <a href="http://www.17sucai.com/preview/643218/2019-02-28/earthquake1.0/info.html">尾页</a>
+    <div class="container">
+        <div class="col-md-5 col-xs-12" style="float: right">
+            <div class="input-group">
+                <input type="text" id="search" class="form-control" placeholder="输入门店名称/编码/市场/进行搜索">
+                <span class="input-group-btn">
+                         <button class="btn btn-primary" id="searchButton">搜 索</button>
+                    </span>
             </div>
-        </td>
-      </tr>
-    </tbody></table>
-     </div>
-     
-  
-</form>
-<script type="text/javascript">
+        </div>
+        <div class="panel panel-default" style="margin-top: 50px;">
+            <div class="panel-heading">
+                <h3 class="panel-title"><strong class="icon-reorder"></strong>门店宽带公告列表</h3>
+            </div>
+            <div class="panel-body">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th width="30%" style="text-align: left; padding-left: 20px;">门店名称</th>
+                        <th width="20%" style="text-align: left;">门店编码</th>
+                        <th width="20%" style="text-align: left;">宽带付款方式</th>
+                        <th width="20%" style="text-align: left;">到期时间</th>
+                    </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div id="page"></div>
 
-//搜索
-function changesearch(){	
-		
-}
-
-//单个删除
-function del(id,mid,iscid){
-	if(confirm("您确定要删除吗?")){
-		
-	}
-}
-
-//全选
-$("#checkall").click(function(){ 
-  $("input[name='id[]']").each(function(){
-	  if (this.checked) {
-		  this.checked = false;
-	  }
-	  else {
-		  this.checked = true;
-	  }
-  });
-})
-
-//批量删除
-function DelSelect(){
-	var Checkbox=false;
-	 $("input[name='id[]']").each(function(){
-	  if (this.checked==true) {		
-		Checkbox=true;	
-	  }
-	});
-	if (Checkbox){
-		var t=confirm("您确认要删除选中的内容吗？");
-		if (t==false) return false;		
-		$("#listform").submit();		
-	}
-	else{
-		alert("请选择您要删除的内容!");
-		return false;
-	}
-}
-
-////批量排序
-//function sorts(){
-//	var Checkbox=false;
-//	 $("input[name='id[]']").each(function(){
-//	  if (this.checked==true) {		
-//		Checkbox=true;	
-//	  }
-//	});
-//	if (Checkbox){	
-//		
-//		$("#listform").submit();		
-//	}
-//	else{
-//		alert("请选择要操作的内容!");
-//		return false;
-//	}
-//}
-//
-//
-////批量首页显示
-//function changeishome(o){
-//	var Checkbox=false;
-//	 $("input[name='id[]']").each(function(){
-//	  if (this.checked==true) {		
-//		Checkbox=true;	
-//	  }
-//	});
-//	if (Checkbox){
-//		
-//		$("#listform").submit();	
-//	}
-//	else{
-//		alert("请选择要操作的内容!");		
-//	
-//		return false;
-//	}
-//}
-//
-////批量推荐
-//function changeisvouch(o){
-//	var Checkbox=false;
-//	 $("input[name='id[]']").each(function(){
-//	  if (this.checked==true) {		
-//		Checkbox=true;	
-//	  }
-//	});
-//	if (Checkbox){
-//		
-//		
-//		$("#listform").submit();	
-//	}
-//	else{
-//		alert("请选择要操作的内容!");	
-//		
-//		return false;
-//	}
-//}
-//
-////批量置顶
-//function changeistop(o){
-//	var Checkbox=false;
-//	 $("input[name='id[]']").each(function(){
-//	  if (this.checked==true) {		
-//		Checkbox=true;	
-//	  }
-//	});
-//	if (Checkbox){		
-//		
-//		$("#listform").submit();	
-//	}
-//	else{
-//		alert("请选择要操作的内容!");		
-//	
-//		return false;
-//	}
-//}
-//
-//
-////批量移动
-//function changecate(o){
-//	var Checkbox=false;
-//	 $("input[name='id[]']").each(function(){
-//	  if (this.checked==true) {		
-//		Checkbox=true;	
-//	  }
-//	});
-//	if (Checkbox){		
-//		
-//		$("#listform").submit();		
-//	}
-//	else{
-//		alert("请选择要操作的内容!");
-//		
-//		return false;
-//	}
-//}
-//
-////批量复制
-//function changecopy(o){
-//	var Checkbox=false;
-//	 $("input[name='id[]']").each(function(){
-//	  if (this.checked==true) {		
-//		Checkbox=true;	
-//	  }
-//	});
-//	if (Checkbox){	
-//		var i = 0;
-//	    $("input[name='id[]']").each(function(){
-//	  		if (this.checked==true) {
-//				i++;
-//			}		
-//	    });
-//		if(i>1){ 
-//	    	alert("只能选择一条信息!");
-//			$(o).find("option:first").prop("selected","selected");
-//		}else{
-//		
-//			$("#listform").submit();		
-//		}	
-//	}
-//	else{
-//		alert("请选择要复制的内容!");
-//		$(o).find("option:first").prop("selected","selected");
-//		return false;
-//	}
-//}
-
-</script>
-
-</body></html>
+</body>
+</html>

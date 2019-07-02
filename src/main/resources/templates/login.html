@@ -5,42 +5,44 @@
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>IT设备管理系统</title>
-    <link rel="stylesheet" type="text/css" href="/style/base.css">
-    <link th:href="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css}" rel="stylesheet"/>
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>IT设备管理系统登录页面</title>
+    <link href="/loginstyle/login.css" rel="stylesheet" type="text/css">
+    <script th:src="@{https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js}"></script>
+    <script>
+        //解决浏览器中自动填充的用户名以及密码
+        //input type='password'且前面有个属性是input type='text'这样浏览器将会自动填充
+        //解决方法是：将页面中input type='password'的属性设置为text。然后在页面聚焦的时候，改变属性为password
+        $(function(){
+            $("[flag='password']").focus(function(){
+                $(this).attr("type","password");
+            });
+        })
+    </script>
 </head>
+
 <body>
-<div class="header Cgreen">
-    <div class="wrapper clearfix">
-        <h1 style="color: dimgray">IT设备管理系统</h1>
-    </div>
-</div>
-<div class="content" style="height: 549px;">
-    <div class="wrapper">
-        <img class="bg1" src="/style/bg1.png">
-        <div class="loginBox">
-            <div class="logo"></div>
-            <div class="formDiv">
-                <form method="post" th:action="@{/login}">
-                    <div>
-                        <input type="text" name="username" class="form-control" placeholder="请输入用户名">
-                    </div>
-                    <div>
-                        <input type="password"  class="form-control" name="password" placeholder="请输入密码">
-                    </div>
-                    <div>
-                        <input type="submit" class="form-control" value="登录">
-                    </div>
-                </form>
+    <div class="login_box">
+        <div class="login_l_img">
+            <img src="./loginstyle/login-img.png">
+        </div>
+        <div class="login">
+            <div class="login_logo">
+                <a href="">
+                    <img src="/loginstyle/login_logo.png">
+                </a>
             </div>
+            <div class="login_name">
+                <p>IT设备管理系统</p>
+            </div>
+            <form method="post" th:action="@{/login}">
+                <input name="username" type="text" th:autocomplete="off" placeholder="请输入用户名">
+                <input name="password" flag="password" type="text"  th:autocomplete="new-password" id="password" placeholder="请输入密码">
+                <input value="登录" style="width:100%;" type="submit">
+            </form>
         </div>
     </div>
-</div>
-<div class="footer">
-    <div class="wrapper">
-        <span>呷哺呷哺餐饮管理有限公司</span>
-    </div>
-</div>
 </body>
 </html>

@@ -368,7 +368,7 @@
         <div id="itemShow"></div>
         <!--设置宽带的信息-->
         <div class="modal fade" id="widthModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-            <form method="post" th:action="@{/store/width}">
+            <form method="post" th:action="@{/store/width}" th:autocomplete="off">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -403,7 +403,7 @@
         </div>
         <!--向门店添加设备信息-->
         <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-            <form method="post" th:action="@{/store/additem}">
+            <form method="post" th:action="@{/store/additem}" th:autocomplete="off">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">

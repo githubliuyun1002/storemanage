@@ -2,7 +2,7 @@ package com.xiabuxiabu.storemanage.service.equip;
 
 import com.xiabuxiabu.storemanage.entity.equip.Classification;
 import com.xiabuxiabu.storemanage.entity.equip.EquipName;
-import com.xiabuxiabu.storemanage.entity.result.ResultByClassAndEquipName;
+import com.xiabuxiabu.storemanage.entity.publicutil.ResultByClassAndEquipName;
 import com.xiabuxiabu.storemanage.repository.equip.ClassificationRepository;
 
 

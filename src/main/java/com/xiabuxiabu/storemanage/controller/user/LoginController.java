@@ -26,6 +26,10 @@ public class LoginController {
         return "/home";
     }
 
+    /**
+     * 展示宽带到期情况列表
+     * @return
+     */
     @RequestMapping("/info")
     public String info(){
         return "/common/info";

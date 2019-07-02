@@ -565,7 +565,7 @@
        <div id="page"></div>
 
        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-           <form th:action="@{/person/updateSave}" method="post" id="formData">
+           <form th:action="@{/person/updateSave}" th:autocomplete="off" method="post" id="formData">
                <div class="modal-dialog">
                    <div class="modal-content">
                        <div class="modal-header">

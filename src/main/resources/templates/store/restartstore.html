@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link th:href="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css}" rel="stylesheet"/>
+    <script th:src="@{https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js}"></script>
+    <script th:src="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+    <title>门店重新开业</title>
+    <style>
+        #page {
+            margin-top: 10px;
+        }
+        #page .curr-page {
+            background-color: #337AB7;
+            color: white;
+        }
+
+        #page .page-btn:hover, #page .prev:hover, #page .next:hover {
+            background-color: #337AB7;
+            color: white;
+        }
+    </style>
+    <script>
+        var page = {
+            currPage: 1,
+            totalPage: 0,
+            pageLength: 4,
+            startPage: 1,
+            endPage: 4,
+            pageSize: 5
+        };
+        //加载页面数据List
+        $(function () {
+            $.ajax({
+                url:"/store/reStartList",
+                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": ""},
+                type:"GET",
+                dataType:"JSON",
+                success:function (data) {
+                    page.totalPage = data.totalPages;
+
+                    if (data.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, data.totalPages);
+                    }
+                    pageIteration(page.currPage);
+                    isDisabled(page.currPage, data.totalPages);
+                    for (var i = 0; i <data.content.length ; i++) {
+                        $("tbody").append('<tr>' +
+                              '<td><input type="checkbox"><input type="hidden" name="storeId" id="storeId" value="'+data.content[i].storeId+'"></td>' +
+                              '<td>'+data.content[i].storeName+'</td>' +
+                              '<td>'+data.content[i].storeCode+'</td>' +
+                              '<td>'+data.content[i].marketCode.name+'</td>' +
+                              '<td><button class="btn btn-default">' +
+                              '<span class="glyphicon glyphicon-search" aria-hidden="true"></span>查看</button></td>' +
+                            '</tr>');
+                    }
+                },
+                error:function () {
+                    alert("重新加载页面失败");
+                }
+            })
+        });
+        //对搜索按钮添加事件
+        $(document).on("click","#searchButton",function (){
+            page.currPage=1;
+            page.startPage=1;
+            page.endPage=4;
+            var searchName = $('#search').val();
+            $("tbody").html("");
+            $.ajax({
+                url:"/store/reStartList",
+                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": ""},
+                type:"GET",
+                dataType:"JSON",
+                success:function (data) {
+                    if (data.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, data.totalPages);
+                    }
+                    pageIteration(page.currPage);
+                    isDisabled(page.currPage, data.totalPages);
+                    for (var i = 0; i <data.content.length; i++) {
+                        $("tbody").append('<tr>' +
+                            '<td><input type="checkbox"><input type="hidden" name="storeId" id="storeId" value="'+data.content[i].storeId+'"></td>' +
+                            '<td>'+data.content[i].storeName+'</td>' +
+                            '<td>'+data.content[i].storeCode+'</td>' +
+                            '<td>'+data.content[i].marketCode.name+'</td>' +
+                            '<td><button class="btn btn-default">' +
+                            '<span class="glyphicon glyphicon-search" aria-hidden="true"></span>查看</button></td>' +
+                            '</tr>');
+                    }
+                }
+            })
+        });
+        //对上一页的按钮添加事件
+        $(document).on("click", "#page .prev", function (){
+            searchName = $('#search').val();
+            page.currPage = parseInt(page.currPage) - 1;
+            curr_page = page.currPage;
+            $("tbody").html("");
+            pageIteration(page.currPage);
+            isDisabled(page.currPage, page.totalPage);
+            $.ajax({
+                url:"/store/reStartList",
+                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": ""},
+                type:"GET",
+                dataType:"JSON",
+                success:function (data) {
+                    if (data.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, data.totalPages);
+                    }
+                    pageIteration(page.currPage);
+                    isDisabled(page.currPage, data.totalPages);
+                    for (var i = 0; i <data.content.length ; i++) {
+                        $("tbody").append('<tr>' +
+                            '<td><input type="checkbox"><input type="hidden" name="storeId" id="storeId" value="'+data.content[i].storeId+'"></td>' +
+                            '<td>'+data.content[i].storeName+'</td>' +
+                            '<td>'+data.content[i].storeCode+'</td>' +
+                            '<td>'+data.content[i].marketCode.name+'</td>' +
+                            '<td><button class="btn btn-default">' +
+                            '<span class="glyphicon glyphicon-search" aria-hidden="true"></span>查看</button></td>' +
+                            '</tr>');
+                    }
+                }
+            })
+        });
+        //对页码添加事件
+        $(document).on("click", ".page-btn", function (){
+            searchName = $('#search').val();
+            $this = $(this);
+            $("tbody").html("");
+            page.currPage = parseInt($this.text());
+            curr_page = page.currPage;
+            pageIteration(page.currPage);
+            isDisabled(page.currPage, page.totalPage);
+            $.ajax({
+                url:"/store/reStartList",
+                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": ""},
+                type:"GET",
+                dataType:"JSON",
+                success:function (data) {
+                    if (data.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, data.totalPages);
+                    }
+                    pageIteration(page.currPage);
+                    isDisabled(page.currPage, data.totalPages);
+                    for (var i = 0; i <data.content.length ; i++) {
+                        $("tbody").append('<tr>' +
+                            '<td><input type="checkbox"><input type="hidden" name="storeId" id="storeId" value="'+data.content[i].storeId+'"></td>' +
+                            '<td>'+data.content[i].storeName+'</td>' +
+                            '<td>'+data.content[i].storeCode+'</td>' +
+                            '<td>'+data.content[i].marketCode.name+'</td>' +
+                            '<td><button class="btn btn-default">' +
+                            '<span class="glyphicon glyphicon-search" aria-hidden="true"></span>查看</button></td>' +
+                            '</tr>');
+                    }
+                }
+            })
+        });
+        //对下一页添加事件
+        $(document).on("click", "#page .next", function (){
+            searchName = $('#search').val();
+            page.currPage = parseInt(page.currPage) + 1;
+            $("tbody").html("");
+            curr_page = page.currPage;
+            pageIteration(page.currPage);
+            isDisabled(page.currPage, page.totalPage);
+            $.ajax({
+                url:"/store/reStartList",
+                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": ""},
+                type:"GET",
+                dataType:"JSON",
+                success:function (data) {
+                    if (data.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, data.totalPages);
+                    }
+                    pageIteration(page.currPage);
+                    isDisabled(page.currPage, data.totalPages);
+                    for (var i = 0; i <data.content.length ; i++) {
+                        $("tbody").append('<tr>' +
+                            '<td><input type="checkbox"><input type="hidden" name="storeId" id="storeId" value="'+data.content[i].storeId+'"></td>' +
+                            '<td>'+data.content[i].storeName+'</td>' +
+                            '<td>'+data.content[i].storeCode+'</td>' +
+                            '<td>'+data.content[i].marketCode.name+'</td>' +
+                            '<td><button class="btn btn-default">' +
+                            '<span class="glyphicon glyphicon-search" aria-hidden="true"></span>查看</button></td>' +
+                            '</tr>');
+                    }
+                }
+            })
+        });
+        //确认重新开业的按钮(页面的所有复选框按钮)
+        function storeRestart() {
+            var checkedLength =  $("input:checkbox:checked");
+            if(checkedLength.length==0){
+                alert("请在页面选择重新开店的门店");
+            }else{
+                var ids="";
+                for (var i = 0; i <checkedLength.length ; i++) {
+                    //门店得id
+                    var subling = $(checkedLength[i]).next().val();
+                    ids+=subling+",";
+                }
+                $.ajax({
+                    url:"/store/toExeStoreStart",
+                    data:{"ids":ids},
+                    dataType:"JSON",
+                    type:"GET",
+                    success:function (data) {
+                        if(data.code=="1"){
+                            window.location.href="/store/reStartPage";
+                        }
+                    },
+                    error:function () {
+                        alert("执行页面的重新开业操作失败");
+                    }
+
+                })
+            }
+        }
+        //添加分页插件，根据总页数来添加按钮
+        function addButtons(startPage, pageLength) {
+            $("#page").html(" ");
+            var _html = "<center><button class='btn btn-default prev' ><<上一页</button> ";
+            for (var i = startPage; i < startPage + pageLength; i++) {
+                _html += "<button class='btn btn-default page-btn' data-pageno=" + i + ">" + i + "</button> ";
+            }
+            _html += " <button class='btn btn-default next'>下一页>></button></center>";
+            $("#page").html(_html);
+        }
+        //分页按钮迭代(最要是对"上一页"和"下一页"是否禁用的判断)
+        function isDisabled(pagenum, totalpage) {
+            if (totalpage == 0 || totalpage == 1) {
+                $("#page .prev").attr("disabled", true);
+                $("#page .next").attr("disabled", true);
+            } else if (pagenum == 1) {
+                $("#page .prev").attr("disabled", true);
+                $("#page .next").removeAttr("disabled");
+            } else if (pagenum == totalpage) {
+                $("#page .next").attr("disabled", true);
+                $("#page .prev").removeAttr("disabled");
+            } else {
+                $("#page .next").removeAttr("disabled");
+                $("#page .prev").removeAttr("disabled");
+            }
+        }
+        //按钮迭代器
+        function pageIteration(currPage) {
+            if (page.currPage != 1 && page.currPage == page.startPage) {
+                page.startPage = page.currPage - page.pageLength / 2;
+                page.endPage = page.currPage + page.pageLength / 2 - 1;
+                addButtons(page.startPage, page.pageLength);
+                $("#page .page-btn").eq(page.pageLength / 2).addClass("curr-page");
+            } else if (page.currPage != page.totalPage && page.currPage == page.endPage) {
+                page.startPage = page.currPage - page.pageLength / 2 + 1;
+                page.endPage = (page.currPage + page.pageLength / 2) >= page.totalPage ? page.totalPage : (page.currPage + page.pageLength / 2);
+                addButtons(page.startPage, page.pageLength / 2 + (page.endPage == page.totalPage ? (page.endPage - page.currPage) : page.pageLength / 2));
+                $("#page .page-btn").eq(page.pageLength / 2 - 1).addClass("curr-page");
+            }
+            $("#page .page-btn").removeClass("curr-page").parent().find("[data-pageno=" + currPage + "]").addClass("curr-page");
+        }
+
+    </script>
+</head>
+<body>
+<div class="container">
+    <div class="col-md-7 col-xs-12">
+        <button type="button" class="btn btn-default" onclick="storeRestart()" id="storeOperation">
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 确认重新开业
+        </button>
+    </div>
+    <div class="col-md-5 col-xs-12" style="float: right">
+        <div class="input-group">
+            <input type="text" id="search" class="form-control" placeholder="输入门店名称/编码/市场/进行搜索">
+            <span class="input-group-btn">
+                 <button class="btn btn-primary" id="searchButton">搜 索</button>
+            </span>
+        </div>
+    </div>
+    <table class="table table-striped">
+        <caption>门店重新开业列表</caption>
+        <thead>
+            <tr>
+                <th>是否重新开业</th>
+                <th>门店名称</th>
+                <th>门店编码</th>
+                <th>所属市场</th>
+                <th>门店操作</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <div id="page"></div>
+
+</div>
+</body>
+</html>

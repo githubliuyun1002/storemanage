@@ -28,7 +28,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
     protected void configure(HttpSecurity http) throws Exception {
         http.headers().frameOptions().disable();
         http.sessionManagement().invalidSessionUrl("/timeout");
-        http.authorizeRequests().antMatchers("/img/**","/style/**").permitAll()
+        http.authorizeRequests().antMatchers("/img/**","/style/**","/loginstyle/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()

@@ -18,4 +18,7 @@ public class MarketService {
     public List<MarketEntity> findAll(){
         return marketRepository.findAll();
     }
+    public MarketEntity findMarketByMarketName(String marketName){
+        return marketRepository.findMarketByMarketName(marketName);
+    }
 }

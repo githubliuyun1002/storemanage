@@ -1,6 +1,6 @@
 package com.xiabuxiabu.storemanage.controller.result;
 
-import com.xiabuxiabu.storemanage.entity.result.ResultByClassAndEquipName;
+import com.xiabuxiabu.storemanage.entity.publicutil.ResultByClassAndEquipName;
 import com.xiabuxiabu.storemanage.service.equip.ClassificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -28,9 +28,9 @@ public class ByClassAndEquipNameController {
      */
     @RequestMapping("/findContionAll")
     public List<ResultByClassAndEquipName> findAll(@RequestParam("page")int page,
-                             @RequestParam("pageSize") int pageSize,
-                             @RequestParam("className") String className,
-                             @RequestParam("equipName") String equipName){
+                                                   @RequestParam("pageSize") int pageSize,
+                                                   @RequestParam("className") String className,
+                                                   @RequestParam("equipName") String equipName){
         List<ResultByClassAndEquipName> list =
                 classificationService.findSearch(page,pageSize,className,equipName);
         String keys="";

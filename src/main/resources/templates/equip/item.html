@@ -395,7 +395,7 @@
       </table>
       <div id="page"></div>
       <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-          <form method="post" th:action="@{/item/save}">
+          <form method="post" th:action="@{/item/save}" th:autocomplete="off">
               <div class="modal-dialog">
                   <div class="modal-content">
                       <div class="modal-header">
@@ -419,7 +419,7 @@
           </form>
       </div>
       <div class="modal fade" id="upmyModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-          <form method="post" th:action="@{/item/updateSave}" id="updateDate">
+          <form method="post" th:action="@{/item/updateSave}" id="updateDate" th:autocomplete="off">
               <div class="modal-dialog">
                   <div class="modal-content">
                       <div class="modal-header">

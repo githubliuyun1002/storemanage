@@ -14,15 +14,15 @@ public class Item {
     private int itemId;
     private String name;
     private String code;
-    private String sign;  //记录是否通过审核。1通过；2不通过
 
-    public String getSign() {
+
+   /* public String getSign() {
         return sign;
     }
 
     public void setSign(String sign) {
         this.sign = sign;
-    }
+    }*/
 
     public int getItemId() {
         return itemId;
