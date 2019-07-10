@@ -25,4 +25,11 @@ public interface UserRepository extends JpaRepository<User,Integer> {
 
     Page<User> findAll(Specification<User> specification, Pageable pageable);
 
+   // @Query("select distinct(marketEntity.name) from User ")
+    @Query("select distinct(marketName) from User ")
+    List<String> marketList();
+    
+    @Query("from User where marketName=:name")
+    List<User> findByMarketName(@Param("name") String name);
+
 }

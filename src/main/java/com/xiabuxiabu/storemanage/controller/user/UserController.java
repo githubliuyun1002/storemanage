@@ -8,6 +8,7 @@ import com.xiabuxiabu.storemanage.entity.user.User;
 import com.xiabuxiabu.storemanage.entity.user.UserType;
 import com.xiabuxiabu.storemanage.service.publicutil.MarketService;
 import com.xiabuxiabu.storemanage.service.publicutil.PublicStatusService;
+import com.xiabuxiabu.storemanage.service.store.StoreBOHService;
 import com.xiabuxiabu.storemanage.service.user.RoleTypeService;
 import com.xiabuxiabu.storemanage.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,14 @@ public class UserController {
     private PublicStatusService publicStatusService;
     @Autowired
     private MarketService marketService;
+    @Autowired
+    private StoreBOHService storeBOHService;
+
+    @RequestMapping("/bandMarketList")
+    @ResponseBody
+    public List<String> bandMarketList(String band) {
+        return storeBOHService.bandMarketList(band);
+    }
     @RequestMapping("/findByUserName")
     @ResponseBody
     public User findByUserName(String userName){

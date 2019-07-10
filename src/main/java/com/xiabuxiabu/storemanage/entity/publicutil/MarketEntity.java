@@ -12,7 +12,8 @@ import java.util.Set;
 @Entity
 public class MarketEntity {
     @Id
-    private int marketCode;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int marketId;
     private String name;
 
     public String getName() {
@@ -23,12 +24,12 @@ public class MarketEntity {
         this.name = name;
     }
 
-    public int getMarketCode() {
-        return marketCode;
+    public int getMarketId() {
+        return marketId;
     }
 
-    public void setMarketCode(int marketCode) {
-        this.marketCode = marketCode;
+    public void setMarketId(int marketId) {
+        this.marketId = marketId;
     }
 
     @Override

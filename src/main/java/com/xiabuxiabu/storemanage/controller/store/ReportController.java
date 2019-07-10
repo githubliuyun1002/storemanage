@@ -30,6 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static java.lang.System.out;
+import static java.lang.System.setOut;
 
 /**
  * 出报表的文件Controller
@@ -69,21 +70,14 @@ public class ReportController {
         //需要生成报表的门店的信息
         List<Store> reportList = storePage.getContent();
         String store="[";
-        out.println("reportSize---->"+reportList.size());
+        System.out.println("reportSize---->"+reportList.size());
         for (int i = 0; i <reportList.size() ; i++) {
             Store storeIndex = reportList.get(i);
             int index = 1;
             store+="{\"storeId\":\""+storeIndex.getStoreId()+"\",\"storeCode\":\""+storeIndex.getStoreCode()+"\",\"storeName\":\""+storeIndex.getStoreName()+"\",\"address\":\""+storeIndex.getAddress()+"\"," +
                     "\"marger\":\""+storeIndex.getMarger()+"\"," +
                     "\"openDate\":\""+storeIndex.getOpenDate()+"\"," +
-                    // "\"closeDate\":\""+$("#closeDate").val()+"\"," +
-                    "\"marketCode\":{\"marketCode\":\""+storeIndex.getMarketCode().getMarketCode()+"\",\"name\":\""+storeIndex.getMarketCode().getName()+"\"}," +
-                    "\"widthBand\":{\"wid\":\""+storeIndex.getWidthBand().getWid()+"\",\"payMoney\":\""+storeIndex.getWidthBand().getPayMoney()+"\",\"endDate\":\""+storeIndex.getWidthBand().getEndDate()+"\"," +
-                    "\"servicePerson\":{\"sid\":"+storeIndex.getWidthBand().getServicePerson().getSid()+",\"serviceName\":\""+storeIndex.getWidthBand().getServicePerson().getServiceName()+"\"}," +
-                    "\"accessMethod\":{\"aid\":"+storeIndex.getWidthBand().getAccessMethod().getAid()+",\"accessName\":\""+storeIndex.getWidthBand().getAccessMethod().getAccessName()+"\"}," +
-                    "\"payMethod\":{\"payid\":"+storeIndex.getWidthBand().getPayMethod().getPayid()+",\"method\":\""+storeIndex.getWidthBand().getPayMethod().getMethod()+"\"}," +
-                    "\"identity\":\""+storeIndex.getWidthBand().getIdentity()+"\",\"password\":\""+storeIndex.getWidthBand().getPassword()+"\",\"tapewidth\":\""+storeIndex.getWidthBand().getTapewidth()+"\"" +
-                    "}," +
+                    "\"marketName\":\""+storeIndex.getMarketName()+"\"," +
                     "\"items\":{" ;
             for (Items items:storeIndex.getItemsSet()) {
                 store += "\""+items.getItem().getName()+"\":"+ items.getNum();
@@ -99,7 +93,6 @@ public class ReportController {
 
         }
         store+="]";
-        // System.out.println("store----->"+store);
         map.put("store",store);
         map.put("page",storePage);
         return  map;

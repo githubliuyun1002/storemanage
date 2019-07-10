@@ -20,10 +20,9 @@ public class Store {
     private String storeCode;           //门店编码
     private String storeName;           //门店名称
     private String address;             //地址
-    @OneToOne
-    @JoinColumn(name = "marketCode")
-    private MarketEntity marketCode;   //所属市场
+    private String marketName;   //所属市场
     private String marger;             //(有些门店没有门店经理，再列表中展示时需要判断)
+    private String band;            //品牌
     //门店状态
     @OneToOne
     @JoinColumn(name = "storeStatus")
@@ -36,14 +35,25 @@ public class Store {
     private Date closeDate;
     //设置闭店标志
     private String closeSign;
-    //带宽信息
-    @OneToOne
-    @JoinColumn(name = "widthband")
-    private WidthBand widthBand;
+    //带宽信息(对应多个宽带信息)
+    @ManyToMany(targetEntity = WidthBand.class,fetch = FetchType.EAGER)
+    @JoinTable(name = "store_widthband",joinColumns = @JoinColumn(name = "store_id"),inverseJoinColumns = @JoinColumn(name = "widthband_id"))
+    private Set<WidthBand> widthBandSet;
+
     //设置门店的设备(items)
     @ManyToMany(targetEntity = Items.class,fetch = FetchType.EAGER)
     @JoinTable(name = "store_items",joinColumns = @JoinColumn(name = "store_id"),inverseJoinColumns = @JoinColumn(name = "items_id"))
     private Set<Items> itemsSet;
+
+
+    public String getBand() {
+        return band;
+    }
+
+    public void setBand(String band) {
+        this.band = band;
+    }
+
     public String getCloseSign() {
         return closeSign;
     }
@@ -52,12 +62,12 @@ public class Store {
         this.closeSign = closeSign;
     }
 
-    public WidthBand getWidthBand() {
-        return widthBand;
+    public Set<WidthBand> getWidthBandSet() {
+        return widthBandSet;
     }
 
-    public void setWidthBand(WidthBand widthBand) {
-        this.widthBand = widthBand;
+    public void setWidthBandSet(Set<WidthBand> widthBandSet) {
+        this.widthBandSet = widthBandSet;
     }
 
     public StoreStatus getStoreStatus() {
@@ -108,12 +118,12 @@ public class Store {
         this.address = address;
     }
 
-    public MarketEntity getMarketCode() {
-        return marketCode;
+    public String getMarketName() {
+        return marketName;
     }
 
-    public void setMarketCode(MarketEntity marketCode) {
-        this.marketCode = marketCode;
+    public void setMarketName(String marketName) {
+        this.marketName = marketName;
     }
 
     public String getMarger() {

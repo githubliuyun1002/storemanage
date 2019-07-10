@@ -12,12 +12,20 @@ public class StoreBOH {
     private String storecode;  //门店编码
     private String storename;  //门店名称
     private String address;     //地址
-    @OneToOne
-    @JoinColumn(name = "marketcode")
-    private MarketEntity marketcode;
+
+    private String marketname;
     private String marger;     //(有些门店没有门店经理，再列表中展示时需要判断)
     @Temporal(TemporalType.DATE)
     private Date opendate;
+    private String band;
+
+    public String getBand() {
+        return band;
+    }
+
+    public void setBand(String band) {
+        this.band = band;
+    }
 
     public String getStorecode() {
         return storecode;
@@ -43,12 +51,12 @@ public class StoreBOH {
         this.address = address;
     }
 
-    public MarketEntity getMarketcode() {
-        return marketcode;
+    public String getMarketname() {
+        return marketname;
     }
 
-    public void setMarketcode(MarketEntity marketcode) {
-        this.marketcode = marketcode;
+    public void setMarketname(String marketname) {
+        this.marketname = marketname;
     }
 
     public String getMarger() {

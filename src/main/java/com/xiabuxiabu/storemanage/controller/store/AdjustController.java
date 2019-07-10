@@ -61,76 +61,62 @@ public class AdjustController {
      * 发现修改开业日期时，存入数据库的日总是少一天，这是因为时区设置的问题UTC。需要更改时区的设置。
      * 应该改为serverTimezone=Asia/Shanghai即可
      * @param store
-     * @param itemsSet
+     * @param
      * @return
      */
     @RequestMapping("/toupdateAdjust")
     @ResponseBody
-    public Map<String,Object> toupdate(String store,String itemsSet){
+    public Map<String,Object> toupdate(String store){
         //转化为json对象
-        Store storeJson =  JSON.parseObject(store,Store.class);
-        Set<Items> items = new HashSet<>(JSONObject.parseArray(itemsSet,Items.class));
-        Store saveStore = storeService.findById(storeJson.getStoreId());
-        //修改门店基本信息
-        saveStore.setStoreCode(storeJson.getStoreCode());
-        saveStore.setStoreName(storeJson.getStoreName());
-        saveStore.setAddress(storeJson.getAddress());
-        saveStore.setMarger(storeJson.getMarger());
-        saveStore.setOpenDate(storeJson.getOpenDate());
-        //闭店日期字段
-        saveStore.setCloseDate(storeJson.getCloseDate());
-        //市场对象的修改（市场id---》市场对象）
-        if(marketService.findMarketByMarketName(storeJson.getMarketCode().getName())!=null){
-            MarketEntity marketEntity = marketService.findMarketByMarketName(storeJson.getMarketCode().getName());
-            saveStore.setMarketCode(marketEntity);
-        }
-        //填充页面宽带的基本信息(数据库中宽带信息)
-        WidthBand widthBandDB =  widthBandService.findById(storeJson.getWidthBand().getWid());
-        WidthBand widthBandJson = storeJson.getWidthBand();
-        widthBandDB.setPayMoney(widthBandJson.getPayMoney());
-        widthBandDB.setIdentity(widthBandJson.getIdentity());
-        widthBandDB.setPassword(widthBandJson.getPassword());
-        widthBandDB.setTapewidth(widthBandJson.getTapewidth());
-        //设置宽带的服务商
-        if(servicePersonService.findByServiceName(widthBandJson.getServicePerson().getServiceName())!=null) {
-            ServicePerson servicePerson = servicePersonService.findByServiceName(widthBandJson.getServicePerson().getServiceName());
-            widthBandDB.setServicePerson(servicePerson);
-        }
-        //修改门店设备基本信息
-        if(saveStore.getItemsSet().size()!=0){
-            for (Items itemsJSON: items) {
-                for (Items itemsDB:saveStore.getItemsSet()) {
+        Store jsonStore  = JSON.parseObject(store,Store.class);
+        System.out.println("门店基本信息---》"+jsonStore);
+
+        Set<Items> itemsSetJSON = jsonStore.getItemsSet();
+        Store storeDB = storeService.findById(jsonStore.getStoreId());
+
+        if(storeDB.getItemsSet().size()!=0&&jsonStore.getItemsSet().size()!=0){
+            for (Items itemsDB:storeDB.getItemsSet()) {
+                for (Items itemsJSON:itemsSetJSON) {
                     if(itemsDB.getId()==itemsJSON.getId()){
-                        Items itemsDemo = itemsService.findById(itemsDB.getId());
-                        //"2"表示需要进行更新
+                        Items itemsDemo = itemsService.findById(itemsJSON.getId());
+                        //表示该设备需要更新
                         if(itemsDemo.getSign().equals("2")){
-                            itemsDemo.setId(itemsJSON.getId());
                             itemsDemo.setClassName(itemsJSON.getClassName());
                             itemsDemo.setEquipName(itemsJSON.getEquipName());
-                            if(itemsDemo.getItem()!=null){
-                                if(itemsDemo.getItem().getItemId()==itemsJSON.getItem().getItemId()){
-                                    Item item = itemService.findById(itemsDemo.getItem().getItemId());
-                                    item.setItemId(itemsJSON.getItem().getItemId());
-                                    item.setName(itemsJSON.getItem().getName());
-                                    itemsDemo.setItem(item);
-                                }
-                            }
-                            //记录原来的设备数量
-                            itemsDemo.setOrigin(itemsDemo.getNum());
+                            itemsDemo.setItem(itemsJSON.getItem());
                             itemsDemo.setNum(itemsJSON.getNum());
-                            itemsDemo.setSign(itemsDemo.getSign());
-                            itemsDemo.setPersonName((String) httpServletRequest.getSession().getAttribute("userName"));
-                            itemsDemo.setUpdateTime(new Date());
                             itemsService.save(itemsDemo);
-                            saveStore.getItemsSet().add(itemsDemo);
                         }
                     }
                 }
             }
+            storeDB.setItemsSet(jsonStore.getItemsSet());
+
         }
+        //添加宽带
+        if(storeDB.getWidthBandSet().size()!=0&&jsonStore.getWidthBandSet().size()!=0){
+            for (WidthBand widthBandJSON:jsonStore.getWidthBandSet()) {
+                for(WidthBand widthBandDB:storeDB.getWidthBandSet()){
+                    if(widthBandJSON.getWid()==widthBandDB.getWid()){
+                        WidthBand widthBandDemo = widthBandService.findById(widthBandDB.getWid());
+                        widthBandDemo.setServicePerson(widthBandJSON.getServicePerson());
+                        widthBandDemo.setAccessMethod(widthBandJSON.getAccessMethod());
+                        widthBandDemo.setPayMethod(widthBandJSON.getPayMethod());
+                        widthBandDemo.setPayMoney(widthBandJSON.getPayMoney());
+                        widthBandDemo.setIdentity(widthBandJSON.getIdentity());
+                        widthBandDemo.setPassword(widthBandJSON.getPassword());
+                        widthBandDemo.setTapewidth(widthBandJSON.getTapewidth());
+                        widthBandDemo.setEndDate(widthBandJSON.getEndDate());
+                        widthBandService.save(widthBandDemo);
+                    }
+                }
+            }
+            storeDB.setWidthBandSet(jsonStore.getWidthBandSet());
+        }
+
         //市场IT调整完后，设置门店的状态为2.待审批状态
-        saveStore.setStoreStatus(storeStatusService.findById(2));
-        storeService.save(saveStore);
+        storeDB.setStoreStatus(storeStatusService.findById(2));
+        storeService.save(storeDB);
         Map<String,Object> map = new HashMap<>();
         map.put("code","1");
         return map;

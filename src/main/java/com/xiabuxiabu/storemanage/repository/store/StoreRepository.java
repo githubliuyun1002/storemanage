@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.parameters.P;
 
 import java.util.List;
 
@@ -17,10 +18,15 @@ public interface StoreRepository extends JpaRepository<Store,Integer>{
     Page<Store> findAll(Specification<Store> specification,Pageable pageable);
     @Query("from Store where storeCode =:code")
     Store findByStoreCode(@Param("code") String code);
-    @Query("from Store where marketCode.name=:marketName")
-    List<Store> findByMarketName(@Param("marketName")String marketName);
+//    @Query("from Store where marketCode.name=:marketName")
+//    List<Store> findByMarketName(@Param("marketName")String marketName);
     @Query("from Store where storeStatus.statusName=:storeStatus")
     List<Store> findByStoreStatus(@Param("storeStatus") String storeStatus);
+
+    @Query("select distinct(marketName) from  Store ")
+    List<String> marketNameList();
+    @Query("from Store where marketName=:marketName")
+    List<Store> findByMarketName(@Param("marketName")String marketName);
 
 
 

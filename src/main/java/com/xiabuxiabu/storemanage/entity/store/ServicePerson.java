@@ -16,7 +16,6 @@ import javax.persistence.Id;
 
 * @UpdateUser:     liuyun
 */
-
 @Entity
 public class ServicePerson {
     @Id
@@ -24,7 +23,6 @@ public class ServicePerson {
     private int sid;
     private String serviceName;
     private String remarks;
-
     public int getSid() {
 
         return sid;

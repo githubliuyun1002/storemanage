@@ -33,6 +33,10 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 @Controller
 @RequestMapping("/store")
 /*@EnableConfigurationProperties(EMailProperties.class)*/
@@ -127,13 +131,27 @@ public class StoreController {
     @RequestMapping("/width")
     public ModelAndView widthSave(int storeId, WidthBand widthBand, ModelAndView modelAndView){
         Store store = storeService.findById(storeId);
-        WidthBand saveWidthBand =  widthBandService.save(widthBand);
-        store.setWidthBand(saveWidthBand);
-        storeService.save(store);
+        //若已经又宽带信息
+        if(store.getWidthBandSet().size()!=0){
+            Set<WidthBand> oldwidthBandSet = store.getWidthBandSet();
+            //“2”标识需要进行修改
+            widthBand.setSign("2");
+            WidthBand saveWidthBand = widthBandService.save(widthBand);
+            oldwidthBandSet.add(saveWidthBand);
+            storeService.save(store);
+        }else{
+            widthBand.setSign("2");
+            //hibernate中的持久化对象，瞬时对象，脱管对象的区别。
+            WidthBand saveWidthBand = widthBandService.save(widthBand);
+            Set<WidthBand> widthBandSet = new HashSet<>();
+            widthBandSet.add(saveWidthBand);
+            store.setWidthBandSet(widthBandSet);
+            storeService.save(store);
+        }
         modelAndView.setViewName("/store/content");
         modelAndView.addObject("storeId",storeId);
         return modelAndView;
-        //hibernate中的持久化对象，瞬时对象，脱管对象的区别。
+
     }
     /**
      * 向门店中添加设备 items
@@ -141,13 +159,13 @@ public class StoreController {
      * @param storeId
      * @param items
      * @return
+     * 添加设备后，等在页面确认按钮后，改变门店的状体为待审批状态。
+     *
      */
     @RequestMapping("/additem")
-    public ModelAndView addItem(ModelAndView modelAndView, int storeId,int storeStatus,Items items){
+    public ModelAndView addItem(ModelAndView modelAndView, int storeId,Items items){
         Store store  =  storeService.findById(storeId);
-        MailList mailList = mailListSerivice.findByStoreCode(store.getStoreCode());
-        StoreStatus storeStatusEntity =  storeStatusService.findById(storeStatus);
-        store.setStoreStatus(storeStatusEntity);   //设置门店状态为待审核
+
         //设置门店的展示样式，再根据门店的基本信息进行填充
         if(store.getItemsSet().size()!=0){
             Set<Items> oldItmsSet = store.getItemsSet();
@@ -168,12 +186,6 @@ public class StoreController {
         }
         modelAndView.setViewName("/store/content");
         modelAndView.addObject("storeId",storeId);
-
-        //只要添加设备默认状态为2，需要管理人审批
-        mailList.setMailStatus(2);
-        mailList.setStoreStatus("待审批");
-        mailListSerivice.save(mailList);
-
         return modelAndView;
     }
     /**
@@ -181,6 +193,7 @@ public class StoreController {
      */
     @RequestMapping("/saveStore")
     public String saveStore(Store store){
+        System.out.println("store------>"+store);
         //需要给一个默认的餐厅的状态(待选择)
         StoreStatus storeStatus = storeStatusService.findById(1);
         store.setStoreStatus(storeStatus);
@@ -189,7 +202,10 @@ public class StoreController {
         mailList.setStoreCode(store.getStoreCode());
         mailList.setStoreName(store.getStoreName());
         mailList.setStoreStatus("待选择");
-        mailList.setMailStatus(1);
+        //未发邮件此时的状态为0-----》发送成功后此时的状态为1
+        mailList.setMailStatus(0);
+        mailList.setMarketName(store.getMarketName());
+
         mailListSerivice.save(mailList);
 
         return "redirect:/store/home";
@@ -230,7 +246,7 @@ public class StoreController {
     }
 
     /**
-     * 修改页面回显
+     * 门店信息确认展示列表：storeupdate
      * @param id
      * @param modelAndView
      * @return
@@ -241,64 +257,66 @@ public class StoreController {
         modelAndView.addObject("storeId",id);
         return modelAndView;
     }
+
+    /**
+     * 门店信息确认展示列表
+     * @param store
+     * @return
+     */
     @RequestMapping("/toupdate")
     @ResponseBody
-    public Map<String,Object> toupdate(String store,String itemsSet){
+    public Map<String,Object> toupdate(String store){
         //转换为json对象
         Store jsonStore  = JSON.parseObject(store,Store.class);
-        //MaliList对象
-        MailList mailList = mailListSerivice.findByStoreCode(jsonStore.getStoreCode());
-
-        //对set中的数据更新
-        Set<Items> items = new HashSet<>(JSONObject.parseArray(itemsSet,Items.class));
-        Store saveStore = storeService.findById(jsonStore.getStoreId());
-        if(saveStore.getItemsSet().size()!=0){
-            for (Items itemsJSON: items) {
-                for (Items itemsDB:saveStore.getItemsSet()) {
+        String userName = (String) httpServletRequest.getSession().getAttribute("userName");
+        Set<Items> itemsSetJSON = jsonStore.getItemsSet();
+        Store storeDB = storeService.findById(jsonStore.getStoreId());
+        if(storeDB.getItemsSet().size()!=0){
+            for (Items itemsDB:storeDB.getItemsSet()) {
+                for (Items itemsJSON:itemsSetJSON) {
                     if(itemsDB.getId()==itemsJSON.getId()){
-                        Items itemsDemo = itemsService.findById(itemsDB.getId());
-                        itemsDemo.setId(itemsJSON.getId());
+                        Items itemsDemo = itemsService.findById(itemsJSON.getId());
                         itemsDemo.setClassName(itemsJSON.getClassName());
                         itemsDemo.setEquipName(itemsJSON.getEquipName());
-                        if(itemsDemo.getItem()!=null){
-                            if(itemsDemo.getItem().getItemId()==itemsJSON.getItem().getItemId()){
-                                Item item = itemService.findById(itemsDemo.getItem().getItemId());
-                                item.setItemId(itemsJSON.getItem().getItemId());
-                                item.setName(itemsJSON.getItem().getName());
-                                //item.setSign(itemsJSON.getItem().getSign());
-                                itemService.save(item);
-                                itemsDemo.setItem(item);
-                            }
-                        }
-                        //管理员进行设置标记sign
-                        itemsDemo.setSign(itemsJSON.getSign());
+                        itemsDemo.setItem(itemsJSON.getItem());
                         itemsDemo.setNum(itemsJSON.getNum());
+                        itemsDemo.setSign(itemsJSON.getSign());
+                        itemsDemo.setCheckPerson(userName);
                         itemsService.save(itemsDemo);
-                        saveStore.getItemsSet().add(itemsDemo);
                     }
                 }
             }
         }
         List<String> signList = new ArrayList<>();
-        for (Items setItems:items) {
+        for (Items setItems:itemsSetJSON) {
             signList.add(setItems.getSign()); //设备是否需要更改的标识
         }
         //包含2说明需要市场IT调整
         if(signList.contains("2")){
-            saveStore.setStoreStatus(storeStatusService.findById(3));  //状态为待调整
+            storeDB.setStoreStatus(storeStatusService.findById(3));  //状态待调整
+            MailList mailList = new MailList();
+            mailList.setMarketName(storeDB.getMarketName());
+            mailList.setStoreCode(storeDB.getStoreCode());
+            mailList.setStoreName(storeDB.getStoreName());
             mailList.setMailStatus(3);
             mailList.setStoreStatus("待调整");
+            mailListSerivice.save(mailList);
 
         }else{
-            saveStore.setStoreStatus(storeStatusService.findById(4));  //状态为已确认
+            storeDB.setStoreStatus(storeStatusService.findById(4));  //状态为已确认
+            MailList mailList = new MailList();
+            mailList.setMarketName(storeDB.getMarketName());
+            mailList.setStoreCode(storeDB.getStoreCode());
+            mailList.setStoreName(storeDB.getStoreName());
             mailList.setMailStatus(4);
             mailList.setStoreStatus("已确认");
+            mailListSerivice.save(mailList);
         }
-        storeService.save(saveStore);
+        storeDB.setItemsSet(jsonStore.getItemsSet());
+        storeService.save(storeDB);
         //调整设备时或者已经确认设备时，均需要改变设备的状态
-        mailListSerivice.save(mailList);
-        Map<String,Object> map = new HashMap<String,Object>();
 
+        Map<String,Object> map = new HashMap<String,Object>();
         map.put("code","1");
         return map;
     }
@@ -340,87 +358,88 @@ public class StoreController {
         String userName = (String) httpServletRequest.getSession().getAttribute("userName");
         //拿到当前登录人(user)
         User user = userService.findByUserName(userName);
-        for (int i = 0; i <storeList.size() ; i++) {
-             Store store = storeList.get(i);
-             Date widthEndDate = store.getWidthBand().getEndDate();
-             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-             StringBuffer content = new StringBuffer();
-            try {
-                Date nowDate = simpleDateFormat.parse(simpleDateFormat.format(new Date()));
-                int lastDays = dateTool.differentDaysByMillisecond(widthEndDate,nowDate);
-                // System.out.println("时间----》"+lastDays);
-                content.append("<html><head></head>");
-                content.append("<body><div><h2>宽带到期通知</h2>" +
-                        "亲爱的用户:您好!门店："+store.getStoreName()+"("+store.getStoreCode()+")的宽带还有"+lastDays+"天即将到期。请您及时进行处理，" +
-                        "如已处理，请忽略。谢谢！</div>");
-                content.append("<div><span style ='float: right;'>总部资讯</span></div>");
-                content.append("</body></html>");
-                //根据时间差，来发送邮件;宽带付款方式为年付
-                //当时间为一个月前，一天通知一次
-                //先暂停发送邮件的操作
-                /*if(lastDays>30){
-                    Runnable runnable = new Runnable() {
-                        @Override
-                        public void run() {
-                            String [] sendAll = {user.getMail()};
-                            try {
-                                eMailTask.sendHtmlMail(eMailProperties.getNickname(),sendAll,eMailProperties.getSubject(),content.toString(),eMailProperties.getHost(),eMailProperties.getUsername(),eMailProperties.getPassword());
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    };
-                    ScheduledExecutorService service = Executors
-                            .newSingleThreadScheduledExecutor();
-                    // 第二个参数为首次执行的延时时间，第三个参数为定时执行的间隔时间
-                    service.scheduleAtFixedRate(runnable, 0, 1, TimeUnit.DAYS);
-                }else if(lastDays>15&&lastDays<=30){
-                    //时间段为15-30天时，一天通知两次
-                    Runnable runnable = new Runnable() {
-                        @Override
-                        public void run() {
-                            String [] sendAll = {user.getMail()};
-                            try {
-                                eMailTask.sendHtmlMail(eMailProperties.getNickname(),sendAll,eMailProperties.getSubject(),content.toString(),eMailProperties.getHost(),eMailProperties.getUsername(),eMailProperties.getPassword());
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    };
-                    ScheduledExecutorService service = Executors
-                            .newSingleThreadScheduledExecutor();
-                    // 第二个参数为首次执行的延时时间，第三个参数为定时执行的间隔时间
-                    service.scheduleAtFixedRate(runnable, 0, 12, TimeUnit.HOURS);
-                }else if (lastDays>0&&lastDays<=15){
-                    //0-15天时，一天通知三次
-                    Runnable runnable = new Runnable() {
-                        @Override
-                        public void run() {
-                            String [] sendAll = {user.getMail()};
-                            try {
-                                eMailTask.sendHtmlMail(eMailProperties.getNickname(),sendAll,eMailProperties.getSubject(),content.toString(),eMailProperties.getHost(),eMailProperties.getUsername(),eMailProperties.getPassword());
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    };
-                    ScheduledExecutorService service = Executors
-                            .newSingleThreadScheduledExecutor();
-                    // 第二个参数为首次执行的延时时间，第三个参数为定时执行的间隔时间
-                    service.scheduleAtFixedRate(runnable, 0, 8, TimeUnit.HOURS);
-                }else if(lastDays==0){
-                    long yearAfter = (widthEndDate.getTime()/1000)+60*60*24*365;
-                    widthEndDate.setTime(yearAfter*1000);
-                    String yearAfterStr = simpleDateFormat.format(widthEndDate);
-                    Date parse = simpleDateFormat.parse(yearAfterStr);
-                    System.out.println("一年以后的日期----》"+parse);
-                    store.getWidthBand().setEndDate(parse);
-                    storeService.save(store);
-                }*/
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-        }
+//        for (int i = 0; i <storeList.size() ; i++) {
+//             Store store = storeList.get(i);
+//
+//             Date widthEndDate = store.getWidthBand().getEndDate();
+//             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+//             StringBuffer content = new StringBuffer();
+//            try {
+//                Date nowDate = simpleDateFormat.parse(simpleDateFormat.format(new Date()));
+//                int lastDays = dateTool.differentDaysByMillisecond(widthEndDate,nowDate);
+//                // System.out.println("时间----》"+lastDays);
+//                content.append("<html><head></head>");
+//                content.append("<body><div><h2>宽带到期通知</h2>" +
+//                        "亲爱的用户:您好!门店："+store.getStoreName()+"("+store.getStoreCode()+")的宽带还有"+lastDays+"天即将到期。请您及时进行处理，" +
+//                        "如已处理，请忽略。谢谢！</div>");
+//                content.append("<div><span style ='float: right;'>总部资讯</span></div>");
+//                content.append("</body></html>");
+//                //根据时间差，来发送邮件;宽带付款方式为年付
+//                //当时间为一个月前，一天通知一次
+//                //先暂停发送邮件的操作
+//                if(lastDays>30){
+//                    Runnable runnable = new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            String [] sendAll = {user.getMail()};
+//                            try {
+//                                eMailTask.sendHtmlMail(eMailProperties.getNickname(),sendAll,eMailProperties.getSubject(),content.toString(),eMailProperties.getHost(),eMailProperties.getUsername(),eMailProperties.getPassword());
+//                            } catch (Exception e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    };
+//                    ScheduledExecutorService service = Executors
+//                            .newSingleThreadScheduledExecutor();
+//                    // 第二个参数为首次执行的延时时间，第三个参数为定时执行的间隔时间
+//                    service.scheduleAtFixedRate(runnable, 0, 1, TimeUnit.DAYS);
+//                }else if(lastDays>15&&lastDays<=30){
+//                    //时间段为15-30天时，一天通知两次
+//                    Runnable runnable = new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            String [] sendAll = {user.getMail()};
+//                            try {
+//                                eMailTask.sendHtmlMail(eMailProperties.getNickname(),sendAll,eMailProperties.getSubject(),content.toString(),eMailProperties.getHost(),eMailProperties.getUsername(),eMailProperties.getPassword());
+//                            } catch (Exception e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    };
+//                    ScheduledExecutorService service = Executors
+//                            .newSingleThreadScheduledExecutor();
+//                    // 第二个参数为首次执行的延时时间，第三个参数为定时执行的间隔时间
+//                    service.scheduleAtFixedRate(runnable, 0, 12, TimeUnit.HOURS);
+//                }else if (lastDays>0&&lastDays<=15){
+//                    //0-15天时，一天通知三次
+//                    Runnable runnable = new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            String [] sendAll = {user.getMail()};
+//                            try {
+//                                eMailTask.sendHtmlMail(eMailProperties.getNickname(),sendAll,eMailProperties.getSubject(),content.toString(),eMailProperties.getHost(),eMailProperties.getUsername(),eMailProperties.getPassword());
+//                            } catch (Exception e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    };
+//                    ScheduledExecutorService service = Executors
+//                            .newSingleThreadScheduledExecutor();
+//                    // 第二个参数为首次执行的延时时间，第三个参数为定时执行的间隔时间
+//                    service.scheduleAtFixedRate(runnable, 0, 8, TimeUnit.HOURS);
+//                }else if(lastDays==0){
+//                    long yearAfter = (widthEndDate.getTime()/1000)+60*60*24*365;
+//                    widthEndDate.setTime(yearAfter*1000);
+//                    String yearAfterStr = simpleDateFormat.format(widthEndDate);
+//                    Date parse = simpleDateFormat.parse(yearAfterStr);
+//                    System.out.println("一年以后的日期----》"+parse);
+//                    store.getWidthBand().setEndDate(parse);
+//                    storeService.save(store);
+//                }
+//            } catch (ParseException e) {
+//                e.printStackTrace();
+//            }
+//        }
         return storePage;
     }
     @RequestMapping("/storeClose")
@@ -477,7 +496,7 @@ public class StoreController {
         storeDB.setStoreCode(store.getStoreCode());
         storeDB.setStoreName(store.getStoreName());
         storeDB.setAddress(store.getAddress());
-        storeDB.setMarketCode(store.getMarketCode());
+        storeDB.setMarketName(store.getMarketName());
         storeDB.setMarger(store.getMarger());
         storeDB.setOpenDate(store.getOpenDate());
         storeService.save(storeDB);
@@ -514,29 +533,17 @@ public class StoreController {
                     itemsDB.setNum(0);
                     //记录操作人(且操作人，可以进行查询)
                     itemsDB.setPersonName((String) httpServletRequest.getSession().getAttribute("userName"));
-                    //记录操作的事件
+                    //记录操作的时间
                     itemsDB.setUpdateTime(new Date());
                     itemsService.save(itemsDB);
                 }
             }
-
             storeService.save(store);
         }
         map.put("code","1");
         return map;
     }
 
-    /**
-     * 重新开店按钮的时间
-     * @return
-     */
-    @RequestMapping("/restart")
-    @ResponseBody
-    public Map<String,Object> restart(){
-        Map<String,Object> map = new HashMap<>();
-        map.put("code","1");
-        return map;
-    }
 
     /**
      * 门店重新开业页面
@@ -560,7 +567,7 @@ public class StoreController {
         return storeService.storeRestartList(page,pageSize,searchName);
     }
     /**
-     * 执行重新开店的按钮，在数据库中进行执行
+     * 执行重新开店的按钮，在数据库中进行执行(执行重新开店操作)
      */
     @RequestMapping("/toExeStoreStart")
     @ResponseBody
@@ -571,14 +578,13 @@ public class StoreController {
         for (int i = 0; i <splitid.length ; i++) {
             int storeId = Integer.valueOf(splitid[i]);
             Store store =  storeService.findById(storeId);
-            //对于重新开业的门店，是否要重写开业日期？
             //闭店标记表示设置为null，闭店时间设置为null
             store.setCloseSign(null);
             store.setCloseDate(null);
             //门店的设备Items为null
             store.setItemsSet(null);
             //设置门店的宽带为null
-            store.setWidthBand(null);
+            store.setWidthBandSet(null);
             //门店此时的状态为待选择状态
             StoreStatus storeStatus = storeStatusService.findById(1);
             store.setStoreStatus(storeStatus);
@@ -587,6 +593,7 @@ public class StoreController {
         map.put("code","1");
         return  map;
     }
+
     /**
      * 查看设备的按钮事件
      */
@@ -650,6 +657,74 @@ public class StoreController {
         modelAndView.setViewName("/store/storeInfor");
         modelAndView.addObject("storeId",storeId);
         return modelAndView;
+    }
+
+    /**
+     * 点击确认按钮，对门店的设备进行确认之后，此时的状态改为待审批状态
+     * @param store
+     * @return
+     */
+    @RequestMapping("/checkStore")
+    @ResponseBody
+    public Map<String,Object> checkStore(String store){
+        Map<String,Object> map = new HashMap<>();
+        //此时门店信息修改的主要是门店的宽带信息以及设备信息
+        Store storeJSON = JSON.parseObject(store,Store.class);
+        Store storeDB = storeService.findById(storeJSON.getStoreId());
+        //添加宽带
+        if(storeDB.getWidthBandSet().size()!=0){
+            for (WidthBand widthBandJSON:storeJSON.getWidthBandSet()) {
+               for(WidthBand widthBandDB:storeDB.getWidthBandSet()){
+                   if(widthBandJSON.getWid()==widthBandDB.getWid()){
+                       WidthBand widthBandDemo = widthBandService.findById(widthBandDB.getWid());
+                       widthBandDemo.setServicePerson(widthBandJSON.getServicePerson());
+                       widthBandDemo.setAccessMethod(widthBandJSON.getAccessMethod());
+                       widthBandDemo.setPayMethod(widthBandJSON.getPayMethod());
+                       widthBandDemo.setPayMoney(widthBandJSON.getPayMoney());
+                       widthBandDemo.setIdentity(widthBandJSON.getIdentity());
+                       widthBandDemo.setPassword(widthBandJSON.getPassword());
+                       widthBandDemo.setTapewidth(widthBandJSON.getTapewidth());
+                       widthBandDemo.setEndDate(widthBandJSON.getEndDate());
+                       widthBandService.save(widthBandDemo);
+                   }
+               }
+            }
+            storeDB.setWidthBandSet(storeJSON.getWidthBandSet());
+        }
+        //添加门店的设备信息
+        if(storeDB.getItemsSet().size()!=0){
+            for(Items itemsJSON:storeJSON.getItemsSet()){
+                for(Items itemsDB:storeDB.getItemsSet()){
+                    if(itemsJSON.getId()==itemsDB.getId()){
+                         Items itemsDemo = itemsService.findById(itemsDB.getId());
+                         itemsDemo.setClassName(itemsJSON.getClassName());
+                         itemsDemo.setEquipName(itemsJSON.getEquipName());
+                         itemsDemo.setNum(itemsJSON.getNum());
+                         itemsDemo.setItem(itemsJSON.getItem());
+                         //待审核
+                         itemsDemo.setSign("2");
+                         itemsService.save(itemsDemo);
+
+                    }
+                }
+            }
+            storeDB.setItemsSet(storeJSON.getItemsSet());
+        }
+        storeDB.setStoreStatus(storeStatusService.findById(2));
+
+        storeService.save(storeDB);
+        map.put("code","1");
+
+        //只要添加设备默认状态为2，需要管理人审批(不覆盖原来的记录)
+        MailList mailList = new MailList();
+        mailList.setMailStatus(2);
+        mailList.setStoreStatus("待审批");
+        mailList.setMarketName(storeDB.getMarketName());
+        mailList.setStoreCode(storeDB.getStoreCode());
+        mailList.setStoreName(storeDB.getStoreName());
+        mailListSerivice.save(mailList);
+
+        return  map;
     }
 
 

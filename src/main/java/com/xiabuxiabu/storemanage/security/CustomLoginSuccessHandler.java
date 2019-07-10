@@ -30,6 +30,7 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
         HttpSession  session = httpServletRequest.getSession();
         session.setAttribute("userName",user.getUsername());
         session.setAttribute("userType",user.getUserType().getName());
+        session.setAttribute("name",user.getUsername());
         httpServletResponse.sendRedirect("/home");
     }
 }

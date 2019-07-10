@@ -28,8 +28,21 @@ public class WidthBand {
     private String password;   //密码
     private String tapewidth;  //带宽
 
+    //记录该门店的宽带是否通过审核的标记
+    private String sign;
+
     @Temporal(TemporalType.DATE)
     private Date endDate;   //到期日期
+
+
+
+    public String getSign() {
+        return sign;
+    }
+
+    public void setSign(String sign) {
+        this.sign = sign;
+    }
 
     public Double getPayMoney() {
         return payMoney;

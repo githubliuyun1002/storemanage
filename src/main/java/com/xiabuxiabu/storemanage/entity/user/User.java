@@ -28,9 +28,18 @@ public class User {
     @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private Set<Role> roles;
     //人员所属的市场,根据人员所属的市场进行统计各个门店的信息
-    @OneToOne
-    @JoinColumn(name = "market")
-    private MarketEntity marketEntity;
+
+    private String marketName;  //市场名称
+    private String band;        //品牌
+
+
+    public String getBand() {
+        return band;
+    }
+
+    public void setBand(String band) {
+        this.band = band;
+    }
 
     public UserType getUserType() {
         return userType;
@@ -40,12 +49,12 @@ public class User {
         this.userType = userType;
     }
 
-    public MarketEntity getMarketEntity() {
-        return marketEntity;
+    public String getMarketName() {
+        return marketName;
     }
 
-    public void setMarketEntity(MarketEntity marketEntity) {
-        this.marketEntity = marketEntity;
+    public void setMarketName(String marketName) {
+        this.marketName = marketName;
     }
 
     public int getId() {

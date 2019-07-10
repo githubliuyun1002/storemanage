@@ -35,6 +35,7 @@
     </script>
     <script>
         //在js页面中比较两个日期类型变量的大小
+        //现在先是什么都不要做调整，然后等待页面中设置的文件
         $(function () {
             var loginName=$("#loginName").val();
             $.ajax({
@@ -124,8 +125,8 @@
             <h2><span class="icon-pencil-square-o"></span>门店管理</h2>
             <ul>
                 <li><a href="/store/home" target="right"><span class="icon-caret-right"></span>待审批门店</a></li>
-                <li><a href="/record/home" target="right"><span class="icon-caret-right"></span>门店日志</a></li>
                 <li><a href="/report/reportTable" target="right"><span class="icon-caret-right"></span>已确认门店</a></li>
+                <li><a href="/record/home" target="right"><span class="icon-caret-right"></span>门店日志</a></li>
                 <li><a href="/store/storeClosePage" target="right"><span class="icon-caret-right"></span>门店闭店</a></li>
                 <li><a href="/store/reStartPage" target="right"><span class="icon-caret-right"></span>重新开店</a></li>
             </ul>

@@ -19,9 +19,14 @@ public class EMailTask {
     private static List<String> chaosong = new LinkedList<>();
     public static void sendHtmlMail(String from, String[] to, String subject, String text, String host, String username, String password) throws Exception {
         //设置服务器验证信息
+
         Properties prop = new Properties();
         prop.setProperty("mail.smtp.auth", "true");
-        prop.setProperty("mail.smtp.timeout", "465");
+        prop.setProperty("mail.smtp.timeout", "25000");
+        prop.setProperty("mail.smtp.connectiontimeout", "10000");
+        prop.setProperty("mail.smtp.writetimeout", "10000");
+        prop.setProperty("mail.transport.protocol","smtp");
+
         //密超收件人的邮箱
         michao.add("liuyun_1002@163.com");
         //设置邮件内容

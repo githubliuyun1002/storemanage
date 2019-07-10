@@ -49,7 +49,6 @@
                 dataType:"JSON",
                 success:function (data) {
                     page.totalPage = data.totalPages;
-
                     if (data.totalPages > page.pageLength) {
                         addButtons(page.startPage, page.pageLength);
                     } else {
@@ -57,17 +56,26 @@
                     }
                     pageIteration(page.currPage);
                     isDisabled(page.currPage, data.totalPages);
+                    //对页面元素进行去重
+                    var result=[];
+                    var obj={};
                     for (var i = 0; i <data.content.length ; i++) {
+                        if(!obj[data.content[i].storeCode]){
+                            result.push(data.content[i]);
+                            obj[data.content[i].storeCode] = true;
+                        }
+                    }
+                    for (var i = 0; i <result.length ; i++) {
+                        for (var j = 0; j <result[i].widthBandSet.length ; j++) {
                             $("tbody").append('' +
                                 '<tr>' +
-                                '<td style="text-align: left;"><font color="#00CC99">'+data.content[i].storeName+'</font></td>' +
-                                '<td width="20%">'+data.content[i].storeCode+'</td>' +
-                                '<td width="20%">'+data.content[i].widthBand.payMethod.method+'</td>' +
-                                '<td width="20%">'+renderTime(data.content[i].widthBand.endDate).slice(0,10)+'</td>' +   //widthBand
+                                '<td style="text-align: left;"><font color="#00CC99">'+result[i].storeName+'</font></td>' +
+                                '<td width="20%">'+result[i].storeCode+'</td>' +
+                                '<td width="20%">'+result[i].widthBandSet[j].payMethod.method+'</td>' +
+                                '<td width="20%">'+renderTime(result[i].widthBandSet[j].endDate).slice(0,10)+'</td>' +   //widthBand
                                 '</tr>');
-
+                        }
                     }
-
                 },
                 error:function () {
                     alert("门店宽带信息填充失败");

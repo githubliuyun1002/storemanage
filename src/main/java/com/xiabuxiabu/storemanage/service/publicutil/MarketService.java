@@ -21,4 +21,7 @@ public class MarketService {
     public MarketEntity findMarketByMarketName(String marketName){
         return marketRepository.findMarketByMarketName(marketName);
     }
+    public MarketEntity findByMarketCode(int marketCode){
+        return marketRepository.findByMarketCode(marketCode);
+    }
 }

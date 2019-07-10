@@ -30,6 +30,15 @@ public class MailList {
     private int mailStatus;
     //门店的状态
     private String storeStatus;
+    private String remarks;
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
 
     public String getMarketName() {
         return marketName;

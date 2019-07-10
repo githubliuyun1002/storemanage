@@ -7,11 +7,10 @@ import com.xiabuxiabu.storemanage.publicutils.EMailProperties;
 import com.xiabuxiabu.storemanage.service.store.MailListSerivice;
 import com.xiabuxiabu.storemanage.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -24,88 +23,95 @@ public class EmailTaskInfoMsg {
     @Autowired
     private EMailTask eMailTask;
     @Autowired
-    private HttpServletRequest httpServletRequest;
-    @Autowired
     private EMailProperties eMailProperties;
 
-    //每两小时执行一次
     //发送给市场IT,让市场IT及时进行添加相应的设备
-    @Scheduled(cron = "0 0 0/2 * * ?" )
-    public void emailRun(){
-        List<MailList> mailList = mailListSerivice.findAll();
-        Page<MailList> allPage =mailListSerivice.findAllPage(1,mailList.size(),"");
-        String userName = (String) httpServletRequest.getSession().getAttribute("userName");
-        //拿到当前登录人(user)
-        User user = userService.findByUserName(userName);
-        List<User> userList = userService.findAll();
-        //判断mailList中的状态，然后发送相应的邮件
-        //提醒IT管理人员添加设备
-        for (int i = 0; i <allPage.getContent().size() ; i++) {
-            MailList mailListDemo = allPage.getContent().get(i);
-            StringBuffer content = new StringBuffer();
-            if(mailListDemo.getMailStatus()==1&&mailListDemo.getStoreStatus().equals("待选择")){
-                 content.append("<html><head></head>");
-                 content.append("<body><div><h2>门店设备添加通知</h2>" +
-                         "亲爱的用户：您好！门店："+mailListDemo.getStoreName()+"("+mailListDemo.getStoreCode()+")基本" +
-                         "信息已经创建成功，请您尽快添加相应的宽带以及设备信息。如已处理请忽略。谢谢！</div>");
-                 content.append("<div><span style ='float: right;'>总部资讯</span></div>");
-                 content.append("</body></html>");
-            }
-            String[] allSend = {user.getMail()};
-            try {
-                eMailTask.sendHtmlMail(eMailProperties.getNickname(),allSend,eMailProperties.getAdditems(),content.toString(),
-                        eMailProperties.getHost(),eMailProperties.getUsername(),eMailProperties.getPassword());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        //提醒管理员进行审批(所有的Store均需要进行审批)
-        for (int i = 0; i < mailList.size(); i++) {
-            MailList mailListAdmin = mailList.get(i);
-            StringBuffer contentAdmin = new StringBuffer();
-            if(mailListAdmin.getMailStatus()==2&&mailListAdmin.getStoreStatus().equals("待审批")){
-                contentAdmin.append("<html><head></head>");
-                contentAdmin.append("<body><div><h2>门店设备审批通知</h2>" +
-                        "亲爱的用户：您好！门店："+mailListAdmin.getStoreName()+"("+mailListAdmin.getStoreCode()+")设备信息" +
-                        "已经添加成功，请您尽快进行审批。如已处理请忽略。谢谢！</div>");
-                contentAdmin.append("<div><span style ='float: right;'>总部资讯</span></div>");
-                contentAdmin.append("</body></html>");
-            }
-            String[] sendPeople = new String[userList.size()];
-            for (int j = 0; j <userList.size() ; j++) {
-                User userDemo = userList.get(j);
-                if(userDemo.getUserType().getName().equals("系统管理员")){
-                    sendPeople[j]=userDemo.getMail();
+    @Scheduled(cron = "0 0 0/2 * * ?")
+    public void emailRun() {
+        //市场名称
+        List<String> marketNameList = mailListSerivice.marketList();
+
+        //根据市场名称，取出人员，以及待发送的门店信息
+        for (int i = 0; i < marketNameList.size(); i++) {
+            String marketName = marketNameList.get(i);
+            List<MailList> mailListList = mailListSerivice.findByMarketName(marketName);
+            List<User> userList = userService.findByMarketName(marketName);
+            if (mailListList.size() != 0 && userList.size() != 0) {
+                System.out.println("市场基本信息:市场名称" + marketName + ",门店数：" + mailListList.size() + ",人员数：" + userList.size());
+                for (int j = 0; j < mailListList.size(); j++) {
+                    MailList mailListDemo = mailListList.get(j);
+                    if (mailListDemo.getMailStatus() == 0 && mailListDemo.getStoreStatus().equals("待选择")) {
+                        StringBuffer content = new StringBuffer();
+                        content.append("<html><head></head>");
+                        content.append("<body><div><h2>门店设备添加通知</h2>" +
+                                "亲爱的用户：您好！门店：" + mailListDemo.getStoreName() + "(" + mailListDemo.getStoreCode() + ")基本" +
+                                "信息已经创建成功，请您尽快添加相应的宽带以及设备信息。如已处理请忽略。谢谢！</div>");
+                        content.append("<div><span style ='float: right;'>总部资讯</span></div>");
+                        content.append("</body></html>");
+                        String mailAddress = "";
+                        for (int k = 0; k < userList.size(); k++) {
+                            mailAddress += userList.get(k).getMail() + ",";
+                        }
+                        String[] allSend = mailAddress.split(",");
+                        try {
+                            eMailTask.sendHtmlMail(eMailProperties.getNickname(),allSend,eMailProperties.getAdditems(),content.toString(),
+                                    eMailProperties.getHost(),eMailProperties.getUsername(),eMailProperties.getPassword());
+                            mailListDemo.setMailStatus(1);
+                            mailListDemo.setRemarks("发送成功");
+                            mailListSerivice.save(mailListDemo);
+                        } catch (Exception e) {
+                           // e.printStackTrace();
+                            mailListDemo.setMailStatus(0);
+                            mailListDemo.setRemarks("未发送成功");
+                            mailListSerivice.save(mailListDemo);
+
+                        }
+                    }
+
                 }
             }
-            try {
-                eMailTask.sendHtmlMail(eMailProperties.getNickname(),sendPeople,eMailProperties.getCheckitems(),contentAdmin.toString(),
-                        eMailProperties.getHost(),eMailProperties.getUsername(),eMailProperties.getPassword());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
         }
-        //拿到所有的门店(Page)
-        //门店没有审核通过，需要需要市场IT进行修改的门店
-        for (int i = 0; i <allPage.getContent().size() ; i++) {
-            MailList mailListCheck = allPage.getContent().get(i);
-            StringBuffer content = new StringBuffer();
-            if(mailListCheck.getMailStatus()==3&&mailListCheck.getStoreStatus().equals("待调整")){
-                content.append("<html><head></head>");
-                content.append("<body><div><h2>门店设备修改通知</h2>" +
-                        "亲爱的用户：您好！门店："+mailListCheck.getStoreName()+"("+mailListCheck.getStoreCode()+")的基本" +
-                        "设备信息经审批需要进行修改。如已处理请忽略。谢谢！</div>");
-                content.append("<div><span style ='float: right;'>总部资讯</span></div>");
-                content.append("</body></html>");
+    }
+    //发送给管理员的邮件列表
+    @Scheduled(cron = "0 0 0/3 * * ?")
+    public void  adminRun(){
+        //对于管理员拿到所有的待发邮件的信息
+        System.out.println("发送管理员定时任务开始执行");
+        List<MailList> mailLists = mailListSerivice.findAll();
+        List<User> userList = userService.findAll();
+        List<User> adminUserList = new ArrayList<>();
+        for (int i = 0; i < userList.size(); i++) {
+            User user = userList.get(i);
+            if(user.getUserType().getName().equals("系统管理员")){
+                adminUserList.add(user);
             }
-            String[] allSend = {user.getMail()};
-            try {
-                eMailTask.sendHtmlMail(eMailProperties.getNickname(),allSend,eMailProperties.getUpdateitems(),content.toString(),
-                        eMailProperties.getHost(),eMailProperties.getUsername(),eMailProperties.getPassword());
-            } catch (Exception e) {
-                e.printStackTrace();
+        }
+        if(mailLists.size()!=0&&adminUserList.size()!=0){
+            for (int i = 0; i <mailLists.size() ; i++) {
+
+                MailList mailList = mailLists.get(i);
+                StringBuffer contentAdmin = new StringBuffer();
+                if(mailList.getMailStatus()==2&&mailList.getStoreStatus().equals("待审批")){
+                    contentAdmin.append("<html><head></head>");
+                    contentAdmin.append("<body><div><h2>门店设备审批通知</h2>" +
+                            "亲爱的用户：您好！门店："+mailList.getStoreName()+"("+mailList.getStoreCode()+")设备信息" +
+                            "已经添加成功，请您尽快进行审批。如已处理请忽略。谢谢！</div>");
+                    contentAdmin.append("<div><span style ='float: right;'>总部资讯</span></div>");
+                    contentAdmin.append("</body></html>");
+                    String send="";
+                    for (int j = 0; j < adminUserList.size(); j++) {
+                        send+=adminUserList.get(j).getMail()+",";
+                    }
+                    String[] sendAll = send.split(",");
+                    try {
+                        eMailTask.sendHtmlMail(eMailProperties.getNickname(),sendAll,eMailProperties.getCheckitems(),contentAdmin.toString(),
+                                eMailProperties.getHost(),eMailProperties.getUsername(),eMailProperties.getPassword());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
     }
 }
+
