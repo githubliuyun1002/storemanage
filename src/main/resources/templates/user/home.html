@@ -487,13 +487,14 @@
                 dataType:"JSON",
                 success:function (data) {
                     <!--页面展示的数据-->
-                    if (data.totalPages > page.pageLength) {
-                        addButtons(page.startPage, page.pageLength);
-                    } else {
-                        addButtons(page.startPage, data.totalPages);
-                    }
+                    // if (data.totalPages > page.pageLength) {
+                    //     addButtons(page.startPage, page.pageLength);
+                    // } else {
+                    //     addButtons(page.startPage, data.totalPages);
+                    // }
+                    // page.totalPage = data.totalPages;
+                    // isDisabled(page.currPage, data.totalPages);  //返回分页的页数用totalPages属性表示
                     page.totalPage = data.totalPages;
-                    isDisabled(page.currPage, data.totalPages);  //返回分页的页数用totalPages属性表示
 
                     for (var i = 0; i < data.content.length; i++) {
                         $("tbody").append('<tr>' +
@@ -529,13 +530,7 @@
                 dataType:"JSON",
                 type:"GET",
                 success:function (data) {
-                    if (data.totalPages > page.pageLength) {
-                        addButtons(page.startPage, page.pageLength);
-                    } else {
-                        addButtons(page.startPage, data.totalPages);
-                    }
                     page.totalPage = data.totalPages;
-                    isDisabled(page.currPage, data.totalPages);
                     for (var i = 0; i < data.content.length; i++) {
                         $("tbody").append('<tr>' +
                             '<td>' + data.content[i].username + '</td>' +
@@ -568,13 +563,7 @@
                 dataType:"JSON",
                 type:"GET",
                 success:function (data) {
-                    if (data.totalPages > page.pageLength) {
-                        addButtons(page.startPage, page.pageLength);
-                    } else {
-                        addButtons(page.startPage, data.totalPages);
-                    }
                     page.totalPage = data.totalPages;
-                    isDisabled(page.currPage, data.totalPages);
                     for (var i = 0; i < data.content.length; i++) {
                         $("tbody").append('<tr>' +
                             '<td>' + data.content[i].username + '</td>' +

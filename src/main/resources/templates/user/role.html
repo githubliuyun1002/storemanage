@@ -238,13 +238,7 @@
                 datatype: "JSON",
                 success: function (data) {
                     <!--页面展示的数据-->
-                    if (data.totalPages > page.pageLength) {
-                        addButtons(page.startPage, page.pageLength);
-                    } else {
-                        addButtons(page.startPage, data.totalPages);
-                    }
                     page.totalPage = data.totalPages;
-                    isDisabled(page.currPage, data.totalPages);
                     //迭代页面的展示数据
                     for (i=0;i<data.content.length;i++) {
                         $("tbody").append('<tr>' +
@@ -281,13 +275,7 @@
                 success: function (data) {
                     var show = data.content;
                     <!--页面展示的数据-->
-                    if (data.totalPages > page.pageLength) {
-                        addButtons(page.startPage, page.pageLength);
-                    } else {
-                        addButtons(page.startPage, data.totalPages);
-                    }
                     page.totalPage = data.totalPages;
-                    isDisabled(page.currPage, data.totalPages);
                     //迭代页面的展示数据
                     for (i=0;i<data.content.length;i++) {
                         $("tbody").append('<tr>' +
@@ -325,13 +313,14 @@
                 success: function (data) {
                     var show = data.content;
                     <!--页面展示的数据-->
-                    if (data.totalPages > page.pageLength) {
-                        addButtons(page.startPage, page.pageLength);
-                    } else {
-                        addButtons(page.startPage, data.totalPages);
-                    }
+                    // if (data.totalPages > page.pageLength) {
+                    //     addButtons(page.startPage, page.pageLength);
+                    // } else {
+                    //     addButtons(page.startPage, data.totalPages);
+                    // }
+                    // page.totalPage = data.totalPages;
+                    // isDisabled(page.currPage, data.totalPages);
                     page.totalPage = data.totalPages;
-                    isDisabled(page.currPage, data.totalPages);
                     //迭代页面的展示数据
                     for (i=0;i<data.content.length;i++) {
                         $("tbody").append('<tr>' +

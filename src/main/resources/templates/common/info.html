@@ -133,13 +133,8 @@
                 type:"GET",
                 dataType:"JSON",
                 success:function (data) {
-                    if (data.totalPages > page.pageLength) {
-                        addButtons(page.startPage, page.pageLength);
-                    } else {
-                        addButtons(page.startPage, data.totalPages);
-                    }
-                    pageIteration(page.currPage);
-                    isDisabled(page.currPage, data.totalPages);
+                    page.totalPage = data.totalPages;
+
                     for (var i = 0; i <data.content.length ; i++) {
                         $("tbody").append('' +
                             '<tr>' +
@@ -170,13 +165,7 @@
                 type:"GET",
                 dataType:"JSON",
                 success:function (data) {
-                    if (data.totalPages > page.pageLength) {
-                        addButtons(page.startPage, page.pageLength);
-                    } else {
-                        addButtons(page.startPage, data.totalPages);
-                    }
-                    pageIteration(page.currPage);
-                    isDisabled(page.currPage, data.totalPages);
+                    page.totalPage = data.totalPages;
                     for (var i = 0; i <data.content.length ; i++) {
                         $("tbody").append('' +
                             '<tr>' +
@@ -204,13 +193,7 @@
                 type:"GET",
                 dataType:"JSON",
                 success:function (data) {
-                    if (data.totalPages > page.pageLength) {
-                        addButtons(page.startPage, page.pageLength);
-                    } else {
-                        addButtons(page.startPage, data.totalPages);
-                    }
-                    pageIteration(page.currPage);
-                    isDisabled(page.currPage, data.totalPages);
+                    page.totalPage = data.totalPages;
                     for (var i = 0; i <data.content.length ; i++) {
                         $("tbody").append('' +
                             '<tr>' +

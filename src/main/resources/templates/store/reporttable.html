@@ -210,13 +210,6 @@
                     //用于分页的数据Page<Store>
                     storePage = data["page"];
                     page.totalPage = storePage.totalPages;
-                    if (storePage.totalPages > page.pageLength) {
-                        addButtons(page.startPage, page.pageLength);
-                    } else {
-                        addButtons(page.startPage, storePage.totalPages);
-                    }
-                    pageIteration(page.currPage);
-                    isDisabled(page.currPage, storePage.totalPages);
                     // console.log("store----->"+store);
                     var str="<tr><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店编码</th><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店名称</th>";
                     var str1="<tr>";
@@ -292,13 +285,6 @@
                     //用于分页的数据Page<Store>
                     storePage = data["page"];
                     page.totalPage = storePage.totalPages;
-                    if (storePage.totalPages > page.pageLength) {
-                        addButtons(page.startPage, page.pageLength);
-                    } else {
-                        addButtons(page.startPage, storePage.totalPages);
-                    }
-                    pageIteration(page.currPage);
-                    isDisabled(page.currPage, storePage.totalPages);
                     // console.log("store----->"+store);
                     var str="<tr><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店编码</th><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店名称</th>";
                     var str1="<tr>";
@@ -373,13 +359,6 @@
                     //用于分页的数据Page<Store>
                     storePage = data["page"];
                     page.totalPage = storePage.totalPages;
-                    if (storePage.totalPages > page.pageLength) {
-                        addButtons(page.startPage, page.pageLength);
-                    } else {
-                        addButtons(page.startPage, storePage.totalPages);
-                    }
-                    pageIteration(page.currPage);
-                    isDisabled(page.currPage, storePage.totalPages);
                     // console.log("store----->"+store);
                     var str="<tr><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店编码</th><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店名称</th>";
                     var str1="<tr>";

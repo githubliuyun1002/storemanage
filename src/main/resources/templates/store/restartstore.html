@@ -110,13 +110,8 @@
                 type:"GET",
                 dataType:"JSON",
                 success:function (data) {
-                    if (data.totalPages > page.pageLength) {
-                        addButtons(page.startPage, page.pageLength);
-                    } else {
-                        addButtons(page.startPage, data.totalPages);
-                    }
-                    pageIteration(page.currPage);
-                    isDisabled(page.currPage, data.totalPages);
+                    page.totalPage  = data.totalPages;
+
                     for (var i = 0; i <data.content.length ; i++) {
                         $("tbody").append('<tr>' +
                             '<td><input type="checkbox"><input type="hidden" name="storeId" id="storeId" value="'+data.content[i].storeId+'"></td>' +
@@ -144,13 +139,7 @@
                 type:"GET",
                 dataType:"JSON",
                 success:function (data) {
-                    if (data.totalPages > page.pageLength) {
-                        addButtons(page.startPage, page.pageLength);
-                    } else {
-                        addButtons(page.startPage, data.totalPages);
-                    }
-                    pageIteration(page.currPage);
-                    isDisabled(page.currPage, data.totalPages);
+                    page.totalPage  = data.totalPages;
                     for (var i = 0; i <data.content.length ; i++) {
                         $("tbody").append('<tr>' +
                             '<td><input type="checkbox"><input type="hidden" name="storeId" id="storeId" value="'+data.content[i].storeId+'"></td>' +
@@ -177,13 +166,7 @@
                 type:"GET",
                 dataType:"JSON",
                 success:function (data) {
-                    if (data.totalPages > page.pageLength) {
-                        addButtons(page.startPage, page.pageLength);
-                    } else {
-                        addButtons(page.startPage, data.totalPages);
-                    }
-                    pageIteration(page.currPage);
-                    isDisabled(page.currPage, data.totalPages);
+                    page.totalPage  = data.totalPages;
                     for (var i = 0; i <data.content.length ; i++) {
                         $("tbody").append('<tr>' +
                             '<td><input type="checkbox"><input type="hidden" name="storeId" id="storeId" value="'+data.content[i].storeId+'"></td>' +

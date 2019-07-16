@@ -753,8 +753,17 @@ public class StoreController {
         Page<Store> all = storeService.findAll(page, pageSize, searchName);
         map.put("pageTotals",all.getTotalPages());
         return  map;
-        
     }
+    //adjustList
+    @RequestMapping("/adjustListTest")
+    @ResponseBody
+    public Map<String,Object> adjustListTest(@RequestParam("page")int page, @RequestParam("pageSize") int pageSize, @RequestParam("searchName") String searchName){
+        Map<String,Object> map = new HashMap<>();
+        Page<Store> storePage = storeService.adjustList(page, pageSize, searchName);
+        map.put("pageTotals",storePage.getTotalPages());
+        return map;
+    }
+
 
 
 

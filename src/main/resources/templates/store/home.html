@@ -194,13 +194,6 @@
                 dataType:"JSON",
                 success:function (data) {
                     page.totalPage = data.totalPages;
-                    // if (data.totalPages > page.pageLength) {
-                    //     addButtons(page.startPage, page.pageLength);
-                    // } else {
-                    //     addButtons(page.startPage, data.totalPages);
-                    // }
-                    // pageIteration(page.currPage);
-                    // isDisabled(page.currPage, data.totalPages);
                     isFirstAndLast(page.currPage,data.totalPages);
                     var tableContent="";
                     var userType = $("#userType").val();

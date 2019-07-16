@@ -117,13 +117,7 @@
                 dataType:"JSON",
                 type:"GET",
                 success:function (data) {
-                    if (data.totalPages > page.pageLength) {
-                        addButtons(page.startPage, page.pageLength);
-                    } else {
-                        addButtons(page.startPage, data.totalPages);
-                    }
-                    pageIteration(page.currPage);
-                    isDisabled(page.currPage, data.totalPages);
+                    page.totalPage  = data.totalPages;
                     for (var i = 0; i <data.content.length ; i++) {
                         $("tbody").append('<tr>' +
                             '<td>'+data.content[i].storeName+'</td>' +
@@ -154,13 +148,7 @@
                 dataType:"JSON",
                 type:"GET",
                 success:function (data) {
-                    if (data.totalPages > page.pageLength) {
-                        addButtons(page.startPage, page.pageLength);
-                    } else {
-                        addButtons(page.startPage, data.totalPages);
-                    }
-                    pageIteration(page.currPage);
-                    isDisabled(page.currPage, data.totalPages);
+                    page.totalPage  = data.totalPages;
                     for (var i = 0; i <data.content.length ; i++) {
                         $("tbody").append('<tr>' +
                             '<td>'+data.content[i].storeName+'</td>' +
@@ -190,13 +178,7 @@
                 dataType:"JSON",
                 type:"GET",
                 success:function (data) {
-                    if (data.totalPages > page.pageLength) {
-                        addButtons(page.startPage, page.pageLength);
-                    } else {
-                        addButtons(page.startPage, data.totalPages);
-                    }
-                    pageIteration(page.currPage);
-                    isDisabled(page.currPage, data.totalPages);
+                    page.totalPage  = data.totalPages;
                     for (var i = 0; i <data.content.length ; i++) {
                         $("tbody").append('<tr>' +
                             '<td>'+data.content[i].storeName+'</td>' +

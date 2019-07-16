@@ -204,16 +204,8 @@
                 dataType: "JSON",
                 data: {"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
                 success:function (data) {
-                    console.log(data);
                     //初始化按钮，即第一次网页面上添加按钮
-                    if (data.totalPages > page.pageLength) {
-                        addButtons(page.startPage, page.pageLength);
-                    } else {
-                        addButtons(page.startPage, data.totalPages);
-                    }
-                    pageIteration(page.currPage);
-                    //禁用"上一页"按钮，因为默认是第一页，第一页没有上一页
-                    isDisabled(page.currPage, data.totalPages);
+                    page.totalPage = data.totalPages;
 
                     for (i = 0; i < data.content.length; i++) {
                         $("tbody").append('<tr>' +
@@ -246,16 +238,7 @@
                 dataType: "JSON",
                 data: {"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
                 success:function (data) {
-                    console.log(data);
-                    //初始化按钮，即第一次网页面上添加按钮
-                    if (data.totalPages > page.pageLength) {
-                        addButtons(page.startPage, page.pageLength);
-                    } else {
-                        addButtons(page.startPage, data.totalPages);
-                    }
-                    pageIteration(page.currPage);
-                    //禁用"上一页"按钮，因为默认是第一页，第一页没有上一页
-                    isDisabled(page.currPage, data.totalPages);
+                    page.totalPage = data.totalPages;
                     for (i = 0; i < data.content.length; i++) {
                         $("tbody").append('<tr>' +
                             '<td>' + data.content[i].name + '</td>' +
@@ -285,14 +268,15 @@
                 dataType: "JSON",
                 data: {"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
                 success:function (data) {
-                    console.log(data);
-                    //初始化按钮，即第一次网页面上添加按钮
-                    if (data.totalPages > page.pageLength) {
-                        addButtons(page.startPage, page.pageLength);
-                    } else {
-                        addButtons(page.startPage, data.totalPages);
-                    }
-                    pageIteration(page.currPage);
+                    // console.log(data);
+                    // //初始化按钮，即第一次网页面上添加按钮
+                    // if (data.totalPages > page.pageLength) {
+                    //     addButtons(page.startPage, page.pageLength);
+                    // } else {
+                    //     addButtons(page.startPage, data.totalPages);
+                    // }
+                    // pageIteration(page.currPage);
+                    page.totalPage = data.totalPages;
                     //禁用"上一页"按钮，因为默认是第一页，第一页没有上一页
                     isDisabled(page.currPage, data.totalPages);
                     for (i = 0; i < data.content.length; i++) {

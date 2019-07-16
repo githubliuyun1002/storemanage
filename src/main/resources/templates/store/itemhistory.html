@@ -44,7 +44,6 @@
                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": ""},
                dataType:"JSON",
                success:function (data) {
-                  // console.log("1111--->"+JSON.stringify(data.content[0]));
                    page.totalPage = data.totalPages;
                    if (data.totalPages > page.pageLength) {
                        addButtons(page.startPage, page.pageLength);
@@ -148,13 +147,7 @@
                 data:{"page": page.currPage, "pageSize": page.pageSize, "searchName":searchName},
                 dataType:"JSON",
                 success:function (data) {
-                    if (data.totalPages > page.pageLength) {
-                        addButtons(page.startPage, page.pageLength);
-                    } else {
-                        addButtons(page.startPage, data.totalPages);
-                    }
-                    pageIteration(page.currPage);
-                    isDisabled(page.currPage, data.totalPages);
+                    page.totalPage = data.totalPages;
                     var result=[];
                     var obj={};
                     for (var i = 0; i <data.content.length ; i++) {
@@ -198,13 +191,7 @@
                 data:{"page": page.currPage, "pageSize": page.pageSize, "searchName":searchName},
                 dataType:"JSON",
                 success:function (data) {
-                    if (data.totalPages > page.pageLength) {
-                        addButtons(page.startPage, page.pageLength);
-                    } else {
-                        addButtons(page.startPage, data.totalPages);
-                    }
-                    pageIteration(page.currPage);
-                    isDisabled(page.currPage, data.totalPages);
+                    page.totalPage = data.totalPages;
                     var result=[];
                     var obj={};
                     for (var i = 0; i <data.content.length ; i++) {
@@ -248,13 +235,7 @@
                 data:{"page": page.currPage, "pageSize": page.pageSize, "searchName":searchName},
                 dataType:"JSON",
                 success:function (data) {
-                    if (data.totalPages > page.pageLength) {
-                        addButtons(page.startPage, page.pageLength);
-                    } else {
-                        addButtons(page.startPage, data.totalPages);
-                    }
-                    pageIteration(page.currPage);
-                    isDisabled(page.currPage, data.totalPages);
+                    page.totalPage = data.totalPages;
                     var result=[];
                     var obj={};
                     for (var i = 0; i <data.content.length ; i++) {
