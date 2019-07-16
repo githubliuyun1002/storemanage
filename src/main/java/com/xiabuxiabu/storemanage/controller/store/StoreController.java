@@ -14,32 +14,22 @@ import com.xiabuxiabu.storemanage.service.equip.ItemService;
 import com.xiabuxiabu.storemanage.service.publicutil.MarketService;
 import com.xiabuxiabu.storemanage.service.store.*;
 import com.xiabuxiabu.storemanage.service.user.UserService;
-import net.bytebuddy.asm.Advice;
-import net.sf.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
-
-import javax.jws.WebParam;
 import javax.servlet.http.HttpServletRequest;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 @Controller
 @RequestMapping("/store")
-/*@EnableConfigurationProperties(EMailProperties.class)*/
 public class StoreController {
     @Autowired
     private StoreService storeService;
@@ -60,15 +50,7 @@ public class StoreController {
     @Autowired
     private ItemService itemService;   //item设备型号
     @Autowired
-    private DateTool dateTool;
-    @Autowired
     private HttpServletRequest httpServletRequest;  //拿到sesssion中得登录人
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private EMailProperties eMailProperties;
-    @Autowired
-    private EMailTask eMailTask;
     @Autowired
     private MailListSerivice mailListSerivice;
 
@@ -131,7 +113,7 @@ public class StoreController {
     @RequestMapping("/width")
     public ModelAndView widthSave(int storeId, WidthBand widthBand, ModelAndView modelAndView){
         Store store = storeService.findById(storeId);
-        //若已经又宽带信息
+        //若已经有宽带信息
         if(store.getWidthBandSet().size()!=0){
             Set<WidthBand> oldwidthBandSet = store.getWidthBandSet();
             //“2”标识需要进行修改
@@ -268,9 +250,12 @@ public class StoreController {
     public Map<String,Object> toupdate(String store){
         //转换为json对象
         Store jsonStore  = JSON.parseObject(store,Store.class);
+        System.out.println("store------>"+jsonStore);
         String userName = (String) httpServletRequest.getSession().getAttribute("userName");
         Set<Items> itemsSetJSON = jsonStore.getItemsSet();
+        Set<WidthBand> widthBandSet = jsonStore.getWidthBandSet();
         Store storeDB = storeService.findById(jsonStore.getStoreId());
+
         if(storeDB.getItemsSet().size()!=0){
             for (Items itemsDB:storeDB.getItemsSet()) {
                 for (Items itemsJSON:itemsSetJSON) {
@@ -287,9 +272,35 @@ public class StoreController {
                 }
             }
         }
+        if(widthBandSet.size()!=0){
+            for (WidthBand widthBandJSON:widthBandSet) {
+                for(WidthBand widthBandDB:storeDB.getWidthBandSet()){
+                    if(widthBandJSON.getWid()==widthBandDB.getWid()){
+                        WidthBand widthBandDemo = widthBandService.findById(widthBandDB.getWid());
+                        widthBandDemo.setServicePerson(widthBandJSON.getServicePerson());
+                        widthBandDemo.setAccessMethod(widthBandJSON.getAccessMethod());
+                        widthBandDemo.setPayMethod(widthBandJSON.getPayMethod());
+                        widthBandDemo.setPayMoney(widthBandJSON.getPayMoney());
+                        widthBandDemo.setIdentity(widthBandJSON.getIdentity());
+                        widthBandDemo.setPassword(widthBandJSON.getPassword());
+                        widthBandDemo.setTapewidth(widthBandJSON.getTapewidth());
+                        widthBandDemo.setEndDate(widthBandJSON.getEndDate());
+                        widthBandDemo.setSign(widthBandJSON.getSign());
+                        widthBandDemo.setChenckPerson(userName);
+                        widthBandService.save(widthBandDemo);
+
+                    }
+                }
+            }
+            storeDB.setWidthBandSet(jsonStore.getWidthBandSet());
+        }
+
         List<String> signList = new ArrayList<>();
         for (Items setItems:itemsSetJSON) {
             signList.add(setItems.getSign()); //设备是否需要更改的标识
+        }
+        for(WidthBand widthBand:widthBandSet){
+            signList.add(widthBand.getSign());
         }
         //包含2说明需要市场IT调整
         if(signList.contains("2")){
@@ -313,6 +324,7 @@ public class StoreController {
             mailListSerivice.save(mailList);
         }
         storeDB.setItemsSet(jsonStore.getItemsSet());
+
         storeService.save(storeDB);
         //调整设备时或者已经确认设备时，均需要改变设备的状态
 
@@ -354,92 +366,6 @@ public class StoreController {
     @ResponseBody
     public Page<Store> widthList(@RequestParam("page")int page, @RequestParam("pageSize") int pageSize, @RequestParam("searchName") String searchName){
         Page<Store> storePage = storeService.storeWidthList(page,pageSize,searchName);
-        List<Store> storeList = storePage.getContent();
-        String userName = (String) httpServletRequest.getSession().getAttribute("userName");
-        //拿到当前登录人(user)
-        User user = userService.findByUserName(userName);
-//        for (int i = 0; i <storeList.size() ; i++) {
-//             Store store = storeList.get(i);
-//
-//             Date widthEndDate = store.getWidthBand().getEndDate();
-//             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-//             StringBuffer content = new StringBuffer();
-//            try {
-//                Date nowDate = simpleDateFormat.parse(simpleDateFormat.format(new Date()));
-//                int lastDays = dateTool.differentDaysByMillisecond(widthEndDate,nowDate);
-//                // System.out.println("时间----》"+lastDays);
-//                content.append("<html><head></head>");
-//                content.append("<body><div><h2>宽带到期通知</h2>" +
-//                        "亲爱的用户:您好!门店："+store.getStoreName()+"("+store.getStoreCode()+")的宽带还有"+lastDays+"天即将到期。请您及时进行处理，" +
-//                        "如已处理，请忽略。谢谢！</div>");
-//                content.append("<div><span style ='float: right;'>总部资讯</span></div>");
-//                content.append("</body></html>");
-//                //根据时间差，来发送邮件;宽带付款方式为年付
-//                //当时间为一个月前，一天通知一次
-//                //先暂停发送邮件的操作
-//                if(lastDays>30){
-//                    Runnable runnable = new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            String [] sendAll = {user.getMail()};
-//                            try {
-//                                eMailTask.sendHtmlMail(eMailProperties.getNickname(),sendAll,eMailProperties.getSubject(),content.toString(),eMailProperties.getHost(),eMailProperties.getUsername(),eMailProperties.getPassword());
-//                            } catch (Exception e) {
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                    };
-//                    ScheduledExecutorService service = Executors
-//                            .newSingleThreadScheduledExecutor();
-//                    // 第二个参数为首次执行的延时时间，第三个参数为定时执行的间隔时间
-//                    service.scheduleAtFixedRate(runnable, 0, 1, TimeUnit.DAYS);
-//                }else if(lastDays>15&&lastDays<=30){
-//                    //时间段为15-30天时，一天通知两次
-//                    Runnable runnable = new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            String [] sendAll = {user.getMail()};
-//                            try {
-//                                eMailTask.sendHtmlMail(eMailProperties.getNickname(),sendAll,eMailProperties.getSubject(),content.toString(),eMailProperties.getHost(),eMailProperties.getUsername(),eMailProperties.getPassword());
-//                            } catch (Exception e) {
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                    };
-//                    ScheduledExecutorService service = Executors
-//                            .newSingleThreadScheduledExecutor();
-//                    // 第二个参数为首次执行的延时时间，第三个参数为定时执行的间隔时间
-//                    service.scheduleAtFixedRate(runnable, 0, 12, TimeUnit.HOURS);
-//                }else if (lastDays>0&&lastDays<=15){
-//                    //0-15天时，一天通知三次
-//                    Runnable runnable = new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            String [] sendAll = {user.getMail()};
-//                            try {
-//                                eMailTask.sendHtmlMail(eMailProperties.getNickname(),sendAll,eMailProperties.getSubject(),content.toString(),eMailProperties.getHost(),eMailProperties.getUsername(),eMailProperties.getPassword());
-//                            } catch (Exception e) {
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                    };
-//                    ScheduledExecutorService service = Executors
-//                            .newSingleThreadScheduledExecutor();
-//                    // 第二个参数为首次执行的延时时间，第三个参数为定时执行的间隔时间
-//                    service.scheduleAtFixedRate(runnable, 0, 8, TimeUnit.HOURS);
-//                }else if(lastDays==0){
-//                    long yearAfter = (widthEndDate.getTime()/1000)+60*60*24*365;
-//                    widthEndDate.setTime(yearAfter*1000);
-//                    String yearAfterStr = simpleDateFormat.format(widthEndDate);
-//                    Date parse = simpleDateFormat.parse(yearAfterStr);
-//                    System.out.println("一年以后的日期----》"+parse);
-//                    store.getWidthBand().setEndDate(parse);
-//                    storeService.save(store);
-//                }
-//            } catch (ParseException e) {
-//                e.printStackTrace();
-//            }
-//        }
         return storePage;
     }
     @RequestMapping("/storeClose")
@@ -595,17 +521,6 @@ public class StoreController {
     }
 
     /**
-     * 查看设备的按钮事件
-     */
-    @RequestMapping("/searchInfor")
-    @ResponseBody
-    public Map<String,Object> searchInfor(){
-        Map<String,Object> map = new HashMap<>();
-        map.put("code","1");
-        return map;
-    }
-
-    /**
      * 对已经添加设备的门店，且门店的设备已经通过审核。
      *  然后，门店需要添加新的设备时的展示页面
      * @return
@@ -617,13 +532,16 @@ public class StoreController {
     /**
      * 查看页面展示列表
      */
-    @RequestMapping("/findByRepostList")
+    @RequestMapping("/marketCheckList")
     @ResponseBody
-    public Page<Store> findByRepostList(int page,int pageSize,String searchName){
-        return  storeService.findByRepostList(page,pageSize,searchName);
+    public Page<Store> marketCheckList(int page,int pageSize,String searchName){
+        return  storeService.marketCheckList(page,pageSize,searchName);
     }
     /**
      * 门店信息的具体展示页面是，storeInfor
+     * 市场IT看到的已经审批的门店列表
+     * 对于已经被管理员审批过的门店设备的信息，市场IT仍然可以修改，但是需要记录修改的历史
+     *
      */
     @RequestMapping("/searchObject")
     public ModelAndView searchObject(ModelAndView modelAndView,int id){
@@ -631,34 +549,6 @@ public class StoreController {
         modelAndView.addObject("storeId",id);
         return modelAndView;
     }
-    @RequestMapping("/additemInfor")
-    public ModelAndView additemInfor(ModelAndView modelAndView, int storeId,int storeStatus,Items items){
-        Store store  =  storeService.findById(storeId);
-        StoreStatus storeStatusEntity =  storeStatusService.findById(storeStatus);
-        store.setStoreStatus(storeStatusEntity);   //设置门店状态为待审核
-        //设置门店的展示样式，再根据门店的基本信息进行填充
-        if(store.getItemsSet().size()!=0){
-            Set<Items> oldItmsSet = store.getItemsSet();
-            //对于新添加的设备，默认状态为待审核状态
-            items.setSign("2");
-            Items saveItems = itemsService.save(items);
-            oldItmsSet.add(saveItems);
-            store.setItemsSet(oldItmsSet);
-            storeService.save(store);
-        }else{
-            //新添加的设别，默认都需要进行验证
-            items.setSign("2");
-            Items saveItems =  itemsService.save(items);
-            Set<Items> newItemsSet = new HashSet<>();
-            newItemsSet.add(saveItems);
-            store.setItemsSet(newItemsSet);
-            storeService.save(store);
-        }
-        modelAndView.setViewName("/store/storeInfor");
-        modelAndView.addObject("storeId",storeId);
-        return modelAndView;
-    }
-
     /**
      * 点击确认按钮，对门店的设备进行确认之后，此时的状态改为待审批状态
      * @param store
@@ -712,9 +602,6 @@ public class StoreController {
         }
         storeDB.setStoreStatus(storeStatusService.findById(2));
 
-        storeService.save(storeDB);
-        map.put("code","1");
-
         //只要添加设备默认状态为2，需要管理人审批(不覆盖原来的记录)
         MailList mailList = new MailList();
         mailList.setMailStatus(2);
@@ -723,9 +610,158 @@ public class StoreController {
         mailList.setStoreCode(storeDB.getStoreCode());
         mailList.setStoreName(storeDB.getStoreName());
         mailListSerivice.save(mailList);
-
+        storeService.save(storeDB);
+        map.put("code","1");
         return  map;
     }
+
+    /**
+     * 当门店宽带审批通过后，再次添加门店的宽带信息
+     */
+    @RequestMapping("/addwidthInfor")
+    public ModelAndView addwidthInfor(int storeId, WidthBand widthBand, ModelAndView modelAndView){
+        Store store = storeService.findById(storeId);
+        Set<WidthBand> widthBandSet = store.getWidthBandSet();
+        //宽带设置为待审批装态
+        widthBand.setSign("2");
+        widthBandService.save(widthBand);
+        widthBandSet.add(widthBand);
+        store.setWidthBandSet(widthBandSet);
+        storeService.save(store);
+        modelAndView.setViewName("/store/storeInfor");
+        modelAndView.addObject("storeId",storeId);
+        return modelAndView;
+    }
+    /**
+     * 门店的设备点击确定后，再次添加门店的设备信息
+     */
+    @RequestMapping("/additemInfor")
+    public ModelAndView additemInfor(ModelAndView modelAndView, int storeId,Items items){
+        Store store  =  storeService.findById(storeId);
+        //状态为待审批状态
+        items.setSign("2");
+        itemsService.save(items);
+
+        Set<Items> itemsSet = store.getItemsSet();
+        itemsSet.add(items);
+        store.setItemsSet(itemsSet);
+
+        storeService.save(store);
+        modelAndView.setViewName("/store/storeInfor");
+        modelAndView.addObject("storeId",storeId);
+        return modelAndView;
+    }
+
+    /**
+     * 当管理员确定门店的宽带和设备信息之后，
+     * 市场IT对审核过设备的更改需要记录修改的记录
+     * (1).记录修改的记录
+     * (2).此时的门店状态调整为待审批状态
+     */
+    @RequestMapping("/addMsgStore")
+    @ResponseBody
+    public Map<String,Object> addMsgStore(String store){
+        System.out.println("store----->"+store);
+        Store jsonStore = JSON.parseObject(store,Store.class);
+        String userName = (String) httpServletRequest.getSession().getAttribute("userName");
+        Set<Items> itemsSetJSON = jsonStore.getItemsSet();
+        Set<WidthBand> widthBandSet = jsonStore.getWidthBandSet();
+        Store storeDB = storeService.findById(jsonStore.getStoreId());
+        //待审批的状态
+        StoreStatus storeStatus = storeStatusService.findById(2);
+        if(storeDB.getItemsSet().size()!=0){
+            for (Items itemsDB:storeDB.getItemsSet()) {
+                for (Items itemsJSON:itemsSetJSON) {
+                    //修改原来的设备信息
+                    if(itemsDB.getId()==itemsJSON.getId()){
+                        Items itemsDemo = itemsService.findById(itemsJSON.getId());
+                        itemsDemo.setClassName(itemsJSON.getClassName());
+                        itemsDemo.setEquipName(itemsJSON.getEquipName());
+                        itemsDemo.setItem(itemsJSON.getItem());
+                        //说明此时市场IT修改了门店设备信息
+                        if(itemsJSON.getNum()!=itemsDemo.getNum()){
+                            //原来的设备数量(记录历史记录)
+                            itemsDemo.setOrigin(itemsDemo.getNum());
+                            System.out.println("原来的设备数量-----》"+itemsDemo.getNum());
+                            itemsDemo.setPersonName(userName);
+                            itemsDemo.setUpdateTime(new Date());
+                            //此时有需要管理员进行审批
+                            itemsDemo.setSign("2");
+                            itemsDemo.setNum(itemsJSON.getNum());
+
+                            storeDB.setStoreStatus(storeStatus);
+
+                        }else{
+                            itemsDemo.setNum(itemsJSON.getNum());
+                            if(itemsDemo.getSign()==null){
+                                itemsDemo.setSign("2");
+                            }
+                        }
+                        itemsService.save(itemsDemo);
+                    }
+
+                }
+            }
+            storeDB.setItemsSet(jsonStore.getItemsSet());
+        }
+        if(storeDB.getWidthBandSet().size()!=0){
+            for(WidthBand widthBandDB:storeDB.getWidthBandSet()){
+                for(WidthBand widthBandJSON : widthBandSet){
+                    if(widthBandDB.getWid()==widthBandJSON.getWid()){
+                        WidthBand widthBandDemo = widthBandService.findById(widthBandDB.getWid());
+                        if(widthBandDemo.getServicePerson()!=widthBandJSON.getServicePerson()||
+                           widthBandDemo.getAccessMethod()!=widthBandJSON.getAccessMethod()||
+                           widthBandDemo.getPayMethod()!=widthBandJSON.getPayMethod()||
+                           widthBandDemo.getPayMoney()!=widthBandJSON.getPayMoney()||
+                           widthBandDemo.getIdentity()!=widthBandJSON.getIdentity()||
+                           widthBandDemo.getPassword()!=widthBandJSON.getPassword()||
+                           widthBandDemo.getTapewidth()!=widthBandJSON.getTapewidth()||
+                           widthBandDemo.getEndDate()!=widthBandJSON.getEndDate()
+                        ){
+
+                            widthBandDemo.setServicePerson(widthBandJSON.getServicePerson());
+                            widthBandDemo.setAccessMethod(widthBandJSON.getAccessMethod());
+                            widthBandDemo.setPayMethod(widthBandJSON.getPayMethod());
+                            widthBandDemo.setPayMoney(widthBandJSON.getPayMoney());
+                            widthBandDemo.setIdentity(widthBandJSON.getIdentity());
+                            widthBandDemo.setPassword(widthBandJSON.getPassword());
+                            widthBandDemo.setTapewidth(widthBandJSON.getTapewidth());
+                            widthBandDemo.setEndDate(widthBandJSON.getEndDate());
+                            widthBandDemo.setSign("2");
+                            storeDB.setStoreStatus(storeStatus);
+                            widthBandService.save(widthBandDemo);
+
+                        }
+                    }
+
+                }
+            }
+            storeDB.setWidthBandSet(jsonStore.getWidthBandSet());
+        }
+        storeService.save(storeDB);
+        Map<String,Object> map = new HashMap<>();
+        map.put("code","1");
+        return map;
+    }
+    /**
+     * 测试末页分页效果
+     */
+    @RequestMapping("/findAllTest")
+    @ResponseBody
+    public Map<String,Object> findAllTest(@RequestParam("page")int page, @RequestParam("pageSize") int pageSize, @RequestParam("searchName") String searchName){
+        Map<String,Object> map = new HashMap<>();
+        Page<Store> all = storeService.findAll(page, pageSize, searchName);
+        map.put("pageTotals",all.getTotalPages());
+        return  map;
+        
+    }
+
+
+
+
+
+
+
 
 
 

@@ -34,7 +34,7 @@
         };
         $(function () {
             $.ajax({
-                url:"/store/findByRepostList",
+                url:"/store/marketCheckList",
                 data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": ""},
                 dataType:"JSON",
                 type:"GET",
@@ -52,7 +52,7 @@
                         $("tbody").append('<tr>' +
                              '<td>'+data.content[i].storeName+'</td>' +
                              '<td>'+data.content[i].storeCode+'</td>' +
-                             '<td>'+data.content[i].marketCode.name+'</td>' +
+                             '<td>'+data.content[i].marketName+'</td>' +
                              '<td>'+data.content[i].storeStatus.statusName+'</td>' +
                              '<td><button class="btn btn-default" onclick="window.location.href=\'/store/searchObject?id='+data.content[i].storeId+'\'">' +
                              '<span class="glyphicon glyphicon-search">查看</span>' +
@@ -73,7 +73,7 @@
             var searchName = $('#search').val();
             $("tbody").html("");
             $.ajax({
-                url:"/store/findByRepostList",
+                url:"/store/marketCheckList",
                 data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
                 dataType:"JSON",
                 type:"GET",
@@ -89,7 +89,7 @@
                         $("tbody").append('<tr>' +
                             '<td>'+data.content[i].storeName+'</td>' +
                             '<td>'+data.content[i].storeCode+'</td>' +
-                            '<td>'+data.content[i].marketCode.name+'</td>' +
+                            '<td>'+data.content[i].marketName+'</td>' +
                             '<td>'+data.content[i].storeStatus.statusName+'</td>' +
                             '<td><button class="btn btn-default" onclick="window.location.href=\'/store/searchObject?id='+data.content[i].storeId+'\'">' +
                             '<span class="glyphicon glyphicon-search">查看</span>' +
@@ -112,7 +112,7 @@
             pageIteration(page.currPage);
             isDisabled(page.currPage, page.totalPage);
             $.ajax({
-                url:"/store/findByRepostList",
+                url:"/store/marketCheckList",
                 data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
                 dataType:"JSON",
                 type:"GET",
@@ -128,7 +128,7 @@
                         $("tbody").append('<tr>' +
                             '<td>'+data.content[i].storeName+'</td>' +
                             '<td>'+data.content[i].storeCode+'</td>' +
-                            '<td>'+data.content[i].marketCode.name+'</td>' +
+                            '<td>'+data.content[i].marketName+'</td>' +
                             '<td>'+data.content[i].storeStatus.statusName+'</td>' +
                             '<td><button class="btn btn-default" onclick="window.location.href=\'/store/searchObject?id='+data.content[i].storeId+'\'">' +
                             '<span class="glyphicon glyphicon-search">查看</span>' +
@@ -149,7 +149,7 @@
             pageIteration(page.currPage);
             isDisabled(page.currPage, page.totalPage);
             $.ajax({
-                url:"/store/findByRepostList",
+                url:"/store/marketCheckList",
                 data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
                 dataType:"JSON",
                 type:"GET",
@@ -165,7 +165,7 @@
                         $("tbody").append('<tr>' +
                             '<td>'+data.content[i].storeName+'</td>' +
                             '<td>'+data.content[i].storeCode+'</td>' +
-                            '<td>'+data.content[i].marketCode.name+'</td>' +
+                            '<td>'+data.content[i].marketName+'</td>' +
                             '<td>'+data.content[i].storeStatus.statusName+'</td>' +
                             '<td><button class="btn btn-default" onclick="window.location.href=\'/store/searchObject?id='+data.content[i].storeId+'\'">' +
                             '<span class="glyphicon glyphicon-search">查看</span>' +
@@ -185,7 +185,7 @@
             pageIteration(page.currPage);
             isDisabled(page.currPage, page.totalPage);
             $.ajax({
-                url:"/store/findByRepostList",
+                url:"/store/marketCheckList",
                 data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
                 dataType:"JSON",
                 type:"GET",
@@ -201,7 +201,7 @@
                         $("tbody").append('<tr>' +
                             '<td>'+data.content[i].storeName+'</td>' +
                             '<td>'+data.content[i].storeCode+'</td>' +
-                            '<td>'+data.content[i].marketCode.name+'</td>' +
+                            '<td>'+data.content[i].marketName+'</td>'+
                             '<td>'+data.content[i].storeStatus.statusName+'</td>' +
                             '<td><button class="btn btn-default" onclick="window.location.href=\'/store/searchObject?id='+data.content[i].storeId+'\'">' +
                             '<span class="glyphicon glyphicon-search">查看</span>' +
@@ -258,7 +258,7 @@
     <div class="container">
         <div class="col-md-5 col-xs-12" style="float:right;">
             <div class="input-group">
-                <input type="text" id="search" class="form-control" placeholder="输入门店名称/编码/市场/进行搜索">
+                <input type="text" id="search" class="form-control" placeholder="输入门店名称/编码/进行搜索">
                 <span class="input-group-btn">
                  <button class="btn btn-primary" id="searchButton">搜 索</button>
             </span>

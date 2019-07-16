@@ -25,7 +25,7 @@ public class ItemController {
     }
     @RequestMapping("/save")
     public String save(int equipId,String[] name){
-        System.out.println("equipId---->"+equipId);
+       // System.out.println("equipId---->"+equipId);
         Set<Item> itemSet = new HashSet<>();
         for (int i = 0; i <name.length ; i++) {
             Item item = new Item();
@@ -47,11 +47,30 @@ public class ItemController {
     }
     //执行修改的操作
     @RequestMapping("/updateSave")
-    public String upadteSave(EquipName equipNameEntity){
+    public String upadteSave(EquipName equipNameEntity,String[] upName){
+        System.out.println("进入的url是-------》updateSave");
+        Set<Item> itemSet = equipNameEntity.getItemSet();
+        if(upName.length!=0){
+            for (int i = 0; i <upName.length ; i++) {
+                Item item = new Item();
+                item.setName(upName[i]);
+                itemService.save(item);
+                itemSet.add(item);
+            }
+        }
+        equipNameEntity.setItemSet(itemSet);
         System.out.println("equipName--->"+equipNameEntity);
         equipNameService.save(equipNameEntity);
         return "redirect:/item/home";
     }
+    //执行修改操作没有添加新的设备类型
+    @RequestMapping("/update")
+    public String upadteSave(EquipName equipNameEntity){
+       // System.out.println("equipName--->"+equipNameEntity);
+        equipNameService.save(equipNameEntity);
+        return "redirect:/item/home";
+    }
+
 
 
 

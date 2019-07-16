@@ -32,28 +32,19 @@ public class EquipNameService {
     public Page<EquipName> findAllList(int page,int size,String value) {
         Sort sort = new Sort(Sort.Direction.ASC, "equipId");
         Pageable pageable = PageRequest.of(page - 1, size, sort);
-        /*if(value!=null){
-            return equipNameRepository.findAll((Root<EquipName> root,CriteriaQuery<?> criteriaQuery,CriteriaBuilder criteriaBuilder)->{
-                List<Predicate> predicates = new ArrayList<Predicate>();
-                predicates.add(criteriaBuilder.like(root.get("name").as(String.class),"%"+value+"%"));
-                predicates.add(criteriaBuilder.isNotNull(root.get("itemSet").as(Item.class)));
-                return criteriaQuery.where(predicates.toArray(new Predicate[predicates.size()])).getRestriction();
-            },pageable);
-        }else{
-            return equipNameRepository.findAll(new Specification<EquipName>() {
-                @Override
-                public Predicate toPredicate(Root<EquipName> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
-                    criteriaQuery.where(criteriaBuilder.isNotNull(root.get("itemSet").as(Item.class)));
-                    return null;
-                }
-            },pageable);
-        }*/
         if (value != null) {
             return equipNameRepository.findAll(new Specification<EquipName>() {
                 @Override
                 public Predicate toPredicate(Root<EquipName> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
                     Path<String> equipName = root.get("name");
-                    criteriaQuery.where(criteriaBuilder.like(equipName, "%" + value + "%"));
+                    Join join = root.join( root.getModel().getSet("itemSet",Item.class),JoinType.LEFT);
+                    Predicate p1 = criteriaBuilder.like(join.get("name"),"%"+value+"%");
+                    Predicate p2 = criteriaBuilder.like(equipName, "%" + value + "%");
+                    Predicate p = criteriaBuilder.or(p1,p2);
+                    criteriaQuery.where(p);
+                    //对实体中有set集合的查询时，会使得记录的条数增多set集合中的元素，以主键进行区分。
+                    //需要对查询的结果进行去重 distinct(true)
+                    criteriaQuery.distinct(true);
                     return null;
                 }
             }, pageable);
@@ -61,7 +52,5 @@ public class EquipNameService {
         return equipNameRepository.findAll(pageable);
 
     }
-
-
 
 }

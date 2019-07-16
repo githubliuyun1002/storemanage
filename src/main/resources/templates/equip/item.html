@@ -59,6 +59,17 @@
                 '<input type="text" class="form-control" placeholder="设备型号" name="name" required="true"/>');
 
         });
+        //upAddItems
+        $(document).on("click","#upAddItems",function () {
+            $("#updateDate").attr("action","/item/updateSave");
+            $("#updateBody").append('<div id="upAddItemset"></div>');
+            $("#upAddItemset").append('' +
+                '<input type="text" class="form-control" placeholder="设备型号" name="upName" required="true"/>');
+
+        });
+        
+        
+        
         //填充页面
         $(function () {
               $.ajax({
@@ -67,9 +78,6 @@
                   dataType:"JSON",
                   type:"GET",
                   success:function (data) {
-                      console.log("总页数----》"+data.totalPages);
-                      console.log("总的记录条数---->"+data.content.length);
-                      console.log("内容----》"+data.content);
                       page.totalPage = data.totalPages;
                       //初始化页面按钮
                       if (data.totalPages > page.pageLength) {
@@ -94,19 +102,6 @@
                                      $("#td"+i).append(data.content[i].itemSet[j].name+",");
                                  }
                              }
-                          /*$("tbody").append('' +
-                              '<tr>' +
-                              '<td>'+data.content[i].name+'</td>' +
-                              '<td id="td'+i+'"></td>' +
-                              '<td>' +
-                              '<button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].equipId + ')" ' +
-                              'data-target="#upmyModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button>' +
-                              '</td>'+
-                              '</tr>');
-                          for (var j = 0; j <data.content[i].itemSet.length; j++) {
-                              $("#td"+i).append(data.content[i].itemSet[j].name+",");
-                          }*/
-
                       }
                   },
                   error:function () {
@@ -181,7 +176,6 @@
                                 $("#td"+i).append(data.content[i].itemSet[j].name+",");
                             }
                         }
-
                     }
                 },
                 error:function () {
@@ -226,8 +220,8 @@
                                 $("#td"+i).append(data.content[i].itemSet[j].name+",");
                             }
                         }
-
                     }
+
                 },
                 error:function () {
                     alert("页面数据填充失败");
@@ -271,8 +265,8 @@
                                 $("#td"+i).append(data.content[i].itemSet[j].name+",");
                             }
                         }
-
                     }
+
                 },
                 error:function () {
                     alert("下一页数据填充失败");
@@ -315,7 +309,6 @@
                                 $("#td"+i).append(data.content[i].itemSet[j].name+",");
                             }
                         }
-
                     }
                 },
                 error:function () {
@@ -323,6 +316,7 @@
                 }
             })
         });
+
         //添加分页插件，根据总页数来添加按钮
         function addButtons(startPage, pageLength) {
             // alert(pageLength);
@@ -376,7 +370,7 @@
       </div>
       <div class="col-md-5 col-xs-12">
           <div class="input-group">
-              <input type="text" id="search" class="form-control" placeholder="输入设备名称进行搜索">
+              <input type="text" id="search" class="form-control" placeholder="输入设备名称/设备型号进行搜索">
               <span class="input-group-btn">
                  <button type="button" class="btn btn-primary" id="searchButton">搜 索</button>
                 </span>
@@ -419,7 +413,7 @@
           </form>
       </div>
       <div class="modal fade" id="upmyModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-          <form method="post" th:action="@{/item/updateSave}" id="updateDate" th:autocomplete="off">
+          <form method="post" th:action="@{/item/update}" id="updateDate" th:autocomplete="off">
               <div class="modal-dialog">
                   <div class="modal-content">
                       <div class="modal-header">
@@ -428,11 +422,13 @@
                       <div class="modal-body" id="updateBody">
                           <div id="updateId"></div>
                           <label>设备名称</label>
-                          <!--属性的名字与实体类的名字一直，驼峰的命名规则。因此会导致，认为equipName属性是一个实体类-->
                           <input type="text" class="form-control"
                                  id="updateequipName" name="name" placeholder="设备名称" required="true">
                           <label>设备型号</label>
                           <div id="appendItem"></div>
+                          <button type="button" class="btn btn-default" id="upAddItems">
+                              <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增设备型号
+                          </button>
                       </div>
                       <div class="modal-footer" id="updateFooter">
                           <button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>

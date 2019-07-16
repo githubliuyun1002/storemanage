@@ -23,6 +23,7 @@
                 dataType:"JSON",
                 type:"GET",
                 success:function (data) {
+                    console.log("data------------>"+data);
                     //若有设置了宽带信息,进行宽带数据填充
                     $("#storeCode").val(data.storeCode);
                     $("#storeName").val(data.storeName);
@@ -32,34 +33,70 @@
                     $("#storeStatus").val(data.storeStatus.statusName);
                     $("#openDate").val(data.openDate);
                     $("#closeDate").val(data.closeDate);
+
+
                     if(data.widthBandSet!=null){
                         for (var i = 0; i <data.widthBandSet.length ; i++) {
-                            $("#widthShow").append("<div class=\"page_section_container hxcontainer_shadow\">" +
-                                "<img class=\"page_section_title_decorated hxbgcolor_datalist_head\" src=\"./content/hxpub_clear.gif\">" +
-                                "<div class=\"page_section_title_area\" hx_element_type=\"text\">" +
-                                "<span class=\"hxtxt_nowrap hxtxt_section_title\" style=\";text-align:left;display:inline-block;width:100%;\">宽带基本信息</span>" +
-                                "</div>" +
-                                "<div class=\"page_section_content_area\">" +
-                                "<table style=\"table-layout:fixed;width:100%;\">" +
-                                "<tbody>" +
-                                "<tr>" +
-                                "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">运营商</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input type=\"hidden\"  name=\"wid\" id=\"wid\" value="+data.widthBandSet[i].wid+"><input type=\"hidden\" id=\"sid\" name=\"sid\" value="+data.widthBandSet[i].servicePerson.sid+"><select class=\"form-control\" name=\"servicePerson\"  test=\"serviceTest\" id=\"servicePerson"+i+"\"></select></span></td>" +
-                                "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">接入方式</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input type=\"hidden\" name=\"aid\" id=\"aid\" value="+data.widthBandSet[i].accessMethod.aid+"><select  class=\"form-control\" name=\"accessMethod\" test=\"accessTest\" id=\"accessMethod"+i+"\"></select></span></td>" +
-                                "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">付款方式</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input type=\"hidden\" name=\"payid\" id=\"payid\" value="+data.widthBandSet[i].payMethod.payid+"><select  class=\"form-control\" test=\"payMethodTest\" name=\"payMethod\" id=\"payMethod"+i+"\"></select></span></td>" +
-                                "</tr>" +
-                                "<tr>" +
-                                "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">付款金额</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input  readonly='readonly' type=\"text\"  name=\"payMoney\"  id=\"payMoney\" value="+data.widthBandSet[i].payMoney+" class=\"hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly\"  style=\"text-align:left;width:100%;overflow-y:auto\"></span></td>" +
-                                "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">宽带账号</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input  readonly='readonly' type=\"text\"  name=\"identity\"  id=\"identity\" value="+data.widthBandSet[i].identity+" class=\"hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly\"  style=\"text-align:left;width:100%;overflow-y:auto\"></span></td>" +
-                                "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">宽带密码</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input  readonly='readonly' type=\"text\"  name=\"password\"  id=\"password\" value="+data.widthBandSet[i].password+" class=\"hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly\"  style=\"text-align:left;width:100%;overflow-y:auto\"></span></td>" +
-                                "</tr>" +
-                                "<tr>" +
-                                "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">宽带带宽</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input readonly='readonly' type=\"text\"  name=\"tapewidth\"  id=\"tapewidth\" value="+data.widthBandSet[i].tapewidth+" class=\"hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly\"  style=\"text-align:left;width:100%;overflow-y:auto\"></span></td>" +
-                                "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">到期日期</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input  readonly='readonly' type=\"text\"  name=\"endDate\"  id=\"endDate\" value="+data.widthBandSet[i].endDate+" class=\"hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly\"  style=\"text-align:left;width:100%;overflow-y:auto\"></span></td>" +
-                                "</tr>"+
-                                "</tbody>" +
-                                "</table>" +
-                                "</div>" +
-                                "</div>");
+                            //表示通过审核
+                            if(data.widthBandSet[i].sign=="1"){
+                                $("#widthShow").append("<div class=\"page_section_container hxcontainer_shadow\">" +
+                                    "<img class=\"page_section_title_decorated hxbgcolor_datalist_head\" src=\"./content/hxpub_clear.gif\">" +
+                                    "<div class=\"page_section_title_area\" hx_element_type=\"text\">" +
+                                    "<span class=\"hxtxt_nowrap hxtxt_section_title\" style=\";text-align:left;display:inline-block;width:100%;\">宽带基本信息</span>" +
+                                    "</div>" +
+                                    "<div class=\"page_section_content_area\">" +
+                                    "<table style=\"table-layout:fixed;width:100%;\">" +
+                                    "<tbody>" +
+                                    "<tr>" +
+                                    "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">运营商</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input type=\"hidden\"  name=\"wid\" id=\"wid\" value="+data.widthBandSet[i].wid+"><input type=\"hidden\" id=\"sid\" name=\"sid\" value="+data.widthBandSet[i].servicePerson.sid+"><select disabled='disabled' class=\"form-control\" name=\"servicePerson\"  test=\"serviceTest\" id=\"servicePerson"+i+"\"></select></span></td>" +
+                                    "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">接入方式</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input type=\"hidden\" name=\"aid\" id=\"aid\" value="+data.widthBandSet[i].accessMethod.aid+"><select  class=\"form-control\" name=\"accessMethod\" test=\"accessTest\"  disabled='disabled' id=\"accessMethod"+i+"\"></select></span></td>" +
+                                    "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">付款方式</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input type=\"hidden\" name=\"payid\" id=\"payid\" value="+data.widthBandSet[i].payMethod.payid+"><select  class=\"form-control\" test=\"payMethodTest\" name=\"payMethod\" disabled='disabled' id=\"payMethod"+i+"\"></select></span></td>" +
+                                    "</tr>" +
+                                    "<tr>" +
+                                    "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">付款金额</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input  readonly='readonly' type=\"text\"  name=\"payMoney\"  id=\"payMoney\" value="+data.widthBandSet[i].payMoney+" class=\"hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly\"  style=\"text-align:left;width:100%;overflow-y:auto\"></span></td>" +
+                                    "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">宽带账号</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input  readonly='readonly' type=\"text\"  name=\"identity\"  id=\"identity\" value="+data.widthBandSet[i].identity+" class=\"hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly\"  style=\"text-align:left;width:100%;overflow-y:auto\"></span></td>" +
+                                    "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">宽带密码</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input  readonly='readonly' type=\"text\"  name=\"password\"  id=\"password\" value="+data.widthBandSet[i].password+" class=\"hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly\"  style=\"text-align:left;width:100%;overflow-y:auto\"></span></td>" +
+                                    "</tr>" +
+                                    "<tr>" +
+                                    "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">宽带带宽</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input readonly='readonly' type=\"text\"  name=\"tapewidth\"  id=\"tapewidth\" value="+data.widthBandSet[i].tapewidth+" class=\"hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly\"  style=\"text-align:left;width:100%;overflow-y:auto\"></span></td>" +
+                                    "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">到期日期</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input  readonly='readonly' type=\"text\"  name=\"endDate\"  id=\"endDate\" value="+data.widthBandSet[i].endDate+" class=\"hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly\"  style=\"text-align:left;width:100%;overflow-y:auto\"></span></td>" +
+                                    "<td class='hxfld_container'><label class='hxtxt_caption hxtxt_nowrap' style='display:inline-block;width:24%;padding-right:10px;text-align:left'>审批人</label><span style='display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;'><input readonly='readonly' type='text' name='chenckPerson' id='chenckPerson' value='"+data.widthBandSet[i].chenckPerson+"' class='hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly' style='text-align:left;width:100%;overflow-y:auto'></span></td>"+
+                                    "</tr>"+
+                                    "</tbody>" +
+                                    "</table>" +
+                                    "</div>" +
+                                    "</div>");
+
+                            }else{
+                                $("#widthShow").append("<div class=\"page_section_container hxcontainer_shadow\">" +
+                                    "<img class=\"page_section_title_decorated hxbgcolor_datalist_head\" src=\"./content/hxpub_clear.gif\">" +
+                                    "<div class=\"page_section_title_area\" hx_element_type=\"text\">" +
+                                    "<span class=\"hxtxt_nowrap hxtxt_section_title\" style=\";text-align:left;display:inline-block;width:100%;\">宽带基本信息</span>" +
+                                    "</div>" +
+                                    "<div class=\"page_section_content_area\">" +
+                                    "<table style=\"table-layout:fixed;width:100%;\">" +
+                                    "<tbody>" +
+                                    "<tr>" +
+                                    "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">运营商</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input type=\"hidden\"  name=\"wid\" id=\"wid\" value="+data.widthBandSet[i].wid+"><input type=\"hidden\" id=\"sid\" name=\"sid\" value="+data.widthBandSet[i].servicePerson.sid+"><select class=\"form-control\" name=\"servicePerson\"  test=\"serviceTest\" id=\"servicePerson"+i+"\"></select></span></td>" +
+                                    "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">接入方式</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input type=\"hidden\" name=\"aid\" id=\"aid\" value="+data.widthBandSet[i].accessMethod.aid+"><select  class=\"form-control\" name=\"accessMethod\" test=\"accessTest\" id=\"accessMethod"+i+"\"></select></span></td>" +
+                                    "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">付款方式</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input type=\"hidden\" name=\"payid\" id=\"payid\" value="+data.widthBandSet[i].payMethod.payid+"><select  class=\"form-control\" test=\"payMethodTest\" name=\"payMethod\" id=\"payMethod"+i+"\"></select></span></td>" +
+                                    "</tr>" +
+                                    "<tr>" +
+                                    "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">付款金额</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input   type=\"text\"  name=\"payMoney\"  id=\"payMoney\" value="+data.widthBandSet[i].payMoney+" class=\"hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly\"  style=\"text-align:left;width:100%;overflow-y:auto;font-weight:bold;color:red\"></span></td>" +
+                                    "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">宽带账号</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input  type=\"text\"  name=\"identity\"  id=\"identity\" value="+data.widthBandSet[i].identity+" class=\"hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly\"  style=\"text-align:left;width:100%;overflow-y:auto;font-weight:bold;color:red\"></span></td>" +
+                                    "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">宽带密码</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input   type=\"text\"  name=\"password\"  id=\"password\" value="+data.widthBandSet[i].password+" class=\"hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly\"  style=\"text-align:left;width:100%;overflow-y:auto;font-weight:bodl;color:red\"></span></td>" +
+                                    "</tr>" +
+                                    "<tr>" +
+                                    "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">宽带带宽</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input  type=\"text\"  name=\"tapewidth\"  id=\"tapewidth\" value="+data.widthBandSet[i].tapewidth+" class=\"hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly\"  style=\"text-align:left;width:100%;overflow-y:auto;font-weight:bold;color:red\"></span></td>" +
+                                    "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">到期日期</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input   type=\"text\"  name=\"endDate\"  id=\"endDate\" value="+data.widthBandSet[i].endDate+" class=\"hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly\"  style=\"text-align:left;width:100%;overflow-y:auto;font-weight:bold;color:red\"></span></td>" +
+                                    "<td class='hxfld_container'><label class='hxtxt_caption hxtxt_nowrap' style='display:inline-block;width:24%;padding-right:10px;text-align:left'>审批人</label><span style='display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;'><input readonly='readonly' type='text' name='chenckPerson' id='chenckPerson' value='"+data.widthBandSet[i].chenckPerson+"' class='hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly' style='text-align:left;width:100%;overflow-y:auto;'></span></td>"+
+                                    "</tr>"+
+                                    "</tbody>" +
+                                    "</table>" +
+                                    "</div>" +
+                                    "</div>");
+                            }
+
                             serviceNameArr.push(data.widthBandSet[i].servicePerson.sid);
                             accessNameArr.push(data.widthBandSet[i].accessMethod.aid);
                             methodArr.push(data.widthBandSet[i].payMethod.payid);
@@ -199,8 +236,7 @@
                 }
             });
         });
-
-        //保存修改的记录，将数据保存再history历史记录中  $("#className").find("option:checked").attr("id");
+        //保存修改的记录，将数据保存再history历史记录中
         function submitFrom() {
             //得到页面所有的checkbox元素(门店设备信息)
             var widthsSet="";
@@ -250,11 +286,12 @@
                     var password = trArrs.eq(1).find("input[name='password']").val();
                     var tapewidth = trArrs.eq(2).find("input[name='tapewidth']").val();
                     var endDate = trArrs.eq(2).find("input[name='endDate']").val();
+                    var chenckPerson = trArrs.eq(2).find("input[name='chenckPerson']").val();
                     widthsSet+="{\"wid\":"+wid+",\"servicePerson\":{\"sid\":"+sid+",\"serviceName\":\""+serviceName+"\"}," +
                         "\"accessMethod\":{\"aid\":"+aid+",\"accessName\":\""+accessName+"\"}," +
                         "\"payMethod\":{\"payid\":"+payid+",\"method\":\""+method+"\"}," +
                         "\"payMoney\":"+payMoney+",\"identity\":\""+identity+"\",\"password\":\""+password+"\"," +
-                        "\"tapewidth\":\""+tapewidth+"\",\"endDate\":\""+endDate+"\"";
+                        "\"tapewidth\":\""+tapewidth+"\",\"endDate\":\""+endDate+"\",\"chenckPerson\":\""+chenckPerson+"\"";
                     if(i==widthObjects.length-1){
                         widthsSet+="}";
                     }else {
@@ -266,7 +303,7 @@
             if(checkBoxArray.length!=0&&widthObjects.length!=0){
                 var storeMsd = "{\"storeId\":"+$("#storeId").val()+",\"storeCode\":\""+$("#storeCode").val()+"\"," +
                     "\"itemsSet\":"+itemsSet+",\"widthBandSet\":"+widthsSet+"}";
-                console.log("修改后提交的门店信息-----》"+storeMsd);
+               // console.log("修改后提交的门店信息-----》"+storeMsd);
                 $.ajax({
                     url:"/adjust/toupdateAdjust",
                     type:"GET",

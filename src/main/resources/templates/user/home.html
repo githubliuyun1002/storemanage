@@ -233,6 +233,25 @@
 
             });
         });
+
+        <!--用户名触发的失去焦点的事件-->
+        function check(){
+            var userName=$("#username").val();
+            $.ajax({
+                url:"/person/checkUserName",
+                data:{"userName":userName},
+                type:"GET",
+                dataType:"JSON",
+                success:function (data) {
+                    $("#errorMsg").html("");
+                    if(data.code=="true"){
+                        $("#errorMsg").html("该用户已经被注册不能再使用，请重新输入");
+                    }
+                }
+            });
+        }
+
+
         <!--修改人员-->
         function updateBtn(id) {
             $("#footer").html("");
@@ -636,8 +655,9 @@
                        </div>
                        <div class="modal-body" id="modalBody">
                            <label for="username">用户名</label>
-                           <input class="form-control" type="text" placeholder="人员名称" name="username" id="username"
+                           <input class="form-control" type="text" onblur="check()" placeholder="人员名称" name="username" id="username"
                                   required="true"/>
+                           <span id="errorMsg" style="font-weight: bold;color: red"></span><br/>
                            <label for="password">密码</label>
                            <input class="form-control" type="text" placeholder="密码" name="password" id="password"
                                   required="true"/>

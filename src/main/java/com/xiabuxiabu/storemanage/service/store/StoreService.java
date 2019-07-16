@@ -93,9 +93,6 @@ public class StoreService {
     public Store findByStoreCode(String code){
         return storeRepository.findByStoreCode(code);
     }
-//    public List<Store> findByMarketName(String marketName){
-//        return storeRepository.findByMarketName(marketName);
-//    }
     public Page<Store> adjustList(int page,int size,String values){
         Sort sort = new Sort(Sort.Direction.ASC,"storeId");
         Pageable pageable = PageRequest.of(page-1,size,sort);
@@ -289,10 +286,12 @@ public class StoreService {
                          marketNameSerarch = criteriaBuilder.equal(market,marketName);
                          bandNameSearch = criteriaBuilder.equal(band,bandName);
                          criteriaQuery.where(p,marketNameSerarch,p4,predicateCloseSign,bandNameSearch);
+                         criteriaQuery.distinct(true);
                      }else {
                          //管理员展示所有的门店信息
                          p=criteriaBuilder.or(p1, p2, p3,p5);
                          criteriaQuery.where(p,p4,predicateCloseSign);
+                         criteriaQuery.distinct(true);
                      }
                      return null;
                  }
@@ -401,7 +400,6 @@ public class StoreService {
         }
         return  storeRepository.findAll(pageable);
     }
-
     public List<String> marketNameList(){
         return storeRepository.marketNameList();
     }
@@ -409,7 +407,39 @@ public class StoreService {
         return storeRepository.findByMarketName(marketName);
     }
 
+    /**
+     * 加载市场IT看到的自己市场的已经通过审批的门店
+     */
+    public Page<Store> marketCheckList(int page,int size,String values){
+        Sort sort = new Sort(Sort.Direction.ASC,"storeId");
+        Pageable pageable = PageRequest.of(page-1,size,sort);
+        if(values!=null){
+            return storeRepository.findAll(new Specification<Store>() {
+                @Override
+                public Predicate toPredicate(Root<Store> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                    Path<String> name = root.get("storeName");  //餐厅名称进行查询
+                    Path<String> code = root.get("storeCode");  //餐厅编码进行查询
+                    Path<String> marketname = root.get("marketName");  //餐厅所属的市场
 
+                    Predicate p1 = criteriaBuilder.like(name,"%"+ values +"%");
+                    Predicate p2 = criteriaBuilder.like(code,"%"+ values +"%");
+                    Predicate or = criteriaBuilder.or(p1,p2);
+
+                    Path<StoreStatus> storeStatus = root.get("storeStatus");
+                    Predicate storestatus = criteriaBuilder.equal(storeStatus.get("statusName"),"已确认");
+                    //拿到登录人的信息
+                    String userName = (String) httpServletRequest.getSession().getAttribute("userName");
+                    String marketNamePreson = userService.findByUserName(userName).getMarketName();
+                    Predicate marketNameSerarch = criteriaBuilder.equal(marketname,marketNamePreson);
+
+                    criteriaQuery.where(or,storestatus,marketNameSerarch);
+
+                    return null;
+                }
+            },pageable);
+        }
+        return storeRepository.findAll(pageable);
+    }
 
 
 

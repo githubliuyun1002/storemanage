@@ -50,6 +50,7 @@
                     }
                     pageIteration(page.currPage);
                     isDisabled(page.currPage, data.totalPages);
+                    //对页面元素进行去重
                     for (var i = 0; i <data.content.length ; i++) {
                         if(data.content[i].equipNames.length>0&&data.content[i].publicStatus.name=="启用"){
                             $("tbody").append('' +
@@ -83,12 +84,23 @@
                 }
             })
         });
+
         //新增设备名称
         $(document).on("click","#addTypes",function () {
             $("#modalBody").append('<div id="addEquipName"></div>');
             $("#addEquipName").append(
                 '<input class="form-control" type="text" placeholder="设备名称" name="equipName" required="true"/>');
         });
+
+        //修改设备时，重新添加新的设备名称
+        $(document).on("click","#upAddTypes",function () {
+            $("#updateDate").attr("action","/equipname/updateSave");
+            $("#updateBody").append('<div id="upAddEquipName"></div>');
+            $("#upAddEquipName").append('' +
+                '<input class="form-control" type="text" placeholder="设备名称" name="upEquipName" required="true"/>');
+        });
+
+
 
         //修改设备回显
         function updateBtn(id){
@@ -98,7 +110,6 @@
                 dataType:"JSON",
                 type:"GET",
                 success:function (data) {
-                     console.log("修改数据回显---->"+data);
                     $("#updateId").html("");
                     $("#updateId").append('<input type="hidden" name="classId" value="'+data.classId+'">');
                     $("#appendEquipName").html("");
@@ -137,7 +148,6 @@
                 type:"GET",
                 dataType:"JSON",
                 success:function (data) {
-                    console.log(data);
                     //初始化按钮，即第一次网页面上添加按钮
                     if (data.totalPages > page.pageLength) {
                         addButtons(page.startPage, page.pageLength);
@@ -203,6 +213,7 @@
                             }
                         }
                     }
+
                 },
                 error:function () {
                     alert("上一页加载数据失败");
@@ -249,6 +260,7 @@
                             }
                         }
                     }
+
                 },
                 error:function () {
                     alert("页码加载数据失败");
@@ -294,6 +306,7 @@
                             }
                         }
                     }
+
                 },
                 error:function () {
                     alert("下一页加载数据失败");
@@ -301,6 +314,7 @@
 
             });
         });
+
         //添加分页插件，根据总页数来添加按钮
         function addButtons(startPage, pageLength) {
             // alert(pageLength);
@@ -348,23 +362,18 @@
 </head>
 <body>
     <div class="container">
-        <div class="col-md-5 col-xs-12">
+        <div class="col-md-7 col-xs-12">
             <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal" id="add"
                     data-backdrop="static" data-keyboard="false"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增设备名称
             </button>
         </div>
-        <div class="col-md-7 col-xs-12">
+        <div class="col-md-5 col-xs-12">
             <div class="input-group">
-                <input type="text" id="search" class="form-control" placeholder="输入设备类别名称进行搜索">
+                <input type="text" id="search" class="form-control" placeholder="输入设备类别/设备名称进行搜索">
                 <span class="input-group-btn">
                  <button type="button" class="btn btn-primary" id="searchButton">搜 索</button>
                 </span>
             </div>
-            <!--<div class="form-inline">
-                <input type="text" id="searchClass" class="form-control" placeholder="输入设备类别进行搜索">
-                <input type="text" id="searchEquip" class="form-control" placeholder="输入设备名称进行搜索">
-                <button type="button" class="btn btn-primary" id="searchButton">搜 索</button>
-            </div>-->
         </div>
 
         <table class="table table-striped">
@@ -402,7 +411,7 @@
             </form>
         </div>
         <div class="modal fade" id="upmyModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-            <form method="post" th:action="@{/equipname/updateSave}" id="updateDate" th:autocomplete="off">
+            <form method="post" th:action="@{/equipname/update}" id="updateDate" th:autocomplete="off">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -411,9 +420,10 @@
                         <div class="modal-body" id="updateBody">
                             <div id="updateId"></div>
                             <label>设备类型</label>
-                            <input type="text" class="form-control" id="updatename" name="name" placeholder="设备类型" required="true">
+                            <input type="text" class="form-control" id="updatename" name="name" readonly="readonly" placeholder="设备类型" required="true">
                             <label>设备名称</label>
                             <div id="appendEquipName"></div>
+                            <button type="button" class="btn btn-default" id="upAddTypes"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增设备名称</button>
                         </div>
                         <div class="modal-footer" id="updateFooter">
                             <button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>

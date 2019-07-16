@@ -20,7 +20,7 @@ public class Store {
     private String storeCode;           //门店编码
     private String storeName;           //门店名称
     private String address;             //地址
-    private String marketName;   //所属市场
+    private String marketName;          //所属市场
     private String marger;             //(有些门店没有门店经理，再列表中展示时需要判断)
     private String band;            //品牌
     //门店状态

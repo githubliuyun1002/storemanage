@@ -20,7 +20,6 @@ public class Classification {
     @ManyToMany(targetEntity = EquipName.class,fetch = FetchType.EAGER)
     @JoinTable(name = "class_equipname",joinColumns = @JoinColumn(name = "class_id"),inverseJoinColumns = @JoinColumn(name = "equipname_id"))
     private Set<EquipName> equipNames;
-
     public int getClassId() {
         return classId;
     }

@@ -60,16 +60,38 @@ public class EquipNameController {
     public List<EquipName> findAll(){
         return equipNameService.findAll();
     }
+
+    //修改设备名称时，有添加新的设备名称
     @RequestMapping("/updateSave")
+    public String updateSave(Classification classification,String[] upEquipName){
+        Set<EquipName> equipNames = classification.getEquipNames();
+
+        for (int i = 0; i <upEquipName.length ; i++) {
+           EquipName equipName = new EquipName();
+           equipName.setName(upEquipName[i]);
+           equipNameService.save(equipName);
+           equipNames.add(equipName);
+        }
+        classification.setEquipNames(equipNames);
+        classificationService.save(classification);
+        return "redirect:/equipname/home";
+    }
+    //修改时，不添加新的设备名称
+    @RequestMapping("/update")
     public String updateSave(Classification classification){
         classificationService.save(classification);
         return "redirect:/equipname/home";
     }
+
+
+
     @RequestMapping("/findById")
     @ResponseBody
     public EquipName findById(int id){
         return equipNameService.findById(id);
     }
+
+
 
 
 }

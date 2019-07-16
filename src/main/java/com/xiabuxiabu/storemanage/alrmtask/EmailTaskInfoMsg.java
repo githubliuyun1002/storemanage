@@ -6,6 +6,7 @@ import com.xiabuxiabu.storemanage.entity.user.User;
 import com.xiabuxiabu.storemanage.publicutils.EMailProperties;
 import com.xiabuxiabu.storemanage.service.store.MailListSerivice;
 import com.xiabuxiabu.storemanage.service.user.UserService;
+import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -24,13 +25,13 @@ public class EmailTaskInfoMsg {
     private EMailTask eMailTask;
     @Autowired
     private EMailProperties eMailProperties;
+    private static Logger log    = Logger.getLogger(EmailTaskInfoMsg.class);
 
-    //发送给市场IT,让市场IT及时进行添加相应的设备
+    //发送给市场IT,让市场IT及时进行添加相应的设备（每2个小时执行一次）
     @Scheduled(cron = "0 0 0/2 * * ?")
     public void emailRun() {
         //市场名称
         List<String> marketNameList = mailListSerivice.marketList();
-
         //根据市场名称，取出人员，以及待发送的门店信息
         for (int i = 0; i < marketNameList.size(); i++) {
             String marketName = marketNameList.get(i);
@@ -59,12 +60,13 @@ public class EmailTaskInfoMsg {
                             mailListDemo.setMailStatus(1);
                             mailListDemo.setRemarks("发送成功");
                             mailListSerivice.save(mailListDemo);
+                            log.info("邮件发送成功");
                         } catch (Exception e) {
                            // e.printStackTrace();
                             mailListDemo.setMailStatus(0);
                             mailListDemo.setRemarks("未发送成功");
                             mailListSerivice.save(mailListDemo);
-
+                            log.error(e+"-----邮件未发出去");
                         }
                     }
 
@@ -73,7 +75,7 @@ public class EmailTaskInfoMsg {
         }
     }
     //发送给管理员的邮件列表
-    @Scheduled(cron = "0 0 0/3 * * ?")
+   // @Scheduled(cron = "0 0 0/3 * * ?")
     public void  adminRun(){
         //对于管理员拿到所有的待发邮件的信息
         System.out.println("发送管理员定时任务开始执行");

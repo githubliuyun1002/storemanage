@@ -30,11 +30,19 @@ public class WidthBand {
 
     //记录该门店的宽带是否通过审核的标记
     private String sign;
+    //审批人
+    private String chenckPerson;
 
     @Temporal(TemporalType.DATE)
     private Date endDate;   //到期日期
 
+    public String getChenckPerson() {
+        return chenckPerson;
+    }
 
+    public void setChenckPerson(String chenckPerson) {
+        this.chenckPerson = chenckPerson;
+    }
 
     public String getSign() {
         return sign;

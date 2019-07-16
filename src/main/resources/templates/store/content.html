@@ -185,7 +185,6 @@
                             //设置分类的div
                             for (var p = 0; p <data.itemsSet.length ; p++) {
                                 var show = $("#span"+k).text();
-                               // console.log("span---->"+show);
                                 if(show==data.itemsSet[p].className){
                                     $("#tbody"+k).append('' +
                                         '<tr class="hxbgcolor_itemline_normal">' +
@@ -322,7 +321,6 @@
                 }
             });
         });
-
         <!--付款方式-->
         $(function () {
             $.ajax({
@@ -339,7 +337,7 @@
                     alert("填充宽带的付款方式失败");
                 }
             });
-        })
+        });
 
        //返回上级按钮的事件
        function  goback(){
@@ -365,7 +363,6 @@
                        var itemId = tdArr.eq(2).find("input[type='hidden']").val();
                        var name = tdArr.eq(2).find("input[name='name']").val();
                        var num = tdArr.eq(3).find("input[name='num']").val();
-                       var className = tdArr.eq(3).find("input[name='className']").val();
                        var className = tdArr.eq(3).find("input[name='className']").val();
                        itemsSet += "{\"className\":\"" + className + "\",\"equipName\":\"" + equipName + "\",\"id\":" + id + "," +
                            "\"item\":{\"itemId\":" + itemId + ",\"name\":\"" + name + "\"}," +
@@ -445,9 +442,7 @@
         function confirmItems() {
             return confirm("请检查您的设备明细，是否要提交");
         }
-        // function checkSubmit() {
-        //     return confirm("设备提交后将上传自管理员审批，请确认是否进行修改");
-        // }
+
     </script>
 </head>
 <body class="hxbgcolor_webpage">

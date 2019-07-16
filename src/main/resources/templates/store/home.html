@@ -19,7 +19,7 @@
             color: white;
         }
 
-        #page .page-btn:hover, #page .prev:hover, #page .next:hover {
+        #page .page-btn:hover, #page .prev:hover, #page .next:hover, #page .first:hover, #page .last:hover{
             background-color: #337AB7;
             color: white;
         }
@@ -51,13 +51,17 @@
                 success:function (data) {
                     page.totalPage = data.totalPages;
 
+
                     if (data.totalPages > page.pageLength) {
                         addButtons(page.startPage, page.pageLength);
                     } else {
                         addButtons(page.startPage, data.totalPages);
                     }
+
                     pageIteration(page.currPage);
                     isDisabled(page.currPage, data.totalPages);
+                    isFirstAndLast(page.currPage,data.totalPages);
+
                     var tableContent="";
                     var userType = $("#userType").val();
                     for (var i = 0; i <data.content.length ; i++) {
@@ -83,7 +87,6 @@
                 }
             })
         });
-
         //对搜索按钮添加事件
         $(document).on("click","#searchButton",function (){
             page.currPage=1;
@@ -104,6 +107,7 @@
                     }
                     pageIteration(page.currPage);
                     isDisabled(page.currPage, data.totalPages);
+                    isFirstAndLast(page.currPage,data.totalPages);
                     var tableContent="";
                     var userType = $("#userType").val();
                     for (var i = 0; i <data.content.length ; i++) {
@@ -145,13 +149,8 @@
                 type:"GET",
                 dataType:"JSON",
                 success:function (data) {
-                    if (data.totalPages > page.pageLength) {
-                        addButtons(page.startPage, page.pageLength);
-                    } else {
-                        addButtons(page.startPage, data.totalPages);
-                    }
-                    pageIteration(page.currPage);
-                    isDisabled(page.currPage, data.totalPages);
+                    page.totalPage = data.totalPages;
+                    isFirstAndLast(page.currPage,data.totalPages);
                     var tableContent="";
                     var userType = $("#userType").val();
                     for (var i = 0; i <data.content.length ; i++) {
@@ -194,13 +193,15 @@
                 type:"GET",
                 dataType:"JSON",
                 success:function (data) {
-                    if (data.totalPages > page.pageLength) {
-                        addButtons(page.startPage, page.pageLength);
-                    } else {
-                        addButtons(page.startPage, data.totalPages);
-                    }
-                    pageIteration(page.currPage);
-                    isDisabled(page.currPage, data.totalPages);
+                    page.totalPage = data.totalPages;
+                    // if (data.totalPages > page.pageLength) {
+                    //     addButtons(page.startPage, page.pageLength);
+                    // } else {
+                    //     addButtons(page.startPage, data.totalPages);
+                    // }
+                    // pageIteration(page.currPage);
+                    // isDisabled(page.currPage, data.totalPages);
+                    isFirstAndLast(page.currPage,data.totalPages);
                     var tableContent="";
                     var userType = $("#userType").val();
                     for (var i = 0; i <data.content.length ; i++) {
@@ -243,13 +244,8 @@
                 type:"GET",
                 dataType:"JSON",
                 success:function (data) {
-                    if (data.totalPages > page.pageLength) {
-                        addButtons(page.startPage, page.pageLength);
-                    } else {
-                        addButtons(page.startPage, data.totalPages);
-                    }
-                    pageIteration(page.currPage);
-                    isDisabled(page.currPage, data.totalPages);
+                    data.totalPage = data.totalPages;
+                    isFirstAndLast(page.currPage,data.totalPages);
                     var tableContent="";
                     var userType = $("#userType").val();
                     for (var i = 0; i <data.content.length ; i++) {
@@ -278,7 +274,115 @@
             })
         });
 
+        //对首页添加点击事件
+        $(document).on("click","#page .first",function () {
+            searchName = $('#search').val();
+            $("tbody").html("");
+            page.currPage = 1;
+            $.ajax({
+                url:"/store/findAllList",
+                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
+                type:"GET",
+                dataType:"JSON",
+                success:function (data) {
+                    page.totalPage = data.totalPages;
 
+                    if (data.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, data.totalPages);
+                    }
+                   // pageIteration(page.currPage);
+                    pageFirst(page.currPage);
+                    isDisabled(page.currPage, data.totalPages);
+                    isFirstAndLast(page.currPage,data.totalPages);
+                    var tableContent="";
+                    var userType = $("#userType").val();
+                    for (var i = 0; i <data.content.length ; i++) {
+                        tableContent="<tr>";
+                        if(userType=="系统管理员"){
+                            tableContent+="<td><a style=\"text-decoration: none;color: black\">"+data.content[i].storeName+"</a></td>";
+                        }else{
+                            tableContent+="<td><a style=\"text-decoration: none;color: black\" href=\"/store/content?id="+data.content[i].storeId+"\">"+data.content[i].storeName+"</a></td>";
+                        }
+                        tableContent+=  "<td>"+data.content[i].storeCode+"</td>"+
+                            "<td>"+data.content[i].marketName+"</td>" +
+                            "<td>"+data.content[i].band+"</td>"+
+                            "<td><code>"+data.content[i].storeStatus.statusName+"</code></td>";
+                        if(userType=="系统管理员"){
+                            tableContent+="<td><button class=\"btn btn-default\" onclick=\"window.location.href='/store/update?id="+data.content[i].storeId+"'\" >" +
+                                "<span class=\"glyphicon glyphicon-pencil\" aria-hidden=\"true\"></span>" +
+                                "查看</button>" +
+                                "</td>"+
+                                "</tr>";
+                        }
+                        $("tbody").append(tableContent);
+                    }
+                }
+            })
+        });
+
+        //对末页添加点击事件
+        $(document).on("click","#page .last",function () {
+            searchName = $('#search').val();
+            $("tbody").html("");
+            var endPage=0;
+            $.ajax({
+                url:"/store/findAllTest",
+                data:{"page": 1, "pageSize": page.pageSize, "searchName": searchName},
+                type:"GET",
+                dataType:"JSON",
+                async:false,
+                success:function (data) {
+                    if(data!=null){
+                       endPage = data["pageTotals"];
+                    }
+                }
+            });
+            pageLast(endPage);
+           // alert("endPage----->"+endPage);
+            page.currPage = endPage;
+            $.ajax({
+                url:"/store/findAllList",
+                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
+                type:"GET",
+                dataType:"JSON",
+                success:function (data) {
+                    page.totalPage = data.totalPages;
+
+                    if (data.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, data.totalPages);
+                    }
+                    pageLast(endPage);
+                    isDisabled(page.currPage, data.totalPages);
+                    isFirstAndLast(page.currPage,data.totalPages);
+                    var tableContent="";
+                    var userType = $("#userType").val();
+                    for (var i = 0; i <data.content.length ; i++) {
+                        tableContent="<tr>";
+                        if(userType=="系统管理员"){
+                            tableContent+="<td><a style=\"text-decoration: none;color: black\">"+data.content[i].storeName+"</a></td>";
+                        }else{
+                            tableContent+="<td><a style=\"text-decoration: none;color: black\" href=\"/store/content?id="+data.content[i].storeId+"\">"+data.content[i].storeName+"</a></td>";
+                        }
+                        tableContent+=  "<td>"+data.content[i].storeCode+"</td>"+
+                            "<td>"+data.content[i].marketName+"</td>" +
+                            "<td>"+data.content[i].band+"</td>"+
+                            "<td><code>"+data.content[i].storeStatus.statusName+"</code></td>";
+                        if(userType=="系统管理员"){
+                            tableContent+="<td><button class=\"btn btn-default\" onclick=\"window.location.href='/store/update?id="+data.content[i].storeId+"'\" >" +
+                                "<span class=\"glyphicon glyphicon-pencil\" aria-hidden=\"true\"></span>" +
+                                "查看</button>" +
+                                "</td>"+
+                                "</tr>";
+                        }
+                        $("tbody").append(tableContent);
+                    }
+                }
+            })
+        });
         //新增按钮添加事件
         $(function () {
             $("#add").click(function () {
@@ -334,17 +438,23 @@
                 });
             })
         });
+
         //添加分页插件，根据总页数来添加按钮
         function addButtons(startPage, pageLength) {
             $("#page").html(" ");
-            var _html = "<center><button class='btn btn-default prev' ><<上一页</button> ";
+
+            var _html = "<center><button class='btn btn-default first'><<首页</button><button class='btn btn-default prev' ><<上一页</button> ";
             for (var i = startPage; i < startPage + pageLength; i++) {
                 _html += "<button class='btn btn-default page-btn' data-pageno=" + i + ">" + i + "</button> ";
             }
-            _html += " <button class='btn btn-default next'>下一页>></button></center>";
+            _html += " <button class='btn btn-default next'>下一页>></button>" +
+                "<button class='btn btn-default last'>末页>></button>" +
+                "</center>";
             $("#page").html(_html);
         }
         //分页按钮迭代(最要是对"上一页"和"下一页"是否禁用的判断)
+        //pagenum表示当前页，totalpage表示共有几页
+
         function isDisabled(pagenum, totalpage) {
             if (totalpage == 0 || totalpage == 1) {
                 $("#page .prev").attr("disabled", true);
@@ -360,6 +470,17 @@
                 $("#page .prev").removeAttr("disabled");
             }
         }
+        //判断首页和末页是禁用还是启用
+        function isFirstAndLast(pagenum,totalpage) {
+            if(totalpage==0){
+                $("#page .first").attr("disabled", true);
+                $("#page .last").attr("disabled", true);
+            }else{
+                $("#page .first").removeAttr("disabled");
+                $("#page .last").removeAttr("disabled");
+            }
+        }
+
         //按钮迭代器
         function pageIteration(currPage) {
             if (page.currPage != 1 && page.currPage == page.startPage) {
@@ -374,6 +495,19 @@
                 $("#page .page-btn").eq(page.pageLength / 2 - 1).addClass("curr-page");
             }
             $("#page .page-btn").removeClass("curr-page").parent().find("[data-pageno=" + currPage + "]").addClass("curr-page");
+        }
+        //首页时的按钮选中事件
+        function pageFirst(currPage) {
+            addButtons(currPage,page.pageLength);
+            $("#page .page-btn").eq(page.pageLength / 2).addClass("curr-page");
+            $("#page .page-btn").removeClass("curr-page").parent().find("[data-pageno=" + currPage + "]").addClass("curr-page");
+        }
+        //末页按钮选中事件
+        function pageLast(currPage) {
+            addButtons(currPage-page.pageLength+1,page.pageLength);
+            $("#page .page-btn").eq(page.pageLength / 2).addClass("curr-page");
+            $("#page .page-btn").removeClass("curr-page").parent().find("[data-pageno=" + currPage + "]").addClass("curr-page");
+
         }
 
     </script>

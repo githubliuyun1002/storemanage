@@ -35,11 +35,12 @@ public class ClassificationService {
                 @Override
                 public Predicate toPredicate(Root<Classification> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
                     Path<String> name = root.get("name");
-                    //  Path<EquipName> equipNamePath = root.get("equipNames");
+                    Join  join = root.join(root.getModel().getSet("equipNames",EquipName.class),JoinType.LEFT);
                     Predicate p1 = criteriaBuilder.like(name, "%" + values + "%");
-                    //  Predicate p2 = criteriaBuilder.like(equipNamePath.get("name"),"%" + values + "%");
-                    //   Predicate p = criteriaBuilder.or(p1, p2);
-                    criteriaQuery.where(p1);
+                    Predicate p2 = criteriaBuilder.like(join.get("name"),"%"+values+"%");
+                    Predicate p = criteriaBuilder.or(p1,p2);
+                    criteriaQuery.where(p);
+                    criteriaQuery.distinct(true);
                     return null;
                 }
             },pageable);
@@ -83,6 +84,10 @@ public class ClassificationService {
         nativeQuery.setMaxResults(size);
         //最后展示的分页的查询结果
         return nativeQuery.getResultList();
+    }
+
+    public Classification findByName(String name){
+        return  classificationRepository.findByName(name);
     }
 
 }

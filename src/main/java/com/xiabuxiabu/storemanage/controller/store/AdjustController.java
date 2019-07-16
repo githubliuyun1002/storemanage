@@ -73,7 +73,6 @@ public class AdjustController {
 
         Set<Items> itemsSetJSON = jsonStore.getItemsSet();
         Store storeDB = storeService.findById(jsonStore.getStoreId());
-
         if(storeDB.getItemsSet().size()!=0&&jsonStore.getItemsSet().size()!=0){
             for (Items itemsDB:storeDB.getItemsSet()) {
                 for (Items itemsJSON:itemsSetJSON) {
@@ -91,7 +90,6 @@ public class AdjustController {
                 }
             }
             storeDB.setItemsSet(jsonStore.getItemsSet());
-
         }
         //添加宽带
         if(storeDB.getWidthBandSet().size()!=0&&jsonStore.getWidthBandSet().size()!=0){
@@ -99,21 +97,22 @@ public class AdjustController {
                 for(WidthBand widthBandDB:storeDB.getWidthBandSet()){
                     if(widthBandJSON.getWid()==widthBandDB.getWid()){
                         WidthBand widthBandDemo = widthBandService.findById(widthBandDB.getWid());
-                        widthBandDemo.setServicePerson(widthBandJSON.getServicePerson());
-                        widthBandDemo.setAccessMethod(widthBandJSON.getAccessMethod());
-                        widthBandDemo.setPayMethod(widthBandJSON.getPayMethod());
-                        widthBandDemo.setPayMoney(widthBandJSON.getPayMoney());
-                        widthBandDemo.setIdentity(widthBandJSON.getIdentity());
-                        widthBandDemo.setPassword(widthBandJSON.getPassword());
-                        widthBandDemo.setTapewidth(widthBandJSON.getTapewidth());
-                        widthBandDemo.setEndDate(widthBandJSON.getEndDate());
-                        widthBandService.save(widthBandDemo);
+                        if(widthBandDemo.getSign().equals("2")){
+                            widthBandDemo.setServicePerson(widthBandJSON.getServicePerson());
+                            widthBandDemo.setAccessMethod(widthBandJSON.getAccessMethod());
+                            widthBandDemo.setPayMethod(widthBandJSON.getPayMethod());
+                            widthBandDemo.setPayMoney(widthBandJSON.getPayMoney());
+                            widthBandDemo.setIdentity(widthBandJSON.getIdentity());
+                            widthBandDemo.setPassword(widthBandJSON.getPassword());
+                            widthBandDemo.setTapewidth(widthBandJSON.getTapewidth());
+                            widthBandDemo.setEndDate(widthBandJSON.getEndDate());
+                            widthBandService.save(widthBandDemo);
+                        }
                     }
                 }
             }
             storeDB.setWidthBandSet(jsonStore.getWidthBandSet());
         }
-
         //市场IT调整完后，设置门店的状态为2.待审批状态
         storeDB.setStoreStatus(storeStatusService.findById(2));
         storeService.save(storeDB);

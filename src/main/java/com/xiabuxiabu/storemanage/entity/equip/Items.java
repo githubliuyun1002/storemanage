@@ -26,8 +26,6 @@ public class Items {
     //记录该设备是否通过审核
     private String sign;  //记录是否通过审核。1通过；2不通过
 
-
-
     private String checkPerson;  //审核人
 
     public String getCheckPerson() {

@@ -1,5 +1,7 @@
 package com.xiabuxiabu.storemanage.emailsend;
 
+import com.sun.mail.util.MailSSLSocketFactory;
+import org.jboss.logging.Logger;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
@@ -13,19 +15,24 @@ import java.util.List;
 import java.util.Properties;
 @Component
 public class EMailTask {
+
+    private static Logger log    = Logger.getLogger(EMailTask.class);
     //添加邮件的密抄列表
     private static List<String> michao = new LinkedList<>();
     //添加抄送列表
     private static List<String> chaosong = new LinkedList<>();
     public static void sendHtmlMail(String from, String[] to, String subject, String text, String host, String username, String password) throws Exception {
         //设置服务器验证信息
-
         Properties prop = new Properties();
         prop.setProperty("mail.smtp.auth", "true");
         prop.setProperty("mail.smtp.timeout", "25000");
         prop.setProperty("mail.smtp.connectiontimeout", "10000");
         prop.setProperty("mail.smtp.writetimeout", "10000");
         prop.setProperty("mail.transport.protocol","smtp");
+        MailSSLSocketFactory sf = new MailSSLSocketFactory();// SSL加密
+        sf.setTrustAllHosts(true); // 设置信任所有的主机
+        prop.setProperty("mail.smtp.ssl.enable", "true");
+        prop.put("mail.smtp.ssl.socketFactory", sf);
 
         //密超收件人的邮箱
         michao.add("liuyun_1002@163.com");

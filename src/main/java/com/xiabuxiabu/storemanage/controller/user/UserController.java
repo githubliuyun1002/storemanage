@@ -164,5 +164,19 @@ public class UserController {
         userService.save(userDB);
         return "redirect:/person/personPage";
     }
+    /**
+     * 下拉框触发事件
+     */
+    @RequestMapping("/checkUserName")
+    @ResponseBody
+    public Map<String,Object> checkUserName(String userName){
+        Map<String,Object> map = new HashMap<>();
+        if(userService.findByUserName(userName)!=null){
+            map.put("code","true");
+        }else{
+            map.put("code","false");
+        }
+        return map;
+    }
 
 }
