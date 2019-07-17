@@ -763,6 +763,14 @@ public class StoreController {
         map.put("pageTotals",storePage.getTotalPages());
         return map;
     }
+    @RequestMapping("/storeCloseListTest")
+    @ResponseBody
+    public Map<String,Object> storeCloseListTest(int page,int pageSize,String searchName){
+        Map<String,Object> map = new HashMap<>();
+        Page<Store> storePage = storeService.storeMsgList(page, pageSize, searchName);
+        map.put("pageTotals",storePage.getTotalPages());
+        return map;
+    }
 
 
 

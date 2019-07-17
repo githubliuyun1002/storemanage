@@ -228,7 +228,6 @@
             searchName = $('#search').val();
             page.currPage = parseInt(page.currPage) + 1;
             $("tbody").html("");
-            curr_page = page.currPage;
             pageIteration(page.currPage);
             isDisabled(page.currPage, page.totalPage);
             $.ajax({
@@ -237,7 +236,7 @@
                 type:"GET",
                 dataType:"JSON",
                 success:function (data) {
-                    data.totalPage = data.totalPages;
+                    page.totalPage = data.totalPages;
                     isFirstAndLast(page.currPage,data.totalPages);
                     var tableContent="";
                     var userType = $("#userType").val();
@@ -269,9 +268,14 @@
 
         //对首页添加点击事件
         $(document).on("click","#page .first",function () {
+            page.currPage=1;
+            page.startPage=1;
+            page.endPage=4;
             searchName = $('#search').val();
             $("tbody").html("");
-            page.currPage = 1;
+            // page.currPage = 1;
+            // pageIteration(page.currPage);
+            // isDisabled(page.currPage, page.totalPage);
             $.ajax({
                 url:"/store/findAllList",
                 data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
@@ -279,13 +283,11 @@
                 dataType:"JSON",
                 success:function (data) {
                     page.totalPage = data.totalPages;
-
                     if (data.totalPages > page.pageLength) {
                         addButtons(page.startPage, page.pageLength);
                     } else {
                         addButtons(page.startPage, data.totalPages);
                     }
-                   // pageIteration(page.currPage);
                     pageFirst(page.currPage);
                     isDisabled(page.currPage, data.totalPages);
                     isFirstAndLast(page.currPage,data.totalPages);
@@ -314,7 +316,6 @@
                 }
             })
         });
-
         //对末页添加点击事件
         $(document).on("click","#page .last",function () {
             searchName = $('#search').val();
@@ -335,6 +336,8 @@
             pageLast(endPage);
            // alert("endPage----->"+endPage);
             page.currPage = endPage;
+            page.startPage = page.currPage-page.pageLength+1;
+            page.endPage=4;
             $.ajax({
                 url:"/store/findAllList",
                 data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
@@ -342,7 +345,6 @@
                 dataType:"JSON",
                 success:function (data) {
                     page.totalPage = data.totalPages;
-
                     if (data.totalPages > page.pageLength) {
                         addButtons(page.startPage, page.pageLength);
                     } else {
@@ -376,6 +378,7 @@
                 }
             })
         });
+
         //新增按钮添加事件
         $(function () {
             $("#add").click(function () {
@@ -473,7 +476,6 @@
                 $("#page .last").removeAttr("disabled");
             }
         }
-
         //按钮迭代器
         function pageIteration(currPage) {
             if (page.currPage != 1 && page.currPage == page.startPage) {
@@ -491,13 +493,14 @@
         }
         //首页时的按钮选中事件
         function pageFirst(currPage) {
-            addButtons(currPage,page.pageLength);
+
+          //  addButtons(currPage,page.pageLength);
             $("#page .page-btn").eq(page.pageLength / 2).addClass("curr-page");
             $("#page .page-btn").removeClass("curr-page").parent().find("[data-pageno=" + currPage + "]").addClass("curr-page");
         }
         //末页按钮选中事件
         function pageLast(currPage) {
-            addButtons(currPage-page.pageLength+1,page.pageLength);
+           // addButtons(currPage-page.pageLength+1,page.pageLength);
             $("#page .page-btn").eq(page.pageLength / 2).addClass("curr-page");
             $("#page .page-btn").removeClass("curr-page").parent().find("[data-pageno=" + currPage + "]").addClass("curr-page");
 

@@ -68,14 +68,43 @@ public class EmailTaskInfoMsg {
                             mailListSerivice.save(mailListDemo);
                             log.error(e+"-----邮件未发出去");
                         }
+                    }else if(mailListDemo.getMailStatus()==3 && mailListDemo.getStoreStatus().equals("待调整")){
+                        StringBuffer content = new StringBuffer();
+                        content.append("<html><head></head>");
+                        content.append("<body><div><h2>门店设备调整通知</h2>" +
+                                "亲爱的用户：您好！门店：" + mailListDemo.getStoreName() + "(" + mailListDemo.getStoreCode() + ")设备信息" +
+                                "经管理员未审批通过，请您及时修改。如已处理请忽略。谢谢！</div>");
+                        content.append("<div><span style ='float: right;'>总部资讯</span></div>");
+                        content.append("</body></html>");
+                        String mailAddress = "";
+                        for (int k = 0; k < userList.size(); k++) {
+                            mailAddress += userList.get(k).getMail() + ",";
+                        }
+                        String[] allSend = mailAddress.split(",");
+                        try {
+                            eMailTask.sendHtmlMail(eMailProperties.getNickname(),allSend,eMailProperties.getAdditems(),content.toString(),
+                                    eMailProperties.getHost(),eMailProperties.getUsername(),eMailProperties.getPassword());
+                            mailListDemo.setMailStatus(3333);
+                            mailListDemo.setRemarks("发送成功");
+                            mailListSerivice.save(mailListDemo);
+                            log.info("邮件发送成功");
+                        } catch (Exception e) {
+                            // e.printStackTrace();
+                            mailListDemo.setMailStatus(3);
+                            mailListDemo.setRemarks("未发送成功");
+                            mailListSerivice.save(mailListDemo);
+                            log.error(e+"-----邮件未发出去");
+                        }
+
                     }
+
 
                 }
             }
         }
     }
     //发送给管理员的邮件列表
-   // @Scheduled(cron = "0 0 0/3 * * ?")
+   @Scheduled(cron = "0 0 0/3 * * ?")
     public void  adminRun(){
         //对于管理员拿到所有的待发邮件的信息
         System.out.println("发送管理员定时任务开始执行");
@@ -91,12 +120,12 @@ public class EmailTaskInfoMsg {
         if(mailLists.size()!=0&&adminUserList.size()!=0){
             for (int i = 0; i <mailLists.size() ; i++) {
 
-                MailList mailList = mailLists.get(i);
+                MailList mailListDemo = mailLists.get(i);
                 StringBuffer contentAdmin = new StringBuffer();
-                if(mailList.getMailStatus()==2&&mailList.getStoreStatus().equals("待审批")){
+                if(mailListDemo.getMailStatus()==2&&mailListDemo.getStoreStatus().equals("待审批")){
                     contentAdmin.append("<html><head></head>");
                     contentAdmin.append("<body><div><h2>门店设备审批通知</h2>" +
-                            "亲爱的用户：您好！门店："+mailList.getStoreName()+"("+mailList.getStoreCode()+")设备信息" +
+                            "亲爱的用户：您好！门店："+mailListDemo.getStoreName()+"("+mailListDemo.getStoreCode()+")设备信息" +
                             "已经添加成功，请您尽快进行审批。如已处理请忽略。谢谢！</div>");
                     contentAdmin.append("<div><span style ='float: right;'>总部资讯</span></div>");
                     contentAdmin.append("</body></html>");
@@ -108,8 +137,16 @@ public class EmailTaskInfoMsg {
                     try {
                         eMailTask.sendHtmlMail(eMailProperties.getNickname(),sendAll,eMailProperties.getCheckitems(),contentAdmin.toString(),
                                 eMailProperties.getHost(),eMailProperties.getUsername(),eMailProperties.getPassword());
+                        mailListDemo.setMailStatus(2222);
+                        mailListDemo.setRemarks("发送成功");
+                        mailListSerivice.save(mailListDemo);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                       // e.printStackTrace();
+                        mailListDemo.setMailStatus(2);
+                        mailListDemo.setRemarks("未发送成功");
+                        mailListSerivice.save(mailListDemo);
+                        log.error(e+"-----邮件未发出去");
+
                     }
                 }
             }

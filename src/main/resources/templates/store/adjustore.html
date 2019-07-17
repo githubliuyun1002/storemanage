@@ -236,15 +236,19 @@
         //对首页添加点击事件
         $(document).on("click","#page .first",function (){
             searchName = $('#search').val();
+            page.currPage=1;
+            page.startPage=1;
+            page.endPage=4;
             $("tbody").html("");
             page.currPage = 1;
             $.ajax({
                 url:"/store/adjustList",
-                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": ""},
+                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
                 type:"GET",
                 dataType:"JSON",
                 success:function (data) {
                     page.totalPage = data.totalPages;
+                    console.log("data.totalPages------》"+data.totalPages);
                     if (data.totalPages > page.pageLength) {
                         addButtons(page.startPage, page.pageLength);
                     } else {
@@ -294,6 +298,9 @@
             });
             pageLast(endPage);
             page.currPage = endPage;
+            page.startPage = page.currPage-page.pageLength+1;
+            page.endPage=4;
+
             $.ajax({
                 url:"/store/adjustList",
                 data:{"page": page.currPage, "pageSize": page.pageSize, "searchName":searchName},
@@ -388,13 +395,13 @@
         }
         //首页时的按钮选中事件
         function pageFirst(currPage) {
-            addButtons(currPage,page.pageLength);
+            //addButtons(currPage,page.pageLength);
             $("#page .page-btn").eq(page.pageLength / 2).addClass("curr-page");
             $("#page .page-btn").removeClass("curr-page").parent().find("[data-pageno=" + currPage + "]").addClass("curr-page");
         }
         //末页按钮选中事件
         function pageLast(currPage) {
-            addButtons(currPage-page.pageLength+1,page.pageLength);
+           // addButtons(currPage-page.pageLength+1,page.pageLength);
             $("#page .page-btn").eq(page.pageLength / 2).addClass("curr-page");
             $("#page .page-btn").removeClass("curr-page").parent().find("[data-pageno=" + currPage + "]").addClass("curr-page");
 
