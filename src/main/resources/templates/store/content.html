@@ -341,10 +341,21 @@
 
        //返回上级按钮的事件
        function  goback(){
-           history.go(-1);
+           $.ajax({
+               url:"/store/homeBtn",
+               dataType:"JSON",
+               type:"GET",
+               success:function (data) {
+                  if(data!=null&&data["code"]=="true"){
+                      window.location.href="/store/home";
+                  }
+               }
+           });
+
+          // history.go(-1);
        }
        //确认提交的按钮
-       function checkSubmit() /{
+       function checkSubmit(){
            var result = confirm("设备提交后将上传至管理员审批，请确认是否进行修改");
            if (result) {
                //在门店设置div下选择tbody

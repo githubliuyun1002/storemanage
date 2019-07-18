@@ -474,10 +474,19 @@
 
             }
         }
-
-
+        //查看页面的按钮展示
         function goback() {
-            history.go(-1);
+           $.ajax({
+               url:"/store/searchBtn",
+               dataType:"JSON",
+               type:"GET",
+               success:function (data) {
+                   if(data!=null&&data["code"]=="true"){
+                       window.location.href="/store/searchInforPage";
+                   }
+               }
+           })
+           // history.go(-1);
         }
     </script>
     <script>

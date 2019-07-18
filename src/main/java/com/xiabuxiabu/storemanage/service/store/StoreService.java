@@ -32,6 +32,13 @@ public class StoreService {
     @Autowired
     private UserService userService;
 
+    /**
+     * 填充页面的controller的请求方法
+     * @param page
+     * @param size
+     * @param values
+     * @return
+     */
     public Page<Store> findAll(int page,int size,String values){
         Sort sort = new Sort(Sort.Direction.ASC,"storeId");
         Pageable pageable = PageRequest.of(page-1,size,sort);
@@ -44,10 +51,12 @@ public class StoreService {
                     Path<String> market = root.get("marketName");  //根据门店所属市场进行查询
                     Path<String> closeSign = root.get("closeSign");   //获取门店得闭店标志
                     Path<String> band= root.get("band");  //根据门店的品牌进行查询
+
                     Predicate p1 = criteriaBuilder.like(name,"%"+ values +"%");
                     Predicate p2 = criteriaBuilder.like(code,"%"+ values +"%");
                     Predicate p3 = criteriaBuilder.like(market,"%"+values+"%");
                     Predicate p4 = criteriaBuilder.like(band,"%"+values+"%");
+
                     Predicate predicateCloseSign =  criteriaBuilder.isNull(closeSign);
                     Predicate p = criteriaBuilder.or(p1, p2);
                     //拿到登录人的信息
@@ -93,6 +102,14 @@ public class StoreService {
     public Store findByStoreCode(String code){
         return storeRepository.findByStoreCode(code);
     }
+
+    /**
+     * 待调整门店列表
+     * @param page
+     * @param size
+     * @param values
+     * @return
+     */
     public Page<Store> adjustList(int page,int size,String values){
         Sort sort = new Sort(Sort.Direction.ASC,"storeId");
         Pageable pageable = PageRequest.of(page-1,size,sort);

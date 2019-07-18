@@ -318,10 +318,19 @@
                 })
             }
         }
-
         //关闭按钮
         function goback() {
-            history.back(-1);
+            $.ajax({
+                url:"/store/adjustBtn",
+                dataType:"JSON",
+                type:"GET",
+                success:function (data) {
+                    if(data!=null&&data["code"]=="true"){
+                        window.location.href="/store/adjustment";
+                    }
+                }
+            })
+           // history.back(-1);
         }
     </script>
 </head>
@@ -334,7 +343,7 @@
         <tr>
             <td width="30%">
                 <div hx_element_type="text" id="WebPageTitleContainer" style="">
-                    <span hx_text_webpart__cnt="1" class="hxtxt_nowrap hxtxt_page_title" style=";text-align:left;display:inline-block;width:100%;">门店信息调整展示列表</span>
+                    <span hx_text_webpart__cgobacknt="1" class="hxtxt_nowrap hxtxt_page_title" style=";text-align:left;display:inline-block;width:100%;">门店信息调整展示列表</span>
                 </div>
             </td>
             <td width="70%">

@@ -621,7 +621,7 @@
            <caption>员工列表展示</caption>
            <thead>
            <tr>
-               <th>用户名</th>
+               <th>登录名</th>
                <th>中文名</th>
                <th>人员类型</th>
                <th>品牌</th>
@@ -643,7 +643,7 @@
                            <h4 class="modal-title" id="myModalLabel">人员操作</h4>
                        </div>
                        <div class="modal-body" id="modalBody">
-                           <label for="username">用户名</label>
+                           <label for="username">登录名</label>
                            <input class="form-control" type="text" onblur="check()" placeholder="人员名称" name="username" id="username"
                                   required="true"/>
                            <span id="errorMsg" style="font-weight: bold;color: red"></span><br/>
@@ -654,7 +654,7 @@
                            <input class="form-control" type="text" placeholder="中文名" name="name" id="name"
                                   required="true"/>
                            <label for="mail">邮箱</label>
-                           <input class="form-control" type="text" placeholder="邮箱" name="mail" id="mail" required="true"/>
+                           <input class="form-control"  type="email" placeholder="邮箱" name="mail" id="mail" required="true"/>
                            <label for="userType">人员类型</label>
                            <select class="form-control" id="userType" name="userType"></select>
                        </div>

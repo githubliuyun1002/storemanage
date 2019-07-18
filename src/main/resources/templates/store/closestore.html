@@ -120,9 +120,9 @@
                         $("tbody").append('<tr>' +
                             '<td style="vertical-align: center"><input type="checkbox"><input type="hidden" name="storeId" id="storeId" value="'+data.content[i].storeId+'"></td>'+
                             '<td>'+data.content[i].storeName+'</td>'+
+                            '<td>'+data.content[i].storeCode+'</td>'+
                             '<td>'+data.content[i].marketName+'</td>' +
                             '<td>'+data.content[i].band+'</td>' +
-                            '<td>'+data.content[i].marketCode.name+'</td>' +
                             '</tr>')
                     }
                 }
@@ -355,6 +355,7 @@
                 $("#page .prev").removeAttr("disabled");
             }
         }
+
         function isFirstAndLast(pagenum,totalpage) {
             if(totalpage==0){
                 $("#page .first").attr("disabled", true);

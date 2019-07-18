@@ -14,6 +14,7 @@ import com.xiabuxiabu.storemanage.service.equip.ItemService;
 import com.xiabuxiabu.storemanage.service.publicutil.MarketService;
 import com.xiabuxiabu.storemanage.service.store.*;
 import com.xiabuxiabu.storemanage.service.user.UserService;
+import javafx.beans.binding.ObjectExpression;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.data.domain.Page;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
+import java.rmi.MarshalledObject;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -73,6 +75,26 @@ public class StoreController {
     public String store(){
         return "/store/home";
     }
+    /**
+     * content页面中返回页面按钮的点击事件
+     */
+    @RequestMapping("/homeBtn")
+    @ResponseBody
+    public Map<String,Object> homeBtn(){
+        Map<String,Object> map = new HashMap<>();
+        map.put("code","true");
+        return  map;
+    }
+
+
+
+    /**
+     * 页面展示按钮
+     * @param page
+     * @param pageSize
+     * @param searchName
+     * @return
+     */
     @RequestMapping("/findAllList")
     @ResponseBody
     public Page<Store> findAllList(@RequestParam("page")int page, @RequestParam("pageSize") int pageSize, @RequestParam("searchName") String searchName){
@@ -341,6 +363,18 @@ public class StoreController {
     public String adjustment(){
         return "/store/adjustore";
     }
+    /**
+     * 待调整页面的返回按钮
+     */
+    @RequestMapping("/adjustBtn")
+    @ResponseBody
+    public Map<String,Object> adjustBtn(){
+        Map<String,Object> map = new HashMap<>();
+        map.put("code","true");
+        return map;
+    }
+
+
 
     /**
      * 待调整页面填充
@@ -529,6 +563,19 @@ public class StoreController {
     public String searchInforPage(){
         return "/store/searchpageList";
     }
+
+    /**
+     *返回页面的按钮展示
+     */
+    @RequestMapping("/searchBtn")
+    @ResponseBody
+    public Map<String,Object> searchBtn(){
+        Map<String,Object> map = new HashMap<>();
+        map.put("code","true");
+        return map;
+    }
+
+
     /**
      * 查看页面展示列表
      */
@@ -688,7 +735,6 @@ public class StoreController {
                             //此时有需要管理员进行审批
                             itemsDemo.setSign("2");
                             itemsDemo.setNum(itemsJSON.getNum());
-
                             storeDB.setStoreStatus(storeStatus);
 
                         }else{
