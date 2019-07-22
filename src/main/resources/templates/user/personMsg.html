@@ -34,6 +34,7 @@
 
             })
         });
+
         //重置密码时，进行写入
         function updateMsg(id) {
             //修改人员信息
@@ -52,7 +53,7 @@
                 }
             })
         }
-        <!-- 在页面验证两次密码是否一致 密码输入框1-->
+        <!-- 在页面验证两次密码是否一致 密码输入框-->
         $(document).ready(function () {
             //及时控制键盘的输入
             $("#password1").on('input propertychange',function () {
@@ -70,7 +71,7 @@
                 }
             })
         });
-        <!-- 在页面验证两次密码是否一致 密码输入框2-->
+        <!-- 在页面验证两次密码是否一致 密码输入框 -->
         $(document).ready(function () {
             $("#password2").on('input propertychange',function () {
                 var pwd = $.trim($(this).val());
@@ -87,6 +88,8 @@
                 }
             })
         });
+
+
         //检查原始密码
         $(document).ready(function () {
             $("#password").blur(function () {
@@ -98,11 +101,13 @@
                     data: {"id": id,"password":password},
                     dataType: "json",
                     success:function (data) {
+                        $("#reg_pwd").html("");
                         if(data.msg==true){
                             $("#checkResult").val("true");
 
                         }else{
                             $("#checkResult").val("false");
+                            $("#reg_pwd").html("<font color='red'>原始密码输入不正确</font>");
 
                         }
                     }
@@ -116,10 +121,9 @@
                 $("#password").val($("#password1").val());
                 $("#submitBtn").attr('type','submit');
 
-            }else if(checkResult=="false"){
-                $("#reg_pwd").html("<font color='red'>原始密码输入不正确</font>");
             }
         });
+        //重置按钮
         function resetFun() {
             $("#password").val("");
             $("#password1").val("");

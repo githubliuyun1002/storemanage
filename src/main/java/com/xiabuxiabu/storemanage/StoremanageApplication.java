@@ -10,12 +10,10 @@ import java.util.Random;
 
 @SpringBootApplication
 public class StoremanageApplication {
-
     public static void main(String[] args){
         SpringApplication.run(StoremanageApplication.class, args);
 
     }
-
 }
 
 

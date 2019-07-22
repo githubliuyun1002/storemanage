@@ -8,7 +8,7 @@
     <title>呷哺呷哺IT设备管理系统</title>
     <script th:src="@{https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js}"></script>
     <script th:src="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js}"></script>
-    <link th:href="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css}" rel="stylesheet"/>
+    <link  th:href="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css}" rel="stylesheet"/>
     <script src="home/jquery.js"></script>
     <script src="home/pintuer.js"></script>
     <link rel="stylesheet" href="home/pintuer.css">
@@ -21,6 +21,27 @@
         }
     </style>
     <script>
+        $(document).ready(function () {
+            $(document).ajaxComplete(function(event,obj,settings){
+                if (obj.responseText == 'timeout') { //超时标识
+                    location.href='/login'; //跳转到登录页面
+                }
+            });
+        });
+        $(function () {
+            //全局的ajax访问，处理ajax清求时sesion超时
+            $.ajaxSetup({
+                contentType: "application/x-www-form-urlencoded;charset=utf-8",
+                complete: function (XMLHttpRequest, textStatus) {
+                    var sessionstatus = XMLHttpRequest.getResponseHeader("sessionstatus"); // 通过XMLHttpRequest取得响应头，sessionstatus，
+                    if (sessionstatus == "timeout") {
+                        // 如果超时就处理 ，指定要跳转的页面
+                        window.location.replace("/login");
+                    }
+                }
+
+            });
+        });
         function setIframeHeight(iframe) {
             if (iframe) {
                 var iframeWin = iframe.contentWindow || iframe.contentDocument.parentWindow;

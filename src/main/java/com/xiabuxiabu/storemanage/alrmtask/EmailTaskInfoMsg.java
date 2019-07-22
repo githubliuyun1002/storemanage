@@ -14,6 +14,9 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 门店状态扭转通知（通知添加设备、审批等工作）
+ */
 @Component
 @EnableScheduling
 public class EmailTaskInfoMsg {

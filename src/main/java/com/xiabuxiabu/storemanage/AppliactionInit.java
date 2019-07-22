@@ -67,7 +67,7 @@ public class AppliactionInit implements ApplicationRunner {
         //findMarketByMarketName
         for (int i = 0; i <marketNameList.size() ; i++) {
             String marketName = marketNameList.get(i);
-            if(marketService.findMarketByMarketName(marketName)!=null){
+            if(marketService.findMarketByMarketName(marketName)!=null&&!(marketName.equals("总部"))){
                 MarketEntity marketEntityOld = marketService.findByMarketCode(marketService.findMarketByMarketName(marketName).getMarketId());
                 marketEntityOld.setName(marketName);
             }else{
@@ -80,7 +80,7 @@ public class AppliactionInit implements ApplicationRunner {
 
         for (int i = 0; i <bandList.size(); i++) {
             String bandName = bandList.get(i);
-            if(bandService.findByName(bandName)!=null){
+            if(bandService.findByName(bandName)!=null&&!(bandName.equals("总部"))){
                 Band bandOld = bandService.findById(bandService.findByName(bandName).getBandId());
                 bandOld.setName(bandName);
             }else{

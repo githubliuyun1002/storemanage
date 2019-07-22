@@ -4,6 +4,11 @@ import com.xiabuxiabu.storemanage.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @Controller
 public class LoginController {
@@ -34,5 +39,20 @@ public class LoginController {
     public String info(){
         return "/common/info";
     }
+    /**
+     * 设置超时标志，超时时会跳转到login
+     */
+    @RequestMapping("/timeout")
+    public void sessionTimeout(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        if (request.getHeader("x-requested-with") != null
+                && request.getHeader("x-requested-with").equalsIgnoreCase(
+                "XMLHttpRequest")) { // ajax 超时处理  
+            response.getWriter().print("timeout"); //设置超时标识
+            response.getWriter().close();
+        } else {
+            response.sendRedirect("/login");
+        }
+    }
+
 
 }
