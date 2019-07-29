@@ -31,7 +31,7 @@ public class EmailTaskInfoMsg {
     private static Logger log    = Logger.getLogger(EmailTaskInfoMsg.class);
 
     //发送给市场IT,让市场IT及时进行添加相应的设备（每2个小时执行一次）
-    @Scheduled(cron = "0 0 0/2 * * ?")
+    @Scheduled(cron = "0 0 */2 * * ?")
     public void emailRun() {
         //市场名称
         List<String> marketNameList = mailListSerivice.marketList();
@@ -107,7 +107,7 @@ public class EmailTaskInfoMsg {
         }
     }
     //发送给管理员的邮件列表
-   @Scheduled(cron = "0 0 0/3 * * ?")
+   @Scheduled(cron = "0 0 */3 * * ?")
     public void  adminRun(){
         //对于管理员拿到所有的待发邮件的信息
         System.out.println("发送管理员定时任务开始执行");
