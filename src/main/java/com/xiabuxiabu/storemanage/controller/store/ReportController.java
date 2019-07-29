@@ -132,6 +132,7 @@ public class ReportController {
                 }
             }
         }
+
         //单级的 行内数据页面中表格中的数据
         List<Map<String,String>> rowList=new ArrayList<>();
         //按照搜索按钮选选择的数据填充页面数据

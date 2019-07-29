@@ -437,20 +437,74 @@ public class StoreService {
                     Path<String> name = root.get("storeName");  //餐厅名称进行查询
                     Path<String> code = root.get("storeCode");  //餐厅编码进行查询
                     Path<String> marketname = root.get("marketName");  //餐厅所属的市场
+                    Path<String> band= root.get("band");  //根据门店的品牌进行查询
 
                     Predicate p1 = criteriaBuilder.like(name,"%"+ values +"%");
                     Predicate p2 = criteriaBuilder.like(code,"%"+ values +"%");
-                    Predicate or = criteriaBuilder.or(p1,p2);
+                    Predicate p3 = criteriaBuilder.like(marketname,"%"+values+"%");
+                    Predicate p4 = criteriaBuilder.like(band,"%"+values+"%");
 
                     Path<StoreStatus> storeStatus = root.get("storeStatus");
-                    Predicate storestatus = criteriaBuilder.equal(storeStatus.get("statusName"),"已确认");
                     //拿到登录人的信息
                     String userName = (String) httpServletRequest.getSession().getAttribute("userName");
                     String marketNamePreson = userService.findByUserName(userName).getMarketName();
-                    Predicate marketNameSerarch = criteriaBuilder.equal(marketname,marketNamePreson);
+                    String bandName = userService.findByUserName(userName).getBand();
 
-                    criteriaQuery.where(or,storestatus,marketNameSerarch);
+                    Predicate marketNameSerarch = null;
+                    Predicate storestatus = null;
+                    Predicate bandSearch = null;
 
+                    if(!marketNamePreson.equals("总部")){
+                        marketNameSerarch = criteriaBuilder.equal(marketname,marketNamePreson);
+                        storestatus = criteriaBuilder.equal(storeStatus.get("statusName"),"已确认");
+                        bandSearch = criteriaBuilder.equal(band,bandName);
+                        Predicate or = criteriaBuilder.or(p1,p2);
+                        criteriaQuery.where(marketNameSerarch,storestatus,bandSearch,or);
+
+                    }else{
+                        storestatus = criteriaBuilder.equal(storeStatus.get("statusName"),"已确认");
+                        Predicate or = criteriaBuilder.or(p1,p2,p3,p4);
+                        criteriaQuery.where(or,storestatus);
+
+                    }
+                    return null;
+                }
+            },pageable);
+        }
+        return storeRepository.findAll(pageable);
+    }
+
+
+    /**
+     *管理员审批闭店的门店
+     */
+    public Page<Store> closeStoreList(int page,int size,String values){
+        Sort sort = new Sort(Sort.Direction.ASC,"storeId");
+        Pageable pageable = PageRequest.of(page-1,size,sort);
+        if(values!=null){
+            return storeRepository.findAll(new Specification<Store>() {
+                @Override
+                public Predicate toPredicate(Root<Store> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                    Path<String> name = root.get("storeName");  //餐厅名称进行查询
+                    Path<String> code = root.get("storeCode");  //餐厅编码进行查询
+                    Path<String> marketname = root.get("marketName");  //餐厅所属的市场
+                    Path<String> band= root.get("band");  //根据门店的品牌进行查询
+                    Predicate p1 = criteriaBuilder.like(name,"%"+ values +"%");
+                    Predicate p2 = criteriaBuilder.like(code,"%"+ values +"%");
+                    Predicate p3 = criteriaBuilder.like(marketname,"%"+values+"%");
+                    Predicate p4 = criteriaBuilder.like(band,"%"+values+"%");
+                    Path<StoreStatus> storeStatus = root.get("storeStatus");
+                    //拿到登录人的信息
+                    String userName = (String) httpServletRequest.getSession().getAttribute("userName");
+                    String marketNamePreson = userService.findByUserName(userName).getMarketName();
+                   // String bandName = userService.findByUserName(userName).getBand();
+                    if(marketNamePreson.equals("总部")){
+                        Predicate equal = criteriaBuilder.equal(storeStatus.get("statusName"),"门店闭店");
+                        Predicate or = criteriaBuilder.or(p1,p2,p3,p4);
+                        criteriaQuery.where(equal,or);
+
+
+                    }
                     return null;
                 }
             },pageable);

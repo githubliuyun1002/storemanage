@@ -61,6 +61,10 @@ public class AppliactionInit implements ApplicationRunner {
         storeStatus.setStatusName("已确认");
         storeStatus.setRemarks("管理员审核过，没有问题的");
         storeStatusService.save(storeStatus);
+        storeStatus.setStatusId(5);
+        storeStatus.setStatusName("门店闭店");
+        storeStatus.setRemarks("此时市场IT申请闭店，需要管理员审批闭店操作");
+        storeStatusService.save(storeStatus);
 
         List<String> marketNameList = storeBOHService.marketNameList();
         List<String> bandList = storeBOHService.bandList();

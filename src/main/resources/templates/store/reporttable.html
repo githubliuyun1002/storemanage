@@ -413,13 +413,7 @@
 
 
         });
-         //$.get(请求数据为get方式)
-        /*function outputFun() {
-            var searchName=$('#search').val()
-            $.get("/report/outputExcel",
-                 {"page":page.currPage, "pageSize":page.pageSize, "searchName":searchName,}
-            );
-        }*/
+
         function outputFun(){
             var searchName = $('#search').val();
             var site="/report/outputExcel?page="+page.currPage+"&pageSize="+page.pageSize+"&searchName="+searchName;

@@ -15,4 +15,7 @@ public class WidthBandService {
     public WidthBand findById(int id){
         return widthBandRepository.findById(id).get();
     }
+    public void  deleteById(int id){
+        widthBandRepository.deleteById(id);
+    }
 }

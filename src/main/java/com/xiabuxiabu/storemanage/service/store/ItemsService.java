@@ -21,6 +21,10 @@ public class ItemsService {
         return  itemsRepository.findAll();
     }
 
+    public void deleteById(int itemsId){
+        itemsRepository.deleteById(itemsId);
+    }
+
 
 
 

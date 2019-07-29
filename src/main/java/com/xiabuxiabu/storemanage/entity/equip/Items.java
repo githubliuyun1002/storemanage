@@ -4,9 +4,11 @@ package com.xiabuxiabu.storemanage.entity.equip;
 
 import com.alibaba.fastjson.JSONObject;
 import com.xiabuxiabu.storemanage.entity.equip.Item;
+import com.xiabuxiabu.storemanage.entity.store.StoreRemarks;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Set;
 
 @Entity
 public class Items {
@@ -19,14 +21,23 @@ public class Items {
     @JoinColumn(name = "item")
     private Item item;
     private int num;
-    private int origin;        //该字段记录修改之前，设备的数量
-    private String personName; //修改人的姓名
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date updateTime;   //修改时间
     //记录该设备是否通过审核
     private String sign;  //记录是否通过审核。1通过；2不通过
 
-    private String checkPerson;  //审核人
+    private String checkPerson;  //审核
+
+//    @ManyToMany(targetEntity = StoreRemarks.class,fetch = FetchType.EAGER)
+//    @JoinTable(name = "items_remark",joinColumns = @JoinColumn(name = "items_id"),inverseJoinColumns = @JoinColumn(name = "remark_id"))
+//    private Set<StoreRemarks> storeRemarksSet;
+
+
+//    public Set<StoreRemarks> getStoreRemarksSet() {
+//        return storeRemarksSet;
+//    }
+//
+//    public void setStoreRemarksSet(Set<StoreRemarks> storeRemarksSet) {
+//        this.storeRemarksSet = storeRemarksSet;
+//    }
 
     public String getCheckPerson() {
         return checkPerson;
@@ -35,32 +46,6 @@ public class Items {
     public void setCheckPerson(String checkPerson) {
         this.checkPerson = checkPerson;
     }
-
-    public int getOrigin() {
-        return origin;
-    }
-
-    public void setOrigin(int origin) {
-        this.origin = origin;
-    }
-
-    public String getPersonName() {
-        return personName;
-    }
-
-    public void setPersonName(String personName) {
-        this.personName = personName;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-
-
 
     public String getSign() {
         return sign;

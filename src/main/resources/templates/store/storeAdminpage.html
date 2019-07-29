@@ -4,8 +4,7 @@
       xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>设备日志记录页面</title>
+    <title>管理员看到的门店确认页面</title>
     <link th:href="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css}" rel="stylesheet"/>
     <script th:src="@{https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js}"></script>
     <script th:src="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js}"></script>
@@ -33,48 +32,43 @@
             endPage: 4,
             pageSize: 5
         };
-        function renderTime(date) {
-            var dateee = new Date(date).toJSON();
-            return new Date(+new Date(dateee) + 8 * 3600 * 1000).toISOString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '')
-        }
-        //对页面数据进行填充(填充List页面)
-       $(function () {
-           $.ajax({
-               url:"/record/itemHistoryList",
-               type:"GET",
-               data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": ""},
-               dataType:"JSON",
-               success:function (data) {
-                   page.totalPage = data.totalPages;
-                   if (data.totalPages > page.pageLength) {
-                       addButtons(page.startPage, page.pageLength);
-                   } else {
-                       addButtons(page.startPage, data.totalPages);
-                   }
-                   pageIteration(page.currPage);
-                   isDisabled(page.currPage, data.totalPages);
-                   for (var i = 0; i < data.content.length; i++) {
-                       $("tbody").append('<tr>' +
-                                            '<td>'+data.content[i].storeName+'</td>' +
-                                            '<td>'+data.content[i].storeCode+'</td>' +
-                                            '<td>'+data.content[i].marketName+'</td>' +
-                                            '<td>'+data.content[i].itemName+'</td>' +
-                                            '<td>'+data.content[i].operatePerson+'</td>' +
-                                            '<td>'+renderTime(data.content[i].updateTime)+'</td>' +
-                                            '<td>'+data.content[i].checkMan+'</td>' +
-                                            '<td>'+renderTime(data.content[i].checkTime)+'</td>' +
-                                            '<td>数量由<code>'+data.content[i].orignnum+'</code>改为<code>'+data.content[i].nownum+'</code>,数量变化为<code>'+data.content[i].changenum+'</code></td>' +
-                                        '</tr>');
-                   }
-               },
-               error:function () {
-                   alert("设备更新历史填充失败");
-               }
+        //填充管理员的门店页面
+        $(function () {
+            $.ajax({
+                url:"/store/marketCheckList",
+                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": ""},
+                dataType:"JSON",
+                type:"GET",
+                success:function (data) {
+                    page.totalPage = data.totalPages;
 
-           })
+                    if (data.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, data.totalPages);
+                    }
+                    pageIteration(page.currPage);
+                    isDisabled(page.currPage, data.totalPages);
+                    for (var i = 0; i <data.content.length ; i++) {
+                        $("tbody").append('<tr>' +
+                            '<td>'+data.content[i].storeName+'</td>' +
+                            '<td>'+data.content[i].storeCode+'</td>' +
+                            '<td>'+data.content[i].marketName+'</td>' +
+                            '<td>'+data.content[i].band+'</td>' +
+                            '<td>'+data.content[i].storeStatus.statusName+'</td>' +
+                            '<td><button class="btn btn-default" onclick="window.location.href=\'/store/storeStatusBack?id='+data.content[i].storeId+'\'">' +
+                            '<span class="glyphicon glyphicon-search">查看</span>' +
+                            '</button></td>' +
+                            '</tr>');
+                    }
+                },
+                error:function () {
+                    alert("页面数据填充失败");
+                }
+            })
         });
 
-        //对搜索按钮添加事件
+        //页面的搜索按钮添加事件
         $(document).on("click","#searchButton",function (){
             page.currPage=1;
             page.startPage=1;
@@ -82,10 +76,10 @@
             var searchName = $('#search').val();
             $("tbody").html("");
             $.ajax({
-                url:"/record/itemHistoryList",
-                type:"GET",
-                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName":searchName},
+                url:"/store/marketCheckList",
+                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
                 dataType:"JSON",
+                type:"GET",
                 success:function (data) {
                     if (data.totalPages > page.pageLength) {
                         addButtons(page.startPage, page.pageLength);
@@ -94,17 +88,16 @@
                     }
                     pageIteration(page.currPage);
                     isDisabled(page.currPage, data.totalPages);
-                    for (var i = 0; i < data.content.length; i++) {
+                    for (var i = 0; i <data.content.length ; i++) {
                         $("tbody").append('<tr>' +
                             '<td>'+data.content[i].storeName+'</td>' +
                             '<td>'+data.content[i].storeCode+'</td>' +
                             '<td>'+data.content[i].marketName+'</td>' +
-                            '<td>'+data.content[i].itemName+'</td>' +
-                            '<td>'+data.content[i].operatePerson+'</td>' +
-                            '<td>'+renderTime(data.content[i].updateTime)+'</td>' +
-                            '<td>'+data.content[i].checkMan+'</td>' +
-                            '<td>'+renderTime(data.content[i].checkTime)+'</td>' +
-                            '<td>数量由<code>'+data.content[i].orignnum+'</code>改为<code>'+data.content[i].nownum+'</code>,数量变化为<code>'+data.content[i].changenum+'</code></td>' +
+                            '<td>'+data.content[i].band+'</td>' +
+                            '<td>'+data.content[i].storeStatus.statusName+'</td>' +
+                            '<td><button class="btn btn-default" onclick="window.location.href=\'/store/storeStatusBack?id='+data.content[i].storeId+'\'">' +
+                            '<span class="glyphicon glyphicon-search">查看</span>' +
+                            '</button></td>' +
                             '</tr>');
                     }
 
@@ -112,7 +105,7 @@
             })
         });
 
-        //上一页添加事件
+        //上一页添加点击事件
         $(document).on("click", "#page .prev", function (){
             searchName = $('#search').val();
             page.currPage = parseInt(page.currPage) - 1;
@@ -121,31 +114,32 @@
             pageIteration(page.currPage);
             isDisabled(page.currPage, page.totalPage);
             $.ajax({
-                url:"/record/itemHistoryList",
-                type:"GET",
-                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName":searchName},
+                url:"/store/marketCheckList",
+                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
                 dataType:"JSON",
+                type:"GET",
                 success:function (data) {
-                    page.totalPage = data.totalPages;
-                    for (var i = 0; i < data.content.length; i++) {
+                    page.totalPage  = data.totalPages;
+                    for (var i = 0; i <data.content.length ; i++) {
                         $("tbody").append('<tr>' +
                             '<td>'+data.content[i].storeName+'</td>' +
                             '<td>'+data.content[i].storeCode+'</td>' +
                             '<td>'+data.content[i].marketName+'</td>' +
-                            '<td>'+data.content[i].itemName+'</td>' +
-                            '<td>'+data.content[i].operatePerson+'</td>' +
-                            '<td>'+renderTime(data.content[i].updateTime)+'</td>' +
-                            '<td>'+data.content[i].checkMan+'</td>' +
-                            '<td>'+renderTime(data.content[i].checkTime)+'</td>' +
-                            '<td>数量由<code>'+data.content[i].orignnum+'</code>改为<code>'+data.content[i].nownum+'</code>,数量变化为<code>'+data.content[i].changenum+'</code></td>' +
+                            '<td>'+data.content[i].band+'</td>' +
+                            '<td>'+data.content[i].storeStatus.statusName+'</td>' +
+                            '<td><button class="btn btn-default" onclick="window.location.href=\'/store/storeStatusBack?id='+data.content[i].storeId+'\'">' +
+                            '<span class="glyphicon glyphicon-search">查看</span>' +
+                            '</button></td>' +
                             '</tr>');
                     }
+
                 }
             })
+
         });
 
-        //对页码添加事件
-        $(document).on("click", ".page-btn", function () {
+        //页码添加点击事件
+        $(document).on("click", ".page-btn", function (){
             searchName = $('#search').val();
             $this = $(this);
             $("tbody").html("");
@@ -154,28 +148,28 @@
             pageIteration(page.currPage);
             isDisabled(page.currPage, page.totalPage);
             $.ajax({
-                url:"/record/itemHistoryList",
-                type:"GET",
-                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName":searchName},
+                url:"/store/marketCheckList",
+                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
                 dataType:"JSON",
+                type:"GET",
                 success:function (data) {
-                    page.totalPage = data.totalPages;
-                    for (var i = 0; i < data.content.length; i++) {
+                    page.totalPage  = data.totalPages;
+                    for (var i = 0; i <data.content.length ; i++) {
                         $("tbody").append('<tr>' +
                             '<td>'+data.content[i].storeName+'</td>' +
                             '<td>'+data.content[i].storeCode+'</td>' +
                             '<td>'+data.content[i].marketName+'</td>' +
-                            '<td>'+data.content[i].itemName+'</td>' +
-                            '<td>'+data.content[i].operatePerson+'</td>' +
-                            '<td>'+renderTime(data.content[i].updateTime)+'</td>' +
-                            '<td>'+data.content[i].checkMan+'</td>' +
-                            '<td>'+renderTime(data.content[i].checkTime)+'</td>' +
-                            '<td>数量由<code>'+data.content[i].orignnum+'</code>改为<code>'+data.content[i].nownum+'</code>,数量变化为<code>'+data.content[i].changenum+'</code></td>' +
+                            '<td>'+data.content[i].band+'</td>' +
+                            '<td>'+data.content[i].storeStatus.statusName+'</td>' +
+                            '<td><button class="btn btn-default" onclick="window.location.href=\'/store/storeStatusBack?id='+data.content[i].storeId+'\'">' +
+                            '<span class="glyphicon glyphicon-search">查看</span>' +
+                            '</button></td>' +
                             '</tr>');
                     }
 
                 }
             })
+
         });
 
         //对下一页添加事件
@@ -187,39 +181,31 @@
             pageIteration(page.currPage);
             isDisabled(page.currPage, page.totalPage);
             $.ajax({
-                url:"/record/itemHistoryList",
-                type:"GET",
-                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName":searchName},
+                url:"/store/marketCheckList",
+                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
                 dataType:"JSON",
+                type:"GET",
                 success:function (data) {
-                    page.totalPage = data.totalPages;
-                    for (var i = 0; i < data.content.length; i++) {
+                    page.totalPage  = data.totalPages;
+                    for (var i = 0; i <data.content.length ; i++) {
                         $("tbody").append('<tr>' +
                             '<td>'+data.content[i].storeName+'</td>' +
                             '<td>'+data.content[i].storeCode+'</td>' +
                             '<td>'+data.content[i].marketName+'</td>' +
-                            '<td>'+data.content[i].itemName+'</td>' +
-                            '<td>'+data.content[i].operatePerson+'</td>' +
-                            '<td>'+renderTime(data.content[i].updateTime)+'</td>' +
-                            '<td>'+data.content[i].checkMan+'</td>' +
-                            '<td>'+renderTime(data.content[i].checkTime)+'</td>' +
-                            '<td>数量由<code>'+data.content[i].orignnum+'</code>改为<code>'+data.content[i].nownum+'</code>,数量变化为<code>'+data.content[i].changenum+'</code></td>' +
+                            '<td>'+data.content[i].band+'</td>' +
+                            '<td>'+data.content[i].storeStatus.statusName+'</td>' +
+                            '<td><button class="btn btn-default" onclick="window.location.href=\'/store/storeStatusBack?id='+data.content[i].storeId+'\'">' +
+                            '<span class="glyphicon glyphicon-search">查看</span>' +
+                            '</button></td>' +
                             '</tr>');
                     }
 
                 }
             })
         });
-        
-        
-        //页面导出excel表格
-        function outputFun() {
-            var searchName = $('#search').val();
-            var site="/record/outputExcel?page="+page.currPage+"&pageSize="+page.pageSize+"&searchName="+searchName;
-            $("#linkExcel").attr("href",site);
-            $("#linkExcel").style.display="none";
 
-        }
+
+
         //添加分页插件，根据总页数来添加按钮
         function addButtons(startPage, pageLength) {
             $("#page").html(" ");
@@ -261,38 +247,34 @@
             }
             $("#page .page-btn").removeClass("curr-page").parent().find("[data-pageno=" + currPage + "]").addClass("curr-page");
         }
+
+
     </script>
 </head>
 <body>
     <div class="container">
-        <div class="col-md-7 col-xs-12">
-            <a class="btn btn-default" id="linkExcel" href="#" onclick="outputFun()">导出Excel</a>
-            <div id="dataFile"></div>
-        </div>
-        <div class="col-md-5 col-xs-12">
+        <div class="col-md-5 col-xs-12" style="float:right;">
             <div class="input-group">
-                <input type="text" id="search" class="form-control" placeholder="输入门店名称/编码/市场/进行搜索">
+                <input type="text" id="search" class="form-control" placeholder="输入门店名称/编码/市场/品牌进行搜索">
                 <span class="input-group-btn">
-                    <button class="btn btn-primary" id="searchButton">搜 索</button>
+                     <button class="btn btn-primary" id="searchButton">搜 索</button>
                 </span>
             </div>
         </div>
         <table class="table table-striped">
-            <caption>门店设备更新日志展示</caption>
+            <caption>门店列表展示信息</caption>
             <thead>
-                <tr>
-                    <th>门店名称</th>
-                    <th>门店编码</th>
-                    <th>所属市场</th>
-                    <th>设备型号</th>
-                    <th>操作人</th>
-                    <th>操作时间</th>
-                    <th>审批人</th>
-                    <th>审批时间</th>
-                    <th>操作描述</th>
-                </tr>
+            <tr>
+                <th>门店名称</th>
+                <th>门店编码</th>
+                <th>所属市场</th>
+                <th>所属品牌</th>
+                <th>门店状态</th>
+                <th>门店操作</th>
+            </tr>
             </thead>
-            <tbody></tbody>
+            <tbody>
+            </tbody>
         </table>
         <div id="page"></div>
     </div>

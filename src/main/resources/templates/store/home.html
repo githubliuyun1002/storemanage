@@ -33,14 +33,6 @@
             endPage: 4,
             pageSize: 5
         };
-        $(function () {
-            var userType = $("#userType").val();
-            if(userType=="系统管理员"){
-                $("#theadShow").append(
-                    '<th>操作</th>'
-                );
-            }
-        });
         //填充页面
         $(function () {
             $.ajax({
@@ -50,7 +42,6 @@
                 dataType:"JSON",
                 success:function (data) {
                     page.totalPage = data.totalPages;
-
 
                     if (data.totalPages > page.pageLength) {
                         addButtons(page.startPage, page.pageLength);
@@ -65,22 +56,24 @@
                     var tableContent="";
                     var userType = $("#userType").val();
                     for (var i = 0; i <data.content.length ; i++) {
-                        tableContent="<tr>";
-                        if(userType=="系统管理员"){
-                            tableContent+="<td><a style=\"text-decoration: none;color: black\">"+data.content[i].storeName+"</a></td>";
-                        }else{
-                            tableContent+="<td><a style=\"text-decoration: none;color: black\" href=\"/store/content?id="+data.content[i].storeId+"\">"+data.content[i].storeName+"</a></td>";
-                        }
-                        tableContent+=  "<td>"+data.content[i].storeCode+"</td>"+
-                                        "<td>"+data.content[i].marketName+"</td>" +
-                                        "<td>"+data.content[i].band+"</td>"+
-                                        "<td><code>"+data.content[i].storeStatus.statusName+"</code></td>";
+                        tableContent="<tr>" +
+                            "<td>"+data.content[i].storeName+"</td>" +
+                            "<td>"+data.content[i].storeCode+"</td>"+
+                            "<td>"+data.content[i].marketName+"</td>" +
+                            "<td>"+data.content[i].band+"</td>"+
+                            "<td><code>"+data.content[i].storeStatus.statusName+"</code></td>";
                         if(userType=="系统管理员"){
                             tableContent+="<td><button class=\"btn btn-default\" onclick=\"window.location.href='/store/update?id="+data.content[i].storeId+"'\" >" +
                                 "<span class=\"glyphicon glyphicon-pencil\" aria-hidden=\"true\"></span>" +
-                                "查看</button>" +
+                                "操作</button>" +
                                 "</td>"+
                                 "</tr>";
+                        }else{
+                            tableContent+="<td>" +
+                                "<button class='btn btn-default' onclick=\"window.location.href='/store/content?id="+data.content[i].storeId+"'\">" +
+                                "<span class='glyphicon glyphicon-pencil' aria-hidden='true'>操作</span>" +
+                                "</button>" +
+                                "</td>"
                         }
                         $("tbody").append(tableContent);
                     }
@@ -112,24 +105,25 @@
                     var userType = $("#userType").val();
                     for (var i = 0; i <data.content.length ; i++) {
                         tableContent="<tr>" +
-                            "<td><a style=\"text-decoration: none;color: black\" href=\"/store/content?id="+data.content[i].storeId+"\">"+data.content[i].storeName+"</a></td>" +
+                            "<td>"+data.content[i].storeName+"</td>" +
                             "<td>"+data.content[i].storeCode+"</td>"+
-                            "<td>"+data.content[i].marketName+"</td>"+
-                            "<td>"+data.content[i].band+"</td>";
-                        if(data.content[i].storeStatus.statusName=="待选择"){
-                            tableContent+="<td><code>"+data.content[i].storeStatus.statusName+"</code></td>";
-                        }else{
-                            tableContent+="<td>"+data.content[i].storeStatus.statusName+"</td>";
-                        }
+                            "<td>"+data.content[i].marketName+"</td>" +
+                            "<td>"+data.content[i].band+"</td>"+
+                            "<td><code>"+data.content[i].storeStatus.statusName+"</code></td>";
                         if(userType=="系统管理员"){
                             tableContent+="<td><button class=\"btn btn-default\" onclick=\"window.location.href='/store/update?id="+data.content[i].storeId+"'\" >" +
                                 "<span class=\"glyphicon glyphicon-pencil\" aria-hidden=\"true\"></span>" +
-                                "查看</button>" +
+                                "操作</button>" +
                                 "</td>"+
                                 "</tr>";
+                        }else{
+                            tableContent+="<td>" +
+                                "<button class='btn btn-default' onclick=\"window.location.href='/store/content?id="+data.content[i].storeId+"'\">" +
+                                "<span class='glyphicon glyphicon-pencil' aria-hidden='true'>操作</span>" +
+                                "</button>" +
+                                "</td>"
                         }
                         $("tbody").append(tableContent);
-
                     }
                 }
             });
@@ -155,24 +149,25 @@
                     var userType = $("#userType").val();
                     for (var i = 0; i <data.content.length ; i++) {
                         tableContent="<tr>" +
-                            "<td><a style=\"text-decoration: none;color: black\" href=\"/store/content?id="+data.content[i].storeId+"\">"+data.content[i].storeName+"</a></td>" +
+                            "<td>"+data.content[i].storeName+"</td>" +
                             "<td>"+data.content[i].storeCode+"</td>"+
-                            "<td>"+data.content[i].marketName+"</td>"+
-                            "<td>"+data.content[i].band+"</td>";
-                        if(data.content[i].storeStatus.statusName=="待选择"){
-                            tableContent+="<td><code>"+data.content[i].storeStatus.statusName+"</code></td>";
-                        }else{
-                            tableContent+="<td>"+data.content[i].storeStatus.statusName+"</td>";
-                        }
+                            "<td>"+data.content[i].marketName+"</td>" +
+                            "<td>"+data.content[i].band+"</td>"+
+                            "<td><code>"+data.content[i].storeStatus.statusName+"</code></td>";
                         if(userType=="系统管理员"){
                             tableContent+="<td><button class=\"btn btn-default\" onclick=\"window.location.href='/store/update?id="+data.content[i].storeId+"'\" >" +
                                 "<span class=\"glyphicon glyphicon-pencil\" aria-hidden=\"true\"></span>" +
-                                "查看</button>" +
+                                "操作</button>" +
                                 "</td>"+
                                 "</tr>";
+                        }else{
+                            tableContent+="<td>" +
+                                "<button class='btn btn-default' onclick=\"window.location.href='/store/content?id="+data.content[i].storeId+"'\">" +
+                                "<span class='glyphicon glyphicon-pencil' aria-hidden='true'>操作</span>" +
+                                "</button>" +
+                                "</td>"
                         }
                         $("tbody").append(tableContent);
-
                     }
                 }
             });
@@ -199,24 +194,25 @@
                     var userType = $("#userType").val();
                     for (var i = 0; i <data.content.length ; i++) {
                         tableContent="<tr>" +
-                            "<td><a style=\"text-decoration: none;color: black\" href=\"/store/content?id="+data.content[i].storeId+"\">"+data.content[i].storeName+"</a></td>" +
+                            "<td>"+data.content[i].storeName+"</td>" +
                             "<td>"+data.content[i].storeCode+"</td>"+
-                            "<td>"+data.content[i].marketName+"</td>"+
-                            "<td>"+data.content[i].band+"</td>";
-                        if(data.content[i].storeStatus.statusName=="待选择"){
-                            tableContent+="<td><code>"+data.content[i].storeStatus.statusName+"</code></td>";
-                        }else{
-                            tableContent+="<td>"+data.content[i].storeStatus.statusName+"</td>";
-                        }
+                            "<td>"+data.content[i].marketName+"</td>" +
+                            "<td>"+data.content[i].band+"</td>"+
+                            "<td><code>"+data.content[i].storeStatus.statusName+"</code></td>";
                         if(userType=="系统管理员"){
                             tableContent+="<td><button class=\"btn btn-default\" onclick=\"window.location.href='/store/update?id="+data.content[i].storeId+"'\" >" +
                                 "<span class=\"glyphicon glyphicon-pencil\" aria-hidden=\"true\"></span>" +
-                                "查看</button>" +
+                                "操作</button>" +
                                 "</td>"+
                                 "</tr>";
+                        }else{
+                            tableContent+="<td>" +
+                                "<button class='btn btn-default' onclick=\"window.location.href='/store/content?id="+data.content[i].storeId+"'\">" +
+                                "<span class='glyphicon glyphicon-pencil' aria-hidden='true'>操作</span>" +
+                                "</button>" +
+                                "</td>"
                         }
                         $("tbody").append(tableContent);
-
                     }
                 }
             });
@@ -242,30 +238,30 @@
                     var userType = $("#userType").val();
                     for (var i = 0; i <data.content.length ; i++) {
                         tableContent="<tr>" +
-                            "<td><a style=\"text-decoration: none;color: black\" href=\"/store/content?id="+data.content[i].storeId+"\">"+data.content[i].storeName+"</a></td>" +
+                            "<td>"+data.content[i].storeName+"</td>" +
                             "<td>"+data.content[i].storeCode+"</td>"+
-                            "<td>"+data.content[i].marketName+"</td>"+
-                            "<td>"+data.content[i].band+"</td>";
-                        if(data.content[i].storeStatus.statusName=="待选择"){
-                            tableContent+="<td><code>"+data.content[i].storeStatus.statusName+"</code></td>";
-                        }else{
-                            tableContent+="<td>"+data.content[i].storeStatus.statusName+"</td>";
-                        }
+                            "<td>"+data.content[i].marketName+"</td>" +
+                            "<td>"+data.content[i].band+"</td>"+
+                            "<td><code>"+data.content[i].storeStatus.statusName+"</code></td>";
                         if(userType=="系统管理员"){
                             tableContent+="<td><button class=\"btn btn-default\" onclick=\"window.location.href='/store/update?id="+data.content[i].storeId+"'\" >" +
                                 "<span class=\"glyphicon glyphicon-pencil\" aria-hidden=\"true\"></span>" +
-                                "查看</button>" +
+                                "操作</button>" +
                                 "</td>"+
                                 "</tr>";
+                        }else{
+                            tableContent+="<td>" +
+                                "<button class='btn btn-default' onclick=\"window.location.href='/store/content?id="+data.content[i].storeId+"'\">" +
+                                "<span class='glyphicon glyphicon-pencil' aria-hidden='true'>操作</span>" +
+                                "</button>" +
+                                "</td>"
                         }
                         $("tbody").append(tableContent);
-
                     }
 
                 }
             })
         });
-
         //对首页添加点击事件
         $(document).on("click","#page .first",function () {
             page.currPage=1;
@@ -294,22 +290,24 @@
                     var tableContent="";
                     var userType = $("#userType").val();
                     for (var i = 0; i <data.content.length ; i++) {
-                        tableContent="<tr>";
-                        if(userType=="系统管理员"){
-                            tableContent+="<td><a style=\"text-decoration: none;color: black\">"+data.content[i].storeName+"</a></td>";
-                        }else{
-                            tableContent+="<td><a style=\"text-decoration: none;color: black\" href=\"/store/content?id="+data.content[i].storeId+"\">"+data.content[i].storeName+"</a></td>";
-                        }
-                        tableContent+=  "<td>"+data.content[i].storeCode+"</td>"+
+                        tableContent="<tr>" +
+                            "<td>"+data.content[i].storeName+"</td>" +
+                            "<td>"+data.content[i].storeCode+"</td>"+
                             "<td>"+data.content[i].marketName+"</td>" +
                             "<td>"+data.content[i].band+"</td>"+
                             "<td><code>"+data.content[i].storeStatus.statusName+"</code></td>";
                         if(userType=="系统管理员"){
                             tableContent+="<td><button class=\"btn btn-default\" onclick=\"window.location.href='/store/update?id="+data.content[i].storeId+"'\" >" +
                                 "<span class=\"glyphicon glyphicon-pencil\" aria-hidden=\"true\"></span>" +
-                                "查看</button>" +
+                                "操作</button>" +
                                 "</td>"+
                                 "</tr>";
+                        }else{
+                            tableContent+="<td>" +
+                                "<button class='btn btn-default' onclick=\"window.location.href='/store/content?id="+data.content[i].storeId+"'\">" +
+                                "<span class='glyphicon glyphicon-pencil' aria-hidden='true'>操作</span>" +
+                                "</button>" +
+                                "</td>"
                         }
                         $("tbody").append(tableContent);
                     }
@@ -355,22 +353,24 @@
                     var tableContent="";
                     var userType = $("#userType").val();
                     for (var i = 0; i <data.content.length ; i++) {
-                        tableContent="<tr>";
-                        if(userType=="系统管理员"){
-                            tableContent+="<td><a style=\"text-decoration: none;color: black\">"+data.content[i].storeName+"</a></td>";
-                        }else{
-                            tableContent+="<td><a style=\"text-decoration: none;color: black\" href=\"/store/content?id="+data.content[i].storeId+"\">"+data.content[i].storeName+"</a></td>";
-                        }
-                        tableContent+=  "<td>"+data.content[i].storeCode+"</td>"+
+                        tableContent="<tr>" +
+                            "<td>"+data.content[i].storeName+"</td>" +
+                            "<td>"+data.content[i].storeCode+"</td>"+
                             "<td>"+data.content[i].marketName+"</td>" +
                             "<td>"+data.content[i].band+"</td>"+
                             "<td><code>"+data.content[i].storeStatus.statusName+"</code></td>";
                         if(userType=="系统管理员"){
                             tableContent+="<td><button class=\"btn btn-default\" onclick=\"window.location.href='/store/update?id="+data.content[i].storeId+"'\" >" +
                                 "<span class=\"glyphicon glyphicon-pencil\" aria-hidden=\"true\"></span>" +
-                                "查看</button>" +
+                                "操作</button>" +
                                 "</td>"+
                                 "</tr>";
+                        }else{
+                            tableContent+="<td>" +
+                                "<button class='btn btn-default' onclick=\"window.location.href='/store/content?id="+data.content[i].storeId+"'\">" +
+                                "<span class='glyphicon glyphicon-pencil' aria-hidden='true'>操作</span>" +
+                                "</button>" +
+                                "</td>"
                         }
                         $("tbody").append(tableContent);
                     }
@@ -533,6 +533,7 @@
               <th>所属市场</th>
               <th>所属品牌</th>
               <th>门店状态</th>
+              <th>门店操作</th>
           </tr>
           </thead>
           <tbody>

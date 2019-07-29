@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>管理员审批提报的闭店的门店</title>
+    <script th:src="@{https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js}"></script>
+    <script th:src="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+    <link  th:href="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css}" rel="stylesheet"/>
+    <style>
+        #page {
+            margin-top: 10px;
+        }
+        #page .curr-page {
+            background-color: #337AB7;
+            color: white;
+        }
+
+        #page .page-btn:hover, #page .prev:hover, #page .next:hover {
+            background-color: #337AB7;
+            color: white;
+        }
+    </style>
+    <script>
+        var page = {
+            currPage: 1,
+            totalPage: 0,
+            pageLength: 4,
+            startPage: 1,
+            endPage: 4,
+            pageSize: 5
+        };
+        $(function () {
+            $.ajax({
+                url:"/store/closeStoreList",
+                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": ""},
+                dataType:"JSON",
+                type:"GET",
+                success:function (data) {
+                    for (var i = 0; i <data.content.length ; i++) {
+                        $("tbody").append('' +
+                            '<tr>' +
+                            '<td>'+data.content[i].storeName+'</td>' +
+                            '<td>'+data.content[i].storeCode+'</td>' +
+                            '<td>'+data.content[i].marketName+'</td>' +
+                            '<td>'+data.content[i].band+'</td>' +
+                            '<td><button class="btn btn-default" onclick="window.location.href=\'/store/closepage?id='+data.content[i].storeId+'\'">' +
+                            '<span class="glyphicon glyphicon-search"></span>查看</button></td>' +
+                            '</tr>');
+                    }
+                }
+            })
+        })
+    </script>
+</head>
+<body>
+  <div class="container">
+      <div class="col-md-5 col-xs-12" style="float: right">
+          <div class="input-group">
+              <input type="text" id="search" class="form-control" placeholder="输入门店名称/编码/市场/进行搜索">
+              <span class="input-group-btn">
+                 <button class="btn btn-primary" id="searchButton">搜 索</button>
+            </span>
+          </div>
+      </div>
+      <table class="table table-striped">
+          <caption>门店列表展示信息</caption>
+          <thead>
+          <tr>
+              <th>门店名称</th>
+              <th>门店编码</th>
+              <th>所属市场</th>
+              <th>所属品牌</th>
+              <th>操作</th>
+          </tr>
+          </thead>
+          <tbody>
+          </tbody>
+      </table>
+      <div id="page"></div>
+
+
+  </div>
+</body>
+</html>

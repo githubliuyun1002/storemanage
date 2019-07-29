@@ -5,21 +5,23 @@ import com.alibaba.fastjson.JSONObject;
 import com.xiabuxiabu.storemanage.entity.equip.Item;
 import com.xiabuxiabu.storemanage.entity.equip.Items;
 import com.xiabuxiabu.storemanage.entity.publicutil.MarketEntity;
-import com.xiabuxiabu.storemanage.entity.store.ServicePerson;
-import com.xiabuxiabu.storemanage.entity.store.Store;
-import com.xiabuxiabu.storemanage.entity.store.StoreStatus;
-import com.xiabuxiabu.storemanage.entity.store.WidthBand;
+import com.xiabuxiabu.storemanage.entity.store.*;
 import com.xiabuxiabu.storemanage.service.equip.ItemService;
 import com.xiabuxiabu.storemanage.service.publicutil.MarketService;
 import com.xiabuxiabu.storemanage.service.store.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.jws.WebParam;
 import javax.servlet.http.HttpServletRequest;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -42,9 +44,14 @@ public class AdjustController {
     @Autowired
     private WidthBandService widthBandService;
     @Autowired
-    private ServicePersonService servicePersonService;
-    @Autowired
-    private AccessMethodService accessMethodService;
+    private StoreRemarksService storeRemarksService;
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder, WebRequest request) {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
+    }
+
     /**
      * 修改调整页面（市场IT）
      * @return
@@ -63,6 +70,8 @@ public class AdjustController {
      * @param store
      * @param
      * @return
+     *
+     * ---------》市场IT调整
      */
     @RequestMapping("/toupdateAdjust")
     @ResponseBody
@@ -89,7 +98,6 @@ public class AdjustController {
                     }
                 }
             }
-            storeDB.setItemsSet(jsonStore.getItemsSet());
         }
         //添加宽带
         if(storeDB.getWidthBandSet().size()!=0&&jsonStore.getWidthBandSet().size()!=0){
@@ -111,7 +119,6 @@ public class AdjustController {
                     }
                 }
             }
-            storeDB.setWidthBandSet(jsonStore.getWidthBandSet());
         }
         //市场IT调整完后，设置门店的状态为2.待审批状态
         storeDB.setStoreStatus(storeStatusService.findById(2));
@@ -120,4 +127,63 @@ public class AdjustController {
         map.put("code","1");
         return map;
     }
+
+    /**
+     * 当门店为待调整状态时，为门店添加相应的设备信息
+     */
+    @RequestMapping("/addwidthInfor")
+    public ModelAndView addwidthInfor(int storeId, WidthBand widthBand, ModelAndView modelAndView){
+        Store store = storeService.findById(storeId);
+        Set<WidthBand> widthBandSet = store.getWidthBandSet();
+        //宽带设置为待审批装态
+        widthBand.setSign("2");
+        widthBandService.save(widthBand);
+        widthBandSet.add(widthBand);
+        store.setWidthBandSet(widthBandSet);
+        storeService.save(store);
+        modelAndView.setViewName("/store/updateadjust");
+        modelAndView.addObject("storeId",storeId);
+        return modelAndView;
+    }
+    /**
+     * 当门店为调整状态，再次添加门店的设备信息
+     */
+    @RequestMapping("/additemInfor")
+    public ModelAndView additemInfor(ModelAndView modelAndView, int storeId,Items items){
+        Store store  =  storeService.findById(storeId);
+
+        String userName = (String) httpServletRequest.getSession().getAttribute("userName");
+        StoreRemarks storeRemarks = new StoreRemarks();
+        storeRemarks.setStoreName(store.getStoreName());
+        storeRemarks.setStoreCode(store.getStoreCode());
+        storeRemarks.setMarketName(store.getMarketName());
+        storeRemarks.setItemName(items.getItem().getName());
+        storeRemarks.setItemId(items.getItem().getItemId());
+        //操作人
+        storeRemarks.setOperatePerson(userName);
+        //设备原来的数量为0
+        storeRemarks.setOrignnum(0);
+        //设备现在的数量
+        storeRemarks.setNownum(items.getNum());
+        //设备变化量
+        storeRemarks.setChangenum(items.getNum()-0);
+        storeRemarks.setStoreAnditem(store.getStoreName()+""+items.getItem().getName());
+        //设置操作记录的时间
+        storeRemarks.setUpdateTime(new Date());
+        storeRemarksService.save(storeRemarks);
+        //状态为待审批状态
+        items.setSign("2");
+        itemsService.save(items);
+
+        Set<Items> itemsSet = store.getItemsSet();
+        itemsSet.add(items);
+        store.setItemsSet(itemsSet);
+
+        storeService.save(store);
+        modelAndView.setViewName("/store/updateadjust");
+        modelAndView.addObject("storeId",storeId);
+        return modelAndView;
+    }
+
+
 }

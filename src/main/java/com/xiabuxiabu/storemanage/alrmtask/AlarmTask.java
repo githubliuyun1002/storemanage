@@ -29,7 +29,8 @@ public class AlarmTask {
     private StoreService storeService;
     @Autowired
     private MailListSerivice mailListSerivice;
-    @Scheduled(cron = "0 0 12 * * ?")  //每天12点触发
+    //@Scheduled(cron = "0 0 12 * * ?")   //每天12点触发 0 0 12 * * ?
+    @Scheduled(cron = "0 0 */3 * * ?")   //每三个小时执行一次
     public void run() {
          List<StoreBOH> storeBOHList = storeBOHService.findALlStoreBOH();
          System.out.println("size数据的长度---->"+storeBOHList.size());

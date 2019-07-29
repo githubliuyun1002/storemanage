@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>门店修改设备回显页面</title>
+    <title>管理员审批门店设备页面</title>
     <link th:href="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css}" rel="stylesheet"/>
     <script th:src="@{https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js}"></script>
     <script th:src="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js}"></script>
@@ -305,7 +305,8 @@
                 if (widthObjects.length != 0 && itemObjects.length != 0) {
                     var storeMsd = "{\"storeId\":" + storeId + ",\"storeCode\":\"" + storeCode + "\"," +
                         "\"itemsSet\":" + itemsSet + ",\"widthBandSet\":" + widthsSet + "}";
-                    console.log("storeMsg-------->"+storeMsd);
+                    //console.log("storeMsg----->"+storeMsd);
+
                     $.ajax({
                         url: "/store/toupdate",
                         data: {"store": storeMsd},

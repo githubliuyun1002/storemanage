@@ -55,6 +55,8 @@ public class StoreController {
     private HttpServletRequest httpServletRequest;  //拿到sesssion中得登录人
     @Autowired
     private MailListSerivice mailListSerivice;
+    @Autowired
+    private StoreRemarksService storeRemarksService;
 
     /**
      * 初始化转换日期类，将输入框中String类型的值，转化为Date类型的值。
@@ -169,7 +171,6 @@ public class StoreController {
     @RequestMapping("/additem")
     public ModelAndView addItem(ModelAndView modelAndView, int storeId,Items items){
         Store store  =  storeService.findById(storeId);
-
         //设置门店的展示样式，再根据门店的基本信息进行填充
         if(store.getItemsSet().size()!=0){
             Set<Items> oldItmsSet = store.getItemsSet();
@@ -179,6 +180,7 @@ public class StoreController {
             oldItmsSet.add(saveItems);
             store.setItemsSet(oldItmsSet);
             storeService.save(store);
+
         }else{
             //新添加的设别，默认都需要进行验证
             items.setSign("2");
@@ -264,19 +266,22 @@ public class StoreController {
 
     /**
      * 门店信息确认展示列表
+     * 管理员的待审批页面的url--------->管理员审批
      * @param store
      * @return
      */
     @RequestMapping("/toupdate")
     @ResponseBody
     public Map<String,Object> toupdate(String store){
+        System.out.println("store------>"+store);
+
         //转换为json对象
         Store jsonStore  = JSON.parseObject(store,Store.class);
-        System.out.println("store------>"+jsonStore);
         String userName = (String) httpServletRequest.getSession().getAttribute("userName");
         Set<Items> itemsSetJSON = jsonStore.getItemsSet();
         Set<WidthBand> widthBandSet = jsonStore.getWidthBandSet();
         Store storeDB = storeService.findById(jsonStore.getStoreId());
+        List<StoreRemarks> storeRemarksList = storeRemarksService.findAll();
 
         if(storeDB.getItemsSet().size()!=0){
             for (Items itemsDB:storeDB.getItemsSet()) {
@@ -289,6 +294,19 @@ public class StoreController {
                         itemsDemo.setNum(itemsJSON.getNum());
                         itemsDemo.setSign(itemsJSON.getSign());
                         itemsDemo.setCheckPerson(userName);
+                        for (int i = 0; i <storeRemarksList.size() ; i++) {
+                            StoreRemarks storeRemarks = storeRemarksList.get(i);
+                            if(storeRemarks.getItemId()==itemsDemo.getItem().getItemId()&&storeRemarks.getCheckTime()==null&&storeRemarks.getStoreCode().equals(storeDB.getStoreCode())){
+                                StoreRemarks storeRemarksDB = storeRemarksService.findById(storeRemarks.getSrId());
+                                storeRemarksDB.setCheckMan(userName);
+                                storeRemarksDB.setCheckTime(new Date());
+                                int change = storeRemarksDB.getNownum()-storeRemarksDB.getOrignnum();
+                                storeRemarks.setChangenum(change);
+                                storeRemarksService.save(storeRemarksDB);
+
+                            }
+                        }
+
                         itemsService.save(itemsDemo);
                     }
                 }
@@ -307,6 +325,7 @@ public class StoreController {
                         widthBandDemo.setPassword(widthBandJSON.getPassword());
                         widthBandDemo.setTapewidth(widthBandJSON.getTapewidth());
                         widthBandDemo.setEndDate(widthBandJSON.getEndDate());
+                       // System.out.println("sign---->"+widthBandJSON.getSign());
                         widthBandDemo.setSign(widthBandJSON.getSign());
                         widthBandDemo.setChenckPerson(userName);
                         widthBandService.save(widthBandDemo);
@@ -314,7 +333,6 @@ public class StoreController {
                     }
                 }
             }
-            storeDB.setWidthBandSet(jsonStore.getWidthBandSet());
         }
 
         List<String> signList = new ArrayList<>();
@@ -418,6 +436,7 @@ public class StoreController {
     public String storeClosePage(){
         return "/store/closestore";
     }
+
     /**
      * 门店闭店页面的List列表展示页面,其中门店的闭店标志为 “null”.
      * 闭店标志位“1”，表示已经闭店
@@ -464,45 +483,127 @@ public class StoreController {
         return "redirect:/store/storeClosePage";
     }
     /**
-     * 执行闭店操作
-     * step1:首先将门店的设备请0
-     * step2:记录在历史表中，可以查询
+     * 执行闭店操作:
+     * 市场IT执行闭店操作-----》管理员进行审批
+     * step1:需要改变餐厅的状态为---》5
+     * step2:申请闭店的时间
+     *
      */
     @RequestMapping("/toExeStoreClose")
     @ResponseBody
     public Map<String,Object> toExeStoreClose(String ids){
         Map<String,Object> map = new HashMap<>();
-        System.out.println("ids------>"+ids);
+        String userName = (String) httpServletRequest.getSession().getAttribute("userName");
+        //System.out.println("ids------>"+ids);
         String[] splitId = ids.split(",");
         for (int i = 0; i <splitId.length ; i++) {
             int storeId = Integer.valueOf(splitId[i]);
-            System.out.println("storeId----->"+storeId);
             Store store = storeService.findById(storeId);
             //设置闭店日期
             store.setCloseDate(new Date());
-            //闭店时设置闭店标志
-            store.setCloseSign("1");
-            //闭店后此时的餐厅状态为待选择状态
-            StoreStatus storeStatus = storeStatusService.findById(1);
+            //闭店操作人
+            store.setClosePerson(userName);
+            //闭店的状态转化为5
+            StoreStatus storeStatus = storeStatusService.findById(5);  //闭店操作，需要管理员进行审批
             store.setStoreStatus(storeStatus);
-            //设置数量清0
-            if(store.getItemsSet()!=null){
-                for (Items items:store.getItemsSet()) {
-                    Items itemsDB = itemsService.findById(items.getId());
-                    //设备清0
-                    itemsDB.setNum(0);
-                    //记录操作人(且操作人，可以进行查询)
-                    itemsDB.setPersonName((String) httpServletRequest.getSession().getAttribute("userName"));
-                    //记录操作的时间
-                    itemsDB.setUpdateTime(new Date());
-                    itemsService.save(itemsDB);
-                }
-            }
             storeService.save(store);
         }
         map.put("code","1");
         return map;
     }
+
+    /**
+     * 管理员看到到闭店审批页面
+     */
+    @RequestMapping("/closecheckList")
+    public String closecheckList(){
+        return "/store/closecheckList";
+    }
+    /**
+     * 管理员闭店页面的数据填充List页面
+     */
+    @RequestMapping("/closeStoreList")
+    @ResponseBody
+    public Page<Store> closeStoreList(int page,int pageSize,String searchName){
+        return storeService.closeStoreList(page,pageSize,searchName);
+    }
+
+    /**
+     * 具体闭店的操作，门店基本信息页面
+     * @param modelAndView
+     * @param id
+     * @return
+     */
+    @RequestMapping("/closepage")
+    public ModelAndView closePage(ModelAndView modelAndView,int id){
+        //System.out.println("id------>"+id);
+        modelAndView.setViewName("/store/closecontent");
+        modelAndView.addObject("storeId",id);
+        return  modelAndView;
+    }
+    /**
+     * 管理员提交具体的审批结果
+     */
+    @RequestMapping("/passCloseStore")
+    @ResponseBody
+    public Map<String,Object> passCloseStore(int storeId){
+        Map<String,Object> map = new HashMap<>();
+        String userName = (String) httpServletRequest.getSession().getAttribute("userName");
+        Store store = storeService.findById(storeId);
+        //闭店标记
+        store.setCloseSign("1");
+        //闭店审批人
+        store.setCheckPerson(userName);
+        //闭店日期
+        store.setCheckDate(new Date());
+        //门店闭店后，此时状态转化为待添加状态1
+        store.setStoreStatus(storeStatusService.findById(1));
+        //step1:将设备数量清零，记录在日志表中
+        if(store.getItemsSet()!=null){
+            Set<Items> itemsSet = store.getItemsSet();
+            for(Items items : itemsSet){
+                StoreRemarks storeRemarks = new StoreRemarks();
+                storeRemarks.setStoreName(store.getStoreName());
+                storeRemarks.setStoreCode(store.getStoreCode());
+                storeRemarks.setMarketName(store.getMarketName());
+                storeRemarks.setItemName(items.getItem().getName());
+                storeRemarks.setItemId(items.getItem().getItemId());
+                storeRemarks.setOperatePerson(store.getClosePerson());
+                storeRemarks.setUpdateTime(store.getCloseDate());
+                storeRemarks.setOrignnum(items.getNum());
+                storeRemarks.setNownum(0);
+                storeRemarks.setChangenum(items.getNum()-0);
+                storeRemarks.setCheckMan(userName);
+                storeRemarks.setCheckTime(new Date());
+                storeRemarks.setStoreAnditem(store.getStoreName()+""+items.getItem().getName());
+                storeRemarksService.save(storeRemarks);
+
+                //删除相应的记录
+                itemsService.deleteById(items.getId());
+
+            }
+
+
+
+            store.setItemsSet(null);
+        }
+        //step2:将宽带的记录清0
+        if(store.getWidthBandSet()!=null){
+
+            //deleteById
+            for(WidthBand widthBand : store.getWidthBandSet()){
+                //删除相应的宽带设备的id
+                widthBandService.deleteById(widthBand.getWid());
+            }
+            store.setWidthBandSet(null);
+        }
+
+        storeService.save(store);
+
+        map.put("code","true");
+        return map;
+    }
+
 
 
     /**
@@ -532,19 +633,21 @@ public class StoreController {
     @RequestMapping("/toExeStoreStart")
     @ResponseBody
     public Map<String,Object> toExeStoreStart(String ids){
-        //System.out.println("ids----->"+ids);
         Map<String,Object> map = new HashMap<>();
         String[] splitid = ids.split(",");
         for (int i = 0; i <splitid.length ; i++) {
             int storeId = Integer.valueOf(splitid[i]);
             Store store =  storeService.findById(storeId);
-            //闭店标记表示设置为null，闭店时间设置为null
+            //闭店标记表示设置为null，
+            // 闭店时间设置为null
+            // 闭店人设置为null
             store.setCloseSign(null);
             store.setCloseDate(null);
-            //门店的设备Items为null
-            store.setItemsSet(null);
-            //设置门店的宽带为null
-            store.setWidthBandSet(null);
+            store.setClosePerson(null);
+            //审批过程设置为null
+            store.setCheckDate(null);
+            store.setCheckPerson(null);
+
             //门店此时的状态为待选择状态
             StoreStatus storeStatus = storeStatusService.findById(1);
             store.setStoreStatus(storeStatus);
@@ -608,6 +711,7 @@ public class StoreController {
         //此时门店信息修改的主要是门店的宽带信息以及设备信息
         Store storeJSON = JSON.parseObject(store,Store.class);
         Store storeDB = storeService.findById(storeJSON.getStoreId());
+
         //添加宽带
         if(storeDB.getWidthBandSet().size()!=0){
             for (WidthBand widthBandJSON:storeJSON.getWidthBandSet()) {
@@ -628,6 +732,8 @@ public class StoreController {
             }
             storeDB.setWidthBandSet(storeJSON.getWidthBandSet());
         }
+
+        String userName = (String) httpServletRequest.getSession().getAttribute("userName");
         //添加门店的设备信息
         if(storeDB.getItemsSet().size()!=0){
             for(Items itemsJSON:storeJSON.getItemsSet()){
@@ -640,7 +746,26 @@ public class StoreController {
                          itemsDemo.setItem(itemsJSON.getItem());
                          //待审核
                          itemsDemo.setSign("2");
-                         itemsService.save(itemsDemo);
+                        //################### 门店日志
+                        StoreRemarks storeRemarks = new StoreRemarks();
+                        storeRemarks.setStoreName(storeDB.getStoreName());
+                        storeRemarks.setStoreCode(storeDB.getStoreCode());
+                        storeRemarks.setMarketName(storeDB.getMarketName());
+                        storeRemarks.setItemName(itemsDemo.getItem().getName());
+                        storeRemarks.setItemId(itemsDemo.getItem().getItemId());
+                        //操作人
+                        storeRemarks.setOperatePerson(userName);
+                        //设备原来的数量为0
+                        storeRemarks.setOrignnum(0);
+                        //设备现在的数量
+                        storeRemarks.setNownum(itemsJSON.getNum());
+                        //设备变化量
+                        storeRemarks.setChangenum(itemsJSON.getNum()-0);
+                        storeRemarks.setStoreAnditem(storeDB.getStoreName()+""+itemsDemo.getItem().getName());
+                        //设置操作记录的时间
+                        storeRemarks.setUpdateTime(new Date());
+                        storeRemarksService.save(storeRemarks);
+                        itemsService.save(itemsDemo);
 
                     }
                 }
@@ -685,6 +810,28 @@ public class StoreController {
     @RequestMapping("/additemInfor")
     public ModelAndView additemInfor(ModelAndView modelAndView, int storeId,Items items){
         Store store  =  storeService.findById(storeId);
+
+        String userName = (String) httpServletRequest.getSession().getAttribute("userName");
+        StoreRemarks storeRemarks = new StoreRemarks();
+        storeRemarks.setStoreName(store.getStoreName());
+        storeRemarks.setStoreCode(store.getStoreCode());
+        storeRemarks.setMarketName(store.getMarketName());
+        storeRemarks.setItemName(items.getItem().getName());
+        storeRemarks.setItemId(items.getItem().getItemId());
+        //操作人
+        storeRemarks.setOperatePerson(userName);
+        //设备原来的数量为0
+        storeRemarks.setOrignnum(0);
+        //设备现在的数量
+        storeRemarks.setNownum(items.getNum());
+        //设备变化量
+        storeRemarks.setChangenum(items.getNum()-0);
+        storeRemarks.setStoreAnditem(store.getStoreName()+""+items.getItem().getName());
+        //设置操作记录的时间
+        storeRemarks.setUpdateTime(new Date());
+        storeRemarksService.save(storeRemarks);
+
+
         //状态为待审批状态
         items.setSign("2");
         itemsService.save(items);
@@ -692,6 +839,7 @@ public class StoreController {
         Set<Items> itemsSet = store.getItemsSet();
         itemsSet.add(items);
         store.setItemsSet(itemsSet);
+
 
         storeService.save(store);
         modelAndView.setViewName("/store/storeInfor");
@@ -727,11 +875,22 @@ public class StoreController {
                         itemsDemo.setItem(itemsJSON.getItem());
                         //说明此时市场IT修改了门店设备信息
                         if(itemsJSON.getNum()!=itemsDemo.getNum()){
-                            //原来的设备数量(记录历史记录)
-                            itemsDemo.setOrigin(itemsDemo.getNum());
-                            System.out.println("原来的设备数量-----》"+itemsDemo.getNum());
-                            itemsDemo.setPersonName(userName);
-                            itemsDemo.setUpdateTime(new Date());
+                            StoreRemarks storeRemarks = new StoreRemarks();
+                            storeRemarks.setStoreName(storeDB.getStoreName());
+                            storeRemarks.setStoreCode(storeDB.getStoreCode());
+                            storeRemarks.setMarketName(storeDB.getMarketName());
+                            storeRemarks.setItemName(itemsJSON.getItem().getName());
+                            storeRemarks.setItemId(itemsJSON.getItem().getItemId());
+                            //操作人(修改人)
+                            storeRemarks.setOperatePerson(userName);
+                            storeRemarks.setUpdateTime(new Date());
+                            storeRemarks.setOrignnum(itemsDemo.getNum());
+                            storeRemarks.setNownum(itemsJSON.getNum());
+                            int change = itemsJSON.getNum() - itemsDemo.getNum();
+                            storeRemarks.setChangenum(change);
+                            storeRemarks.setStoreAnditem(storeDB.getStoreName()+""+itemsDemo.getItem().getName());
+                            storeRemarksService.save(storeRemarks);
+
                             //此时有需要管理员进行审批
                             itemsDemo.setSign("2");
                             itemsDemo.setNum(itemsJSON.getNum());
@@ -779,7 +938,6 @@ public class StoreController {
 
                         }
                     }
-
                 }
             }
             storeDB.setWidthBandSet(jsonStore.getWidthBandSet());
@@ -817,6 +975,148 @@ public class StoreController {
         map.put("pageTotals",storePage.getTotalPages());
         return map;
     }
+
+    /**
+     * 门店移除设备信息,并且会删除相应的日志里的记录
+     * @param itemsId
+     * @return
+     */
+    @RequestMapping("/deleteByItemsId")
+    @ResponseBody
+    public Map<String,Object> deleteByItemsId(int itemsId){
+        Map<String,Object> map = new HashMap<>();
+        int itemId = itemsService.findById(itemsId).getItem().getItemId();
+        itemsService.deleteById(itemsId);
+       // storeRemarksService.deleteById(storeRemarksService.findByItemsId(itemId).getSrId());
+        map.put("code","true");
+        return map;
+    }
+
+    /**
+     * content页面的保存按钮
+     */
+    @RequestMapping("/saveStoreInfor")
+    @ResponseBody
+    public Map<String,Object> saveStoreInfor(String store){
+        Map<String,Object> map = new HashMap<>();
+        //此时门店信息修改的主要是门店的宽带信息以及设备信息
+        Store storeJSON = JSON.parseObject(store,Store.class);
+        Store storeDB = storeService.findById(storeJSON.getStoreId());
+        //添加宽带
+        if(storeDB.getWidthBandSet().size()!=0){
+            for (WidthBand widthBandJSON:storeJSON.getWidthBandSet()) {
+                for(WidthBand widthBandDB:storeDB.getWidthBandSet()){
+                    if(widthBandJSON.getWid()==widthBandDB.getWid()){
+                        WidthBand widthBandDemo = widthBandService.findById(widthBandDB.getWid());
+                        widthBandDemo.setServicePerson(widthBandJSON.getServicePerson());
+                        widthBandDemo.setAccessMethod(widthBandJSON.getAccessMethod());
+                        widthBandDemo.setPayMethod(widthBandJSON.getPayMethod());
+                        widthBandDemo.setPayMoney(widthBandJSON.getPayMoney());
+                        widthBandDemo.setIdentity(widthBandJSON.getIdentity());
+                        widthBandDemo.setPassword(widthBandJSON.getPassword());
+                        widthBandDemo.setTapewidth(widthBandJSON.getTapewidth());
+                        widthBandDemo.setEndDate(widthBandJSON.getEndDate());
+                        widthBandService.save(widthBandDemo);
+                    }
+                }
+            }
+            storeDB.setWidthBandSet(storeJSON.getWidthBandSet());
+        }
+        //添加门店的设备信息
+        if(storeDB.getItemsSet().size()!=0){
+            for(Items itemsJSON:storeJSON.getItemsSet()){
+                for(Items itemsDB:storeDB.getItemsSet()){
+                    if(itemsJSON.getId()==itemsDB.getId()){
+                        Items itemsDemo = itemsService.findById(itemsDB.getId());
+                        itemsDemo.setClassName(itemsJSON.getClassName());
+                        itemsDemo.setEquipName(itemsJSON.getEquipName());
+                        itemsDemo.setNum(itemsJSON.getNum());
+                        itemsDemo.setItem(itemsJSON.getItem());
+                        //待审核
+                        itemsDemo.setSign("2");
+                        itemsService.save(itemsDemo);
+
+                    }
+                }
+            }
+            storeDB.setItemsSet(storeJSON.getItemsSet());
+        }
+        storeService.save(storeDB);
+        map.put("code","true");
+        return map;
+    }
+    /**
+     * 管理员看到的已确认门店的页面
+     */
+    @RequestMapping("/storeAdminPage")
+    public String storeAdminPage(){
+        return "/store/storeAdminpage";
+    }
+    /**
+     * 管理员点击查看按钮进行撤回审批的页面
+     */
+    @RequestMapping("/storeStatusBack")
+    public ModelAndView storeStatusBack(ModelAndView modelAndView,int id){
+        modelAndView.setViewName("/store/storestatusback");
+        modelAndView.addObject("storeId",id);
+        return modelAndView;
+    }
+    /**
+     * 管理员撤回审批，
+     * 此时的门店的状态由4已经确认状态，流转到待审批状态
+     */
+    @RequestMapping("/back")
+    @ResponseBody
+    public Map<String,Object> bank(String store){
+        Map<String,Object> map = new HashMap<>();
+        //此时门店信息修改的主要是门店的宽带信息以及设备信息
+        Store storeJSON = JSON.parseObject(store,Store.class);
+        Store storeDB = storeService.findById(storeJSON.getStoreId());
+
+        //添加宽带
+        if(storeDB.getWidthBandSet().size()!=0){
+            for (WidthBand widthBandJSON:storeJSON.getWidthBandSet()) {
+                for(WidthBand widthBandDB:storeDB.getWidthBandSet()){
+                    if(widthBandJSON.getWid()==widthBandDB.getWid()){
+                        WidthBand widthBandDemo = widthBandService.findById(widthBandDB.getWid());
+                        if(!widthBandJSON.getSign().equals(widthBandDemo.getSign())){
+                            widthBandDemo.setSign(widthBandJSON.getSign());
+                            widthBandDemo.setChenckPerson(null);
+                        }
+                        widthBandService.save(widthBandDemo);
+                    }
+                }
+            }
+            storeDB.setWidthBandSet(storeJSON.getWidthBandSet());
+        }
+        //添加门店的设备信息
+        if(storeDB.getItemsSet().size()!=0){
+            for(Items itemsJSON:storeJSON.getItemsSet()){
+                for(Items itemsDB:storeDB.getItemsSet()){
+                    if(itemsJSON.getId()==itemsDB.getId()){
+                        Items itemsDemo = itemsService.findById(itemsDB.getId());
+                        if(!itemsJSON.getSign().equals(itemsDemo.getSign())){
+                            itemsDemo.setSign(itemsJSON.getSign());
+                            itemsDemo.setCheckPerson(null);
+                        }
+                        itemsService.save(itemsDemo);
+
+                    }
+                }
+            }
+            storeDB.setItemsSet(storeJSON.getItemsSet());
+        }
+        //撤回后门店的状态为待审核状态
+        storeDB.setStoreStatus(storeStatusService.findById(2));
+        storeService.save(storeDB);
+        map.put("code","true");
+        return map;
+    }
+
+
+
+
+
 
 
 

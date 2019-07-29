@@ -35,6 +35,16 @@ public class Store {
     private Date closeDate;
     //设置闭店标志
     private String closeSign;
+    //执行闭店的操作人
+    private String closePerson;
+    //闭店的审批人
+    private String checkPerson;
+    //审批时间
+    @Temporal(TemporalType.DATE)
+    private Date checkDate;
+
+
+
     //带宽信息(对应多个宽带信息)
     @ManyToMany(targetEntity = WidthBand.class,fetch = FetchType.EAGER)
     @JoinTable(name = "store_widthband",joinColumns = @JoinColumn(name = "store_id"),inverseJoinColumns = @JoinColumn(name = "widthband_id"))
@@ -45,6 +55,30 @@ public class Store {
     @JoinTable(name = "store_items",joinColumns = @JoinColumn(name = "store_id"),inverseJoinColumns = @JoinColumn(name = "items_id"))
     private Set<Items> itemsSet;
 
+
+    public Date getCheckDate() {
+        return checkDate;
+    }
+
+    public void setCheckDate(Date checkDate) {
+        this.checkDate = checkDate;
+    }
+
+    public String getCheckPerson() {
+        return checkPerson;
+    }
+
+    public void setCheckPerson(String checkPerson) {
+        this.checkPerson = checkPerson;
+    }
+
+    public String getClosePerson() {
+        return closePerson;
+    }
+
+    public void setClosePerson(String closePerson) {
+        this.closePerson = closePerson;
+    }
 
     public String getBand() {
         return band;

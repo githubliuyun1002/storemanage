@@ -23,7 +23,6 @@
                 dataType:"JSON",
                 type:"GET",
                 success:function (data) {
-                    console.log("data------------>"+data);
                     //若有设置了宽带信息,进行宽带数据填充
                     $("#storeCode").val(data.storeCode);
                     $("#storeName").val(data.storeName);
@@ -33,8 +32,6 @@
                     $("#storeStatus").val(data.storeStatus.statusName);
                     $("#openDate").val(data.openDate);
                     $("#closeDate").val(data.closeDate);
-
-
                     if(data.widthBandSet!=null){
                         for (var i = 0; i <data.widthBandSet.length ; i++) {
                             //表示通过审核
@@ -60,14 +57,14 @@
                                     "<tr>" +
                                     "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">宽带带宽</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input readonly='readonly' type=\"text\"  name=\"tapewidth\"  id=\"tapewidth\" value="+data.widthBandSet[i].tapewidth+" class=\"hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly\"  style=\"text-align:left;width:100%;overflow-y:auto\"></span></td>" +
                                     "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">到期日期</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input  readonly='readonly' type=\"text\"  name=\"endDate\"  id=\"endDate\" value="+data.widthBandSet[i].endDate+" class=\"hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly\"  style=\"text-align:left;width:100%;overflow-y:auto\"></span></td>" +
-                                    "<td class='hxfld_container'><label class='hxtxt_caption hxtxt_nowrap' style='display:inline-block;width:24%;padding-right:10px;text-align:left'>审批人</label><span style='display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;'><input readonly='readonly' type='text' name='chenckPerson' id='chenckPerson' value='"+data.widthBandSet[i].chenckPerson+"' class='hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly' style='text-align:left;width:100%;overflow-y:auto'></span></td>"+
+                                    "<td class='hxfld_container'><label class='hxtxt_caption hxtxt_nowrap' style='display:inline-block;width:24%;padding-right:10px;text-align:left'>审批人</label><span style='display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;'><input readonly='readonly' type='text' name='chenckPerson' id='chenckPerson' value='' class='hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly' style='text-align:left;width:100%;overflow-y:auto'></span></td>"+
                                     "</tr>"+
                                     "</tbody>" +
                                     "</table>" +
                                     "</div>" +
                                     "</div>");
-
                             }else{
+                                //表示未通过审核
                                 $("#widthShow").append("<div class=\"page_section_container hxcontainer_shadow\">" +
                                     "<img class=\"page_section_title_decorated hxbgcolor_datalist_head\" src=\"./content/hxpub_clear.gif\">" +
                                     "<div class=\"page_section_title_area\" hx_element_type=\"text\">" +
@@ -77,25 +74,27 @@
                                     "<table style=\"table-layout:fixed;width:100%;\">" +
                                     "<tbody>" +
                                     "<tr>" +
-                                    "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">运营商</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input type=\"hidden\"  name=\"wid\" id=\"wid\" value="+data.widthBandSet[i].wid+"><input type=\"hidden\" id=\"sid\" name=\"sid\" value="+data.widthBandSet[i].servicePerson.sid+"><select class=\"form-control\" name=\"servicePerson\"  test=\"serviceTest\" id=\"servicePerson"+i+"\"></select></span></td>" +
+                                    "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">运营商</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input type=\"hidden\"  name=\"wid\" id=\"wid\" value="+data.widthBandSet[i].wid+"><input type=\"hidden\" id=\"sid\" name=\"sid\" value="+data.widthBandSet[i].servicePerson.sid+"><select class=\"form-control\" name=\"servicePerson\" test=\"serviceTest\" id=\"servicePerson"+i+"\"></select></span></td>" +
                                     "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">接入方式</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input type=\"hidden\" name=\"aid\" id=\"aid\" value="+data.widthBandSet[i].accessMethod.aid+"><select  class=\"form-control\" name=\"accessMethod\" test=\"accessTest\" id=\"accessMethod"+i+"\"></select></span></td>" +
                                     "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">付款方式</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input type=\"hidden\" name=\"payid\" id=\"payid\" value="+data.widthBandSet[i].payMethod.payid+"><select  class=\"form-control\" test=\"payMethodTest\" name=\"payMethod\" id=\"payMethod"+i+"\"></select></span></td>" +
                                     "</tr>" +
                                     "<tr>" +
-                                    "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">付款金额</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input   type=\"text\"  name=\"payMoney\"  id=\"payMoney\" value="+data.widthBandSet[i].payMoney+" class=\"hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly\"  style=\"text-align:left;width:100%;overflow-y:auto;font-weight:bold;color:red\"></span></td>" +
-                                    "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">宽带账号</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input  type=\"text\"  name=\"identity\"  id=\"identity\" value="+data.widthBandSet[i].identity+" class=\"hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly\"  style=\"text-align:left;width:100%;overflow-y:auto;font-weight:bold;color:red\"></span></td>" +
-                                    "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">宽带密码</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input   type=\"text\"  name=\"password\"  id=\"password\" value="+data.widthBandSet[i].password+" class=\"hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly\"  style=\"text-align:left;width:100%;overflow-y:auto;font-weight:bodl;color:red\"></span></td>" +
+                                    "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">付款金额</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input   type=\"text\"  name=\"payMoney\"  id=\"payMoney\" value="+data.widthBandSet[i].payMoney+" class=\"hxinputbox hxborder_inputbox\"  style=\"text-align:left;width:100%;overflow-y:auto;font-weight:bold;color:red\"></span></td>" +
+                                    "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">宽带账号</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input  type=\"text\"  name=\"identity\"  id=\"identity\" value="+data.widthBandSet[i].identity+" class=\"hxinputbox hxborder_inputbox\"  style=\"text-align:left;width:100%;overflow-y:auto;font-weight:bold;color:red\"></span></td>" +
+                                    "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">宽带密码</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input   type=\"text\"  name=\"password\"  id=\"password\" value="+data.widthBandSet[i].password+" class=\"hxinputbox hxborder_inputbox\"  style=\"text-align:left;width:100%;overflow-y:auto;font-weight:bodl;color:red\"></span></td>" +
                                     "</tr>" +
                                     "<tr>" +
-                                    "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">宽带带宽</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input  type=\"text\"  name=\"tapewidth\"  id=\"tapewidth\" value="+data.widthBandSet[i].tapewidth+" class=\"hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly\"  style=\"text-align:left;width:100%;overflow-y:auto;font-weight:bold;color:red\"></span></td>" +
-                                    "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">到期日期</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input   type=\"text\"  name=\"endDate\"  id=\"endDate\" value="+data.widthBandSet[i].endDate+" class=\"hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly\"  style=\"text-align:left;width:100%;overflow-y:auto;font-weight:bold;color:red\"></span></td>" +
-                                    "<td class='hxfld_container'><label class='hxtxt_caption hxtxt_nowrap' style='display:inline-block;width:24%;padding-right:10px;text-align:left'>审批人</label><span style='display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;'><input readonly='readonly' type='text' name='chenckPerson' id='chenckPerson' value='"+data.widthBandSet[i].chenckPerson+"' class='hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly' style='text-align:left;width:100%;overflow-y:auto;'></span></td>"+
+                                    "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">宽带带宽</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input  type=\"text\"  name=\"tapewidth\"  id=\"tapewidth\" value="+data.widthBandSet[i].tapewidth+" class=\"hxinputbox hxborder_inputbox\"  style=\"text-align:left;width:100%;overflow-y:auto;font-weight:bold;color:red\"></span></td>" +
+                                    "<td class=\"hxfld_container\"><label class=\"hxtxt_caption hxtxt_nowrap\" style=\"display:inline-block;width:24%;padding-right:10px;text-align:left\">到期日期</label><span style=\"display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;\"><input   type=\"text\"  name=\"endDate\"  id=\"endDate\" value="+data.widthBandSet[i].endDate+" class=\"hxinputbox hxborder_inputbox\"  style=\"text-align:left;width:100%;overflow-y:auto;font-weight:bold;color:red\"></span></td>" +
+                                    "<td class='hxfld_container'><label class='hxtxt_caption hxtxt_nowrap' style='display:inline-block;width:24%;padding-right:10px;text-align:left'>审批人</label><span style='display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;'><input readonly='readonly' type='text' name='chenckPerson' id='chenckPerson' value='' class='hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly' style='text-align:left;width:100%;overflow-y:auto;'></span></td>"+
                                     "</tr>"+
                                     "</tbody>" +
                                     "</table>" +
                                     "</div>" +
                                     "</div>");
                             }
+                            //
+                            $("input[name='chenckPerson']").eq(i).val(data.widthBandSet[i].chenckPerson);
 
                             serviceNameArr.push(data.widthBandSet[i].servicePerson.sid);
                             accessNameArr.push(data.widthBandSet[i].accessMethod.aid);
@@ -114,7 +113,7 @@
                                 }
                             },
                             error:function () {
-                                alert("填充宽带运行商失败")
+                                alert("填充宽带运营商失败")
                             }
                         });
                         <!--宽带的接入方式-->
@@ -156,6 +155,7 @@
                             $("select[test='payMethodTest']").eq(i).val(methodArr[i]);
                         }
                     }
+
                     if(data.itemsSet!=null){
                         var newArr =[];
                         for (var i = 0; i < data.itemsSet.length; i++) {
@@ -199,7 +199,6 @@
                                 '</table>' +
                                 '</div>'+
                                 '</div>');
-                            //设置分类的div，是否需要更新
                             for (var p = 0; p < data.itemsSet.length; p++) {
                                 var show = $("#span"+k).text();
                                 if(show==data.itemsSet[p].className){
@@ -212,8 +211,8 @@
                                             '</td>' +
                                             '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="hidden" name="id" value="'+data.itemsSet[p].id+'"><input type="text" readonly="readonly"  class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly"  name="equipName" value="'+data.itemsSet[p].equipName+'" style="text-align:left;width:100%;overflow-y:auto"></span></td>' +
                                             '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="hidden" name="itemId" value="'+data.itemsSet[p].item.itemId+'"><input type="text" readonly="readonly" name="name" value="'+data.itemsSet[p].item.name+'"  class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly"   style="text-align:left;width:100%;overflow-y:auto"></span></td>' +
-                                            '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="hidden" name="className" value="'+data.itemsSet[p].className+'"><input type="text" readonly="readonly" name="num"  value="'+data.itemsSet[p].num+'" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly" style="text-align:left;width:100%;overflow-y:auto"></span></td>' +
-                                            '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="text" readonly="readonly" name="checkPerson"  value="'+data.itemsSet[p].checkPerson+'" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly" style="text-align:left;width:100%;overflow-y:auto"></span></td>' +
+                                            '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="text" readonly="readonly" name="num"  value="'+data.itemsSet[p].num+'" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly" style="text-align:left;width:100%;overflow-y:auto"></span></td>' +
+                                            '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="hidden" name="className" value="'+data.itemsSet[p].className+'"><input type="text" readonly="readonly" name="checkPerson"  value="'+data.itemsSet[p].checkPerson+'" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly" style="text-align:left;width:100%;overflow-y:auto"></span></td>' +
                                             '</tr>');
                                     }else{
                                         //标记为‘2’表示未通过,此时复选选中进行提醒
@@ -224,12 +223,11 @@
                                             '</td>' +
                                             '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="hidden" name="id" value="'+data.itemsSet[p].id+'"><input type="text" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly"  readonly="readonly" name="equipName" value="'+data.itemsSet[p].equipName+'" style="text-align:left;width:100%;overflow-y:auto"></span></td>' +
                                             '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="hidden" name="itemId" value="'+data.itemsSet[p].item.itemId+'"><input type="text" name="name" value="'+data.itemsSet[p].item.name+'" readonly="readonly" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly"   style="text-align:left;width:100%;overflow-y:auto"></span></td>' +
-                                            '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;color: red;font-weight: bold"><input type="hidden" name="className" value="'+data.itemsSet[p].className+'"><input type="text"  name="num" value="'+data.itemsSet[p].num+'"  class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly" style="text-align:left;width:100%;overflow-y:auto"></span></td>' +
-                                            '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="text" readonly="readonly" name="checkPerson"  value="'+data.itemsSet[p].checkPerson+'" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly" style="text-align:left;width:100%;overflow-y:auto"></span></td>' +
+                                            '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;color: red;font-weight: bold"><input type="text"  name="num" value="'+data.itemsSet[p].num+'"  class="hxinputbox hxborder_inputbox" style="text-align:left;width:100%;overflow-y:auto"></span></td>' +
+                                            '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="hidden" name="className" value="'+data.itemsSet[p].className+'"><input type="text" readonly="readonly" name="checkPerson"  value="'+(data.itemsSet[p].checkPerson==null?"":data.itemsSet[p].checkPerson)+'" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly" style="text-align:left;width:100%;overflow-y:auto"></span></td>' +
                                             '</tr>');
                                     }
                                 }
-
                             }
                         }
                     }
@@ -241,31 +239,29 @@
             //得到页面所有的checkbox元素(门店设备信息)
             var widthsSet="";
             var itemsSet="";
-            var checkBoxArray = $('input[type=checkbox]');
-            if(checkBoxArray.length!=0){
-                itemsSet="[";
-                //拼接设备数量基本信息
-                for (var i = 0; i <checkBoxArray.length ; i++) {
-                    var tr =  $(checkBoxArray[i]).parent().parent();
-                    var tdArr = tr.find("td");
-                    var id= tdArr.eq(1).find("input[type='hidden']").val();
+            var itemObjects = $("#itemShow .page_section_content_area .hxtbl_datalist_frame tbody tr");
+            if (itemObjects.length != 0) {
+                itemsSet = "[";
+                for (var i = 0; i < itemObjects.length; i++) {
+                    var tdArr = $(itemObjects[i]).find("td");
+                    var id = tdArr.eq(1).find("input[type='hidden']").val();
                     var equipName = tdArr.eq(1).find("input[name='equipName']").val();
                     var itemId = tdArr.eq(2).find("input[type='hidden']").val();
                     var name = tdArr.eq(2).find("input[name='name']").val();
                     var num = tdArr.eq(3).find("input[name='num']").val();
+                    var className = tdArr.eq(4).find("input[name='className']").val();
                     var checkPerson = tdArr.eq(4).find("input[name='checkPerson']").val();
-                    var className = tdArr.eq(3).find("input[name='className']").val();
-                    itemsSet+="{\"className\":\""+className+"\",\"equipName\":\""+equipName+"\",\"id\":"+id+"," +
-                        "\"item\":{\"itemId\":"+itemId+",\"name\":\""+name+"\"}," +
+                    itemsSet += "{\"className\":\"" + className + "\",\"equipName\":\"" + equipName + "\",\"id\":" + id + "," +
+                        "\"item\":{\"itemId\":" + itemId + ",\"name\":\"" + name + "\"}," +
                         "\"num\":"+num+"," +
                         "\"checkPerson\":\""+checkPerson+"\"";
-                    if(i==checkBoxArray.length-1){
-                        itemsSet+="}"
-                    }else{
-                        itemsSet+="},";
+                    if (i == itemObjects.length - 1) {
+                        itemsSet += "}";
+                    } else {
+                        itemsSet += "},"
                     }
                 }
-                itemsSet+="]";
+                itemsSet += "]";
             }
             //门店的宽带信息
             var widthObjects = $("#widthShow .page_section_content_area tbody");
@@ -300,37 +296,207 @@
                 }
                 widthsSet += "]";
             }
-            if(checkBoxArray.length!=0&&widthObjects.length!=0){
-                var storeMsd = "{\"storeId\":"+$("#storeId").val()+",\"storeCode\":\""+$("#storeCode").val()+"\"," +
-                    "\"itemsSet\":"+itemsSet+",\"widthBandSet\":"+widthsSet+"}";
-               // console.log("修改后提交的门店信息-----》"+storeMsd);
-                $.ajax({
-                    url:"/adjust/toupdateAdjust",
-                    type:"GET",
-                    data:{"store":storeMsd},
-                    dataType:"JSON",
-                    success:function (data) {
-                        if(data.code="1"){
-                            window.location.href="/store/adjustment";
-                        }
-                    }
 
-                })
+            //添加门店的基本信息
+            var storeId = $("#store_id").val();
+            var storeCode = $("#storeCode").val();
+            var storeMsg = "{\"storeId\":"+storeId+",\"storeCode\":\""+storeCode+"\"";
+            if(widthObjects.length!=0){
+                storeMsg+=",\"widthBandSet\":"+widthsSet+""
             }
-        }
-        //关闭按钮
-        function goback() {
+            if(itemObjects.length!=0){
+                storeMsg+=",\"itemsSet\":"+itemsSet+""
+            }
+            storeMsg+="}";
+            //console.log("storeMsg--->"+storeMsg);
+
             $.ajax({
-                url:"/store/adjustBtn",
-                dataType:"JSON",
+                url:"/adjust/toupdateAdjust",
                 type:"GET",
+                data:{"store":storeMsg},
+                dataType:"JSON",
                 success:function (data) {
-                    if(data!=null&&data["code"]=="true"){
+                    if(data.code="1"){
                         window.location.href="/store/adjustment";
                     }
                 }
+
             })
-           // history.back(-1);
+
+
+
+        }
+        //关闭按钮
+        function goback() {
+            window.location.href="/store/adjustment";
+        }
+
+        <!--填充设备类别信息-->
+        $(function () {
+            $.ajax({
+                url:"/classfication/findAll",
+                dataType:"JSON",
+                type:"GET",
+                success:function (data) {
+                    $("#classficationSelect").html("");
+                    //   $("select#className").empty();
+                    $("#classficationSelect").append('' +
+                        '<select onchange="changeClass()" class="form-control" name="className" id="className">' +
+                        '<option value="0">--请选择</option>' +
+                        '</select>');
+                    for (var i = 0; i <data.length ; i++) {
+                        $("select#className").append('' +
+                            '<option id="'+data[i].classId+'" value="'+data[i].name+'">'+data[i].name+'</option>');
+                    }
+                },
+                error:function () {
+                    alert("页面设备信息填充失败");
+                }
+            })
+        });
+        <!--填充设备名称信息-->
+        function changeClass() {
+            var id = $("#className").find("option:checked").attr("id");
+            $.ajax({
+                url:"/classfication/findById",
+                data:{"id":id},
+                dataType:"JSON",
+                type:"GET",
+                success:function (data) {
+                    $("#equipNameSelect").html("");
+                    // $("select#equipName").empty();
+                    $("#equipNameSelect").append('' +
+                        '<label>设备名称</label>' +
+                        '<select onchange="changeEquipName()" class="form-control" name="equipName" id="equipName">' +
+                        '<option value="0">--请选择</option>' +
+                        '</select>');
+                    if(data.equipNames.length!=0){
+                        for (var i = 0; i <data.equipNames.length ; i++) {
+                            $("select#equipName").append('' +
+                                '<option id="'+data.equipNames[i].equipId+'" value="'+data.equipNames[i].name+'">'+data.equipNames[i].name+'</option>');
+                        }
+                    }
+                },
+                error:function () {
+                    alert("填充设备名称信息失败");
+                }
+            });
+        }
+        <!--填充设备型号信息-->
+        function changeEquipName() {
+            var id = $("#equipName").find("option:checked").attr("id");
+            $.ajax({
+                url:"/equipname/findById",
+                data:{"id":id},
+                dataType:"JSON",
+                type:"GET",
+                success:function (data) {
+                    $("#itemSelect").html("");
+                    //  $("select#item").empty();
+                    $("#itemSelect").append(
+                        '<label>设备型号</label>'+
+                        '<select class="form-control" name="item" id="item">' +
+                        '<option>--请选择</option>' +
+                        '</select>'
+                    );
+                    if(data.itemSet.length!=0){
+                        for (var i = 0; i < data.itemSet.length; i++) {
+                            $("select#item").append('' +
+                                '<option id="'+data.itemSet[i].name+'" value="'+data.itemSet[i].itemId+'">'+data.itemSet[i].name+'</option>')
+                        }
+                    }
+                },
+                error:function () {
+                    alert("填充设备型号信息失败");
+                }
+            })
+
+        }
+        <!--加载宽带运营商 注意ajax请求的取值方式：false-->
+        $(function () {
+            $.ajax({
+                url:"/store/serviceperson",
+                dataType:"JSON",
+                type:"GET",
+                success:function (data) {
+                    for (var i = 0; i <data.length ; i++) {
+                        $("select#servicePerson").append('' +
+                            '<option id="'+data[i].serviceName+'" value="'+data[i].sid+'">'+data[i].serviceName+'</option>');
+                    }
+                },
+                error:function () {
+                    alert("填充宽带运营商失败")
+                }
+            });
+        });
+        <!--宽带的接入方式-->
+        $(function () {
+            $.ajax({
+                url:"/store/accessmethod",
+                dataType:"JSON",
+                type:"GET",
+                success:function (data) {
+                    for (var i = 0; i <data.length ; i++) {
+                        $("select#accessMethod").append('' +
+                            '<option id="'+data[i].accessName+'" value="'+data[i].aid+'">'+data[i].accessName+'</option>')
+                    }
+                },
+                error:function () {
+                    alert("填充宽带的接入方式失败")
+                }
+            });
+        });
+        <!--付款方式-->
+        $(function () {
+            $.ajax({
+                url:"/store/paymethod",
+                dataType:"JSON",
+                type:"GET",
+                success:function (data) {
+                    for (var i = 0; i <data.length ; i++) {
+                        $("select#payMethod").append('' +
+                            '<option id="'+data[i].method+'" value="'+data[i].payid+'">'+data[i].method+'</option>')
+                    }
+                },
+                error:function () {
+                    alert("填充宽带的付款方式失败");
+                }
+            });
+        });
+
+    </script>
+    <script>
+        function confirmItems() {
+            var result = confirm("请检查您的设备明细，是否要提交");
+            if(result){
+                var addItemId = $("#myModal").find("select[name='item']").find("option:checked").val();
+                //设备id值
+                var pageItems = $("input[name='itemId']");
+                //设备名称
+                var pageItemsName = $("input[name='name']");
+                var pageArr = new Array();
+                if(pageItems.length!=0){
+                    for (var i = 0; i <pageItems.length ; i++) {
+                        pageArr[i] = $(pageItems[i]).val();
+                    }
+                    var index = $.inArray(addItemId,pageArr);
+                    if(index>=0){
+                        alert("该设备型号已经存在，请不要重新添加");
+                        $(pageItemsName[index]).css("background","pink");
+                    }else{
+                        $("#additem").attr("action","/adjust/additemInfor");
+                        $("#additem").submit();
+
+                    }
+                }else {
+                    $("#additem").attr("action","/adjust/additemInfor");
+                    $("#additem").submit();
+                }
+            }
+
+        }
+        function confirmWidth() {
+            return confirm("请检查您的宽带明细，是否要提交");
         }
     </script>
 </head>
@@ -348,11 +514,18 @@
             </td>
             <td width="70%">
                 <button type="button" onclick="goback()" style="float: right" class="btn btn-default">
-                    <span class="glyphicon glyphicon-share-alt"></span>关闭
+                    <span class="glyphicon glyphicon-share-alt"></span>返回上级
                 </button>
                 <button type="button"  onclick="submitFrom()" style="float: right"  class="btn btn-default">
                     <span class="glyphicon glyphicon-lock"></span>提交修改
                 </button>
+                <button style="float: right" type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>添加设备
+                </button>
+                <button style="float:right" type="button" class="btn btn-default" data-toggle="modal" data-target="#widthModal">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>宽带设置
+                </button>
+
             </td>
         </tr>
         </tbody>
@@ -364,7 +537,6 @@
         <div class="page_section_title_area" hx_element_type="text">
             <span class="hxtxt_nowrap hxtxt_section_title" style=";text-align:left;display:inline-block;width:100%;">门店信息展示</span>
         </div>
-        <input type="hidden"  th:value="${storeId}" name="storeId" id="storeId">
         <div class="page_section_content_area">
             <table style="table-layout:fixed;width:100%;">
                 <tbody id="contentshow">
@@ -390,6 +562,71 @@
     <div id="widthShow"></div>
     <!--设备分类信息展示-->
     <div id="itemShow"></div>
+
+    <!--弹窗-->
+    <!--设置门店设备信息-->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <form method="post" th:action="@{/adjust/additemInfor}" th:autocomplete="off" id="additem">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">设备添加</h4>
+                    </div>
+                    <div class="modal-body">
+                        <input class="form-control" type="hidden"  name="storeId" th:value="${storeId}">
+                        <label>设备类别</label>
+                        <div id="classficationSelect"></div>
+                        <div id="equipNameSelect"></div>
+                        <div id="itemSelect"></div>
+                        <label>设备数量</label>
+                        <input type="text" class="form-control" placeholder="设备数量" id="num" name="num" required="true">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
+                        <button type="button" onclick="return confirmItems()" class="btn btn-primary">提交</button>
+                    </div>
+
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <!--设备门店宽带信息-->
+    <div class="modal fade" id="widthModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <form method="post" th:action="@{/adjust/addwidthInfor}" th:autocomplete="off">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">设置宽带</h4>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden"  name="storeId" th:value="${storeId}" id="storeId">
+                        <label for="identity">账号</label>
+                        <input class="form-control" type="text" placeholder="账号" name="identity" id="identity" required="true"/>
+                        <label for="password">密码</label>
+                        <input class="form-control" type="text" placeholder="密码" name="password" id="password" required="true"/>
+                        <label for="servicePerson">宽带运营商</label>
+                        <select class="form-control" name="servicePerson" id="servicePerson"></select>
+                        <label>接入方式</label>
+                        <select class="form-control" name="accessMethod" id="accessMethod"></select>
+                        <label>付款方式</label>
+                        <select class="form-control" name="payMethod" id="payMethod"></select>
+                        <label>付款金额</label>
+                        <input class="form-control" type="number" placeholder="付款金额" name="payMoney" id="payMoney" required="true"/>
+                        <label>带宽</label>
+                        <input class="form-control" type="text" placeholder="带宽" name="tapewidth" id="tapewidth" required="true"/>
+                        <label>到期日期</label>
+                        <input class="form-control" type="date" placeholder="到期日期" name="endDate" id="endDate" required="true"/>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" onclick="removeSelect()" class="btn btn-primary" data-dismiss="modal">关闭</button>
+                        <button type="submit" onclick="return confirmWidth()" class="btn btn-primary">提交</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
 </div>
 </body>
 </html>
