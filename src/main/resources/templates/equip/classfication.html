@@ -56,7 +56,7 @@
                             '<td>' + data.content[i].name + '</td>' +
                             '<td>' + data.content[i].publicStatus.name + '</td>' +
                             '<td><button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].classId + ')" ' +
-                            'data-target="#myModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button></td>' +
+                            'data-target="#upmyModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button></td>' +
                             '</tr>');
                     }
 
@@ -67,7 +67,7 @@
             });
         });
 
-        //新增设备类别
+        //新增设备类别判断
         $(function () {
             //在新增设备时，添加鼠标失去事件
             $("#name").on('blur',function () {
@@ -80,71 +80,91 @@
                     dataType:"JSON",
                     success:function (data) {
                         $("#errorMsg").html("");
-                        if(data.code=="true"){
+                        $("#addBtn").attr("type","button");
+                        if(data["code"]=="true"){
                             $("#errorMsg").html("该设备类别已经存在，请不要重复输入");
+                        }else{
+                            $("#formData").attr("action","/classfication/save");
+                            $("#addBtn").attr("type","submit");
                         }
                     }
                 });
             });
-
-            $("#add").click(function () {
-                $("#formData").attr("action","/classfication/save");
-                $("#PID").html("");
-                $("#name").val("");
-                $("#footer").html("");
-                $("#footer").append(
-                    '<button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>'+
-                    '<button type="submit" class="btn btn-primary" id="submitBtn">新增</button>'
-                );
+        });
+        <!--加载公共状态列表-->
+        $(function () {
+            $.ajax({
+                url:"/person/statusList",
+                type:"GET",
+                dataType:"JSON",
+                success:function (data) {
+                    //console.log(data);
+                    for(i=0;i<data.length;i++){
+                        $("select#uppublicStatus").append(
+                            '<option id="' + data[i].name + '" value="' + data[i].id + '">' + data[i].name + '</option>'
+                        );
+                    }
+                },
+                error:function () {
+                    alert("状态列表加载失败");
+                }
             });
         });
 
         //修改设备类别
         function updateBtn(id) {
-            $("#footer").html("");
-            $("#formData").attr("action","/classfication/updateSave");
             $.ajax({
                 url:"/classfication/findById",
                 data:{"id":id},
                 type:"GET",
                 dataType:"JSON",
                 success:function (data) {
-                    $("#footer").append(
-                        '<button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>'+
-                        '<button type="submit" class="btn btn-primary" id="submitBtn">修改</button>'
-                    );
+                    $("#errorMsg").html("");
+                    $("#check").html("");
                     $("#PID").html("");
-                    $("#modalBody").append('<div id="PID"></div>');
+                    $("#upmodalBody").append('<div id="PID"></div>');
                     $("#PID").append('' +
                         '<input  class="form-control" name="classId" id="classficationId" type="hidden" value="' + data.classId + '"/>');
-                    $("#name").val(data.name);
-                    <!--加载公共状态列表-->
-                    $(function () {
-                        $.ajax({
-                            url:"/person/statusList",
-                            type:"GET",
-                            dataType:"JSON",
-                            success:function (data) {
-                                //console.log(data);
-                                for(i=0;i<data.length;i++){
-                                    $("select#uppublicStatus").append(
-                                        '<option id="' + data[i].name + '" value="' + data[i].id + '">' + data[i].name + '</option>'
-                                    );
-                                }
-                            },
-                            error:function () {
-                                alert("状态列表加载失败");
-                            }
-                        });
-                    });
+                    $("#upname").val(data.name);
+
+                    $("#check").append('' +
+                        '<input type="hidden" id="checkvalue" class="form-control" value="'+data.name+'">');
                     //公共状态
                     var publicStatusName=data.publicStatus.name;
                     <!--对下拉框的数据进行回显-->
                     if (publicStatusName == "启用") {
-                        $("#publicStatus").find("option:contains('启用')").attr("selected", true);
+                        $("#uppublicStatus").find("option:contains('启用')").attr("selected", true);
                     } else if (publicStatusName == "禁用") {
-                        $("#publicStatus").find("option:contains('禁用')").attr("selected", true);
+                        $("#uppublicStatus").find("option:contains('禁用')").attr("selected", true);
                     }
+
+                    $("#upBtn").click(function () {
+                        var values = $("#checkvalue").val();
+                        var className = $("#upname").val();
+                        if(values==className){
+                            $("#updateForm").attr("action","/classfication/save");
+                            $("#upBtn").attr("type","submit");
+                        }else{
+                            $.ajax({
+                                url:"/classfication/findByName",
+                                data:{"className":className},
+                                type:"GET",
+                                dataType:"JSON",
+                                success:function (data) {
+                                    $("#uperrorMsg").html("");
+                                    $("#upBtn").attr("type","button");
+                                    if(data["code"]=="true"){
+                                        $("#uperrorMsg").html("该设备类别已经存在，请不要重复输入");
+                                    }else{
+                                        $("#updateForm").attr("action","/classfication/save");
+                                        $("#updateForm").submit();
+                                        //$("#upBtn").attr("type","submit");
+                                    }
+                                }
+                            });
+                        }
+                    });
+
                 },
                 error:function () {
                     alert("加载人员信息失败");
@@ -394,18 +414,47 @@
                         </div>
                         <div class="modal-body" id="modalBody">
                             <label for="name">设备类型名称</label>
-                            <input class="form-control" type="text"  onblur="check()" placeholder="设备类型名称" name="name" id="name" required="true"/>
+                            <input class="form-control" type="text"  placeholder="设备类型名称" name="name" id="name" required="true"/>
                             <span id="errorMsg" style="font-weight: bold;color: red"></span><br/>
                             <label>设备状态</label>
                             <select class="form-control" id="publicStatus" name="publicStatus"></select>
                         </div>
                         <div class="modal-footer" id="footer">
-
+                            <button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
+                            <button type="button" id="addBtn" class="btn btn-primary">新增</button>
                         </div>
                     </div>
                 </div>
             </form>
         </div>
+        <div class="modal fade" id="upmyModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <form method="post" th:action="@{/classfication/updateSave}" id="updateForm" th:autocomplete="off">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">设备类型修改</h4>
+                        </div>
+                        <div class="modal-body" id="upmodalBody">
+                            <label for="name">设备类型名称</label>
+                            <input class="form-control" type="text"  placeholder="设备类型名称" name="name" id="upname" required="true"/>
+                            <div id="check"></div>
+                            <span id="uperrorMsg" style="font-weight: bold;color: red"></span><br/>
+                            <label>设备状态</label>
+                            <select class="form-control" id="uppublicStatus" name="publicStatus"></select>
+                        </div>
+                        <div class="modal-footer" id="upfooter">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
+                            <button type="button" id="upBtn" class="btn btn-primary">修改</button>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+
+        </div>
+
+
+
 
     </div>
 

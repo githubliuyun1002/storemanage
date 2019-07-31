@@ -170,6 +170,7 @@ public class StoreController {
      */
     @RequestMapping("/additem")
     public ModelAndView addItem(ModelAndView modelAndView, int storeId,Items items){
+        System.out.println("items------>"+items);
         Store store  =  storeService.findById(storeId);
         //设置门店的展示样式，再根据门店的基本信息进行填充
         if(store.getItemsSet().size()!=0){

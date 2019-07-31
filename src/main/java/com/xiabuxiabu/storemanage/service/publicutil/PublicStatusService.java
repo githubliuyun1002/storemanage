@@ -27,4 +27,8 @@ public class PublicStatusService {
     public List<PublicStatus> findAll(){
         return publicStatusRepository.findAll();
     }
+
+    public PublicStatus findById(int id){
+        return  publicStatusRepository.findById(id).get();
+    }
 }

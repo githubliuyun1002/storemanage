@@ -33,18 +33,21 @@
             endPage: 4,//当前显示的最后一个按钮的值    与pageLength相同
             pageSize: 5  //一页展示多少条记录
         };
+
         //填充设备名称(select)
         $(function () {
             $.ajax({
-                url:"/classfication/findAll",
+                url:"/equipname/findAll",
                 dataType:"JSON",
                 type:"GET",
                 success:function (data) {
                     for (var i = 0; i < data.length; i++) {
-                        for (var j = 0; j <data[i].equipNames.length ; j++) {
+                        if(data[i].publicStatus.name=="启用"){
                             $("select#equipId").append('' +
-                                '<option id="'+data[i].equipNames[j].name+'" value="'+data[i].equipNames[j].equipId+'">'+data[i].equipNames[j].name+'</option>')
+                                    '<option id="'+data[i].name+'" value="'+data[i].equipId+'">'+data[i].name+'</option>')
+
                         }
+
                     }
                 },
                 error:function () {
@@ -73,7 +76,7 @@
         //填充页面
         $(function () {
               $.ajax({
-                  url:"/equipname/findAllList",
+                  url:"/item/findAllItem",
                   data:{"page":page.currPage,"pageSize":page.pageSize,"searchName":""},
                   dataType:"JSON",
                   type:"GET",
@@ -88,20 +91,15 @@
                       pageIteration(page.currPage);
                       isDisabled(page.currPage, data.totalPages);
                       for (var i = 0; i <data.content.length ; i++) {
-                             if(data.content[i].itemSet.length>0){
-                                 $("tbody").append('' +
-                                     '<tr>' +
-                                     '<td>'+data.content[i].name+'</td>' +
-                                     '<td id="td'+i+'"></td>' +
-                                     '<td>' +
-                                     '<button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].equipId + ')" ' +
-                                     'data-target="#upmyModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button>' +
-                                     '</td>'+
-                                     '</tr>');
-                                 for (var j = 0; j <data.content[i].itemSet.length; j++) {
-                                     $("#td"+i).append(data.content[i].itemSet[j].name+",");
-                                 }
-                             }
+                             $("tbody").append('<tr>' +
+                                 '<td>'+data.content[i].className+'</td>' +
+                                 '<td>'+data.content[i].equipName+'</td>' +
+                                 '<td>'+data.content[i].name+'</td>' +
+                                 '<td>'+data.content[i].publicStatus.name+'</td>' +
+                                 '<td><button type="button" class="btn btn-default" data-toggle="modal" data-target="#upmyModal"' +
+                                 'onclick="updateBtn('+data.content[i].itemId+')"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>' +
+                                 '修改</button></td>' +
+                                 '</tr>')
                       }
                   },
                   error:function () {
@@ -109,36 +107,112 @@
                   }
               })
         });
-        //修改回显页面
-        function updateBtn(id) {
+        //填充公共状态
+        $(function () {
             $.ajax({
-                url:"/equipname/findById",
-                data:{"id":id},
+                url:"/person/statusList",
                 type:"GET",
                 dataType:"JSON",
                 success:function (data) {
-                     console.log("页面修改回显数据---->"+data);
-                     $("#updateequipName").val(data.name);
-                     $("#updateId").html("");
-                     $("#updateId").append('<input type="hidden" class="form-control" name="equipId" value="'+data.equipId+'">');
-                     $("#appendItem").html("");
-                    for (var i = 0; i <data.itemSet.length ; i++) {
-                        $("#appendItem").append('' +
-                            '<input type="checkbox" name="itemSet" value="'+data.itemSet[i].itemId+'" id="ck'+i+'">'+data.itemSet[i].name);
-                    }
-                    for (var j = 0; j <data.itemSet.length ; j++) {
-                        var cks =  $("input:checkbox[name='itemSet']");
-                        for (var k = 0; k < cks.length; k++) {
-                            if(data.itemSet[j].itemId==cks[k].value){
-                                cks[k].checked=true;
-                            }
-                        }
+                    for(i=0;i<data.length;i++){
+                        $("select#publicStatus").append(
+                            '<option id="' + data[i].name + '" value="' + data[i].id + '">' + data[i].name + '</option>'
+                        );
                     }
                 },
                 error:function () {
+                    alert("状态列表加载失败");
+                }
+            });
+        });
+        $(function () {
+            $("#name").on('blur',function () {
+                var itemName =  $("#name").val();
+                var euipName =  $("#equipId").find("option:checked").attr("id");
+                //alert("itemName--->"+itemName);
+                $.ajax({
+                    url:"/item/findByName",
+                    data:{"itemName":itemName,"equipName":euipName},
+                    dataType:"JSON",
+                    type:"GET",
+                    success:function (data) {
+                        $("#errorMsg").html("");
+                        $("#addBtn").attr("type","button");
+                        if(data["code"]=="true"){
+                            $("#errorMsg").html("该设备型号已经存在，请不要重复输入");
+                           //
+                        }else{
+                            $("#addForm").attr("action","/item/save");
+                            $("#addBtn").attr("type","submit");
+                        }
+                    }
+                })
+
+            })
+
+        });
+
+        //修改回显页面
+        function updateBtn(id) {
+            //alert("id----->"+id);
+            $.ajax({
+                url: "/item/findById",
+                data: {"itemId": id},
+                type: "GET",
+                dataType: "JSON",
+                success: function (data) {
+                    //console.log("页面修改回显数据---->"+data);
+                    $("#updateId").html("");
+                    $("#check").html("");
+                    $("#updateId").append('<input type="hidden" class="form-control" name="itemId" value="' + data.itemId + '">');
+                    $("#check").append('<input type="hidden" class="form-control" id="checkvalue" value="' + data.name + '">');
+                    $("#className").val(data.className);
+                    $("#equipName").val(data.equipName);
+                    $("#itemName").val(data.name);
+
+                    //公共状态
+                    var publicStatusName = data.publicStatus.name;
+                    <!--对下拉框的数据进行回显-->
+                    if (publicStatusName == "启用") {
+                        $("#publicStatus").find("option:contains('启用')").attr("selected", true);
+                    } else if (publicStatusName == "禁用") {
+                        $("#publicStatus").find("option:contains('禁用')").attr("selected", true);
+                    }
+                    $("#upBtn").click(function () {
+                        var itemName = $("#itemName").val();
+                        var values = $("#checkvalue").val();
+                        if (itemName == values) {
+                            $("#updateDate").attr("action","/item/update");
+                            $("#upBtn").attr("type","submit");
+                        }else{
+                            var itemName = $("#itemName").val();
+                            var euipName = $("#equipName").val();
+                            $.ajax({
+                                url:"/item/findByName",
+                                data:{"itemName":itemName,"equipName":euipName},
+                                dataType:"JSON",
+                                type:"GET",
+                                success:function (data) {
+                                    $("#uperrorMsg").html("");
+                                    $("#upBtn").attr("type","button");
+                                    if(data["code"]=="true"){
+                                        $("#uperrorMsg").html("该设备型号已经存在，请不要重复输入");
+                                        //
+                                    }else{
+                                        $("#updateDate").attr("action","/item/save");
+                                        $("#updateDate").submit();
+
+                                    }
+                                }
+                            })
+                        }
+
+                    });
+                },
+                error: function () {
                     alert("页面回显数据加载失败");
                 }
-            })
+            });
         }
         //对搜索按钮添加点击事件
         $(document).on("click","#searchButton",function () {
@@ -148,7 +222,7 @@
             $("tbody").html("");
             searchName = $('#search').val();
             $.ajax({
-                url:"/equipname/findAllList",
+                url:"/item/findAllItem",
                 data:{"page":page.currPage,"pageSize":page.pageSize,"searchName":searchName},
                 dataType:"JSON",
                 type:"GET",
@@ -161,21 +235,32 @@
                     }
                     pageIteration(page.currPage);
                     isDisabled(page.currPage, data.totalPages);
+                    // for (var i = 0; i <data.content.length ; i++) {
+                    //     if(data.content[i].itemSet.length>0){
+                    //         $("tbody").append('' +
+                    //             '<tr>' +
+                    //             '<td>'+data.content[i].name+'</td>' +
+                    //             '<td id="td'+i+'"></td>' +
+                    //             '<td>' +
+                    //             '<button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].equipId + ')" ' +
+                    //             'data-target="#upmyModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button>' +
+                    //             '</td>'+
+                    //             '</tr>');
+                    //         for (var j = 0; j <data.content[i].itemSet.length; j++) {
+                    //             $("#td"+i).append(data.content[i].itemSet[j].name+",");
+                    //         }
+                    //     }
+                    // }
                     for (var i = 0; i <data.content.length ; i++) {
-                        if(data.content[i].itemSet.length>0){
-                            $("tbody").append('' +
-                                '<tr>' +
-                                '<td>'+data.content[i].name+'</td>' +
-                                '<td id="td'+i+'"></td>' +
-                                '<td>' +
-                                '<button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].equipId + ')" ' +
-                                'data-target="#upmyModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button>' +
-                                '</td>'+
-                                '</tr>');
-                            for (var j = 0; j <data.content[i].itemSet.length; j++) {
-                                $("#td"+i).append(data.content[i].itemSet[j].name+",");
-                            }
-                        }
+                        $("tbody").append('<tr>' +
+                            '<td>'+data.content[i].className+'</td>' +
+                            '<td>'+data.content[i].equipName+'</td>' +
+                            '<td>'+data.content[i].name+'</td>' +
+                            '<td>'+data.content[i].publicStatus.name+'</td>' +
+                            '<td><button type="button" class="btn btn-default" data-toggle="modal" data-target="#upmyModal"' +
+                            'onclick="updateBtn('+data.content[i].itemId+')"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>' +
+                            '修改</button></td>' +
+                            '</tr>')
                     }
                 },
                 error:function () {
@@ -193,27 +278,38 @@
             pageIteration(page.currPage);
             isDisabled(page.currPage, page.totalPage);
             $.ajax({
-                url:"/equipname/findAllList",
+                url:"/item/findAllItem",
                 data:{"page":page.currPage,"pageSize":page.pageSize,"searchName":searchName},
                 dataType:"JSON",
                 type:"GET",
                 success:function (data) {
                     page.totalPage = data.totalPages;
+                    // for (var i = 0; i <data.content.length ; i++) {
+                    //     if(data.content[i].itemSet.length>0){
+                    //         $("tbody").append('' +
+                    //             '<tr>' +
+                    //             '<td>'+data.content[i].name+'</td>' +
+                    //             '<td id="td'+i+'"></td>' +
+                    //             '<td>' +
+                    //             '<button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].equipId + ')" ' +
+                    //             'data-target="#upmyModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button>' +
+                    //             '</td>'+
+                    //             '</tr>');
+                    //         for (var j = 0; j <data.content[i].itemSet.length; j++) {
+                    //             $("#td"+i).append(data.content[i].itemSet[j].name+",");
+                    //         }
+                    //     }
+                    // }
                     for (var i = 0; i <data.content.length ; i++) {
-                        if(data.content[i].itemSet.length>0){
-                            $("tbody").append('' +
-                                '<tr>' +
-                                '<td>'+data.content[i].name+'</td>' +
-                                '<td id="td'+i+'"></td>' +
-                                '<td>' +
-                                '<button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].equipId + ')" ' +
-                                'data-target="#upmyModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button>' +
-                                '</td>'+
-                                '</tr>');
-                            for (var j = 0; j <data.content[i].itemSet.length; j++) {
-                                $("#td"+i).append(data.content[i].itemSet[j].name+",");
-                            }
-                        }
+                        $("tbody").append('<tr>' +
+                            '<td>'+data.content[i].className+'</td>' +
+                            '<td>'+data.content[i].equipName+'</td>' +
+                            '<td>'+data.content[i].name+'</td>' +
+                            '<td>'+data.content[i].publicStatus.name+'</td>' +
+                            '<td><button type="button" class="btn btn-default" data-toggle="modal" data-target="#upmyModal"' +
+                            'onclick="updateBtn('+data.content[i].itemId+')"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>' +
+                            '修改</button></td>' +
+                            '</tr>')
                     }
 
                 },
@@ -232,27 +328,38 @@
             pageIteration(page.currPage);
             isDisabled(page.currPage, page.totalPage);
             $.ajax({
-                url:"/equipname/findAllList",
+                url:"/item/findAllItem",
                 data:{"page":page.currPage,"pageSize":page.pageSize,"searchName":searchName},
                 dataType:"JSON",
                 type:"GET",
                 success:function (data) {
                     page.totalPage = data.totalPages;
+                    // for (var i = 0; i <data.content.length ; i++) {
+                    //     if(data.content[i].itemSet.length>0){
+                    //         $("tbody").append('' +
+                    //             '<tr>' +
+                    //             '<td>'+data.content[i].name+'</td>' +
+                    //             '<td id="td'+i+'"></td>' +
+                    //             '<td>' +
+                    //             '<button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].equipId + ')" ' +
+                    //             'data-target="#upmyModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button>' +
+                    //             '</td>'+
+                    //             '</tr>');
+                    //         for (var j = 0; j <data.content[i].itemSet.length; j++) {
+                    //             $("#td"+i).append(data.content[i].itemSet[j].name+",");
+                    //         }
+                    //     }
+                    // }
                     for (var i = 0; i <data.content.length ; i++) {
-                        if(data.content[i].itemSet.length>0){
-                            $("tbody").append('' +
-                                '<tr>' +
-                                '<td>'+data.content[i].name+'</td>' +
-                                '<td id="td'+i+'"></td>' +
-                                '<td>' +
-                                '<button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].equipId + ')" ' +
-                                'data-target="#upmyModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button>' +
-                                '</td>'+
-                                '</tr>');
-                            for (var j = 0; j <data.content[i].itemSet.length; j++) {
-                                $("#td"+i).append(data.content[i].itemSet[j].name+",");
-                            }
-                        }
+                        $("tbody").append('<tr>' +
+                            '<td>'+data.content[i].className+'</td>' +
+                            '<td>'+data.content[i].equipName+'</td>' +
+                            '<td>'+data.content[i].name+'</td>' +
+                            '<td>'+data.content[i].publicStatus.name+'</td>' +
+                            '<td><button type="button" class="btn btn-default" data-toggle="modal" data-target="#upmyModal"' +
+                            'onclick="updateBtn('+data.content[i].itemId+')"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>' +
+                            '修改</button></td>' +
+                            '</tr>')
                     }
 
                 },
@@ -270,33 +377,65 @@
             pageIteration(page.currPage);
             isDisabled(page.currPage, page.totalPage);
             $.ajax({
-                url:"/equipname/findAllList",
+                //url:"/equipname/findAllList",
+                url:"/item/findAllItem",
                 data:{"page":page.currPage,"pageSize":page.pageSize,"searchName":searchName},
                 dataType:"JSON",
                 type:"GET",
                 success:function (data) {
                     page.totalPage = data.totalPages;
+                    // for (var i = 0; i <data.content.length ; i++) {
+                    //     if(data.content[i].itemSet.length>0){
+                    //         $("tbody").append('' +
+                    //             '<tr>' +
+                    //             '<td>'+data.content[i].name+'</td>' +
+                    //             '<td id="td'+i+'"></td>' +
+                    //             '<td>' +
+                    //             '<button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].equipId + ')" ' +
+                    //             'data-target="#upmyModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button>' +
+                    //             '</td>'+
+                    //             '</tr>');
+                    //         for (var j = 0; j <data.content[i].itemSet.length; j++) {
+                    //             $("#td"+i).append(data.content[i].itemSet[j].name+",");
+                    //         }
+                    //     }
+                    // }
                     for (var i = 0; i <data.content.length ; i++) {
-                        if(data.content[i].itemSet.length>0){
-                            $("tbody").append('' +
-                                '<tr>' +
-                                '<td>'+data.content[i].name+'</td>' +
-                                '<td id="td'+i+'"></td>' +
-                                '<td>' +
-                                '<button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].equipId + ')" ' +
-                                'data-target="#upmyModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button>' +
-                                '</td>'+
-                                '</tr>');
-                            for (var j = 0; j <data.content[i].itemSet.length; j++) {
-                                $("#td"+i).append(data.content[i].itemSet[j].name+",");
-                            }
-                        }
+                        $("tbody").append('<tr>' +
+                            '<td>'+data.content[i].className+'</td>' +
+                            '<td>'+data.content[i].equipName+'</td>' +
+                            '<td>'+data.content[i].name+'</td>' +
+                            '<td>'+data.content[i].publicStatus.name+'</td>' +
+                            '<td><button type="button" class="btn btn-default" data-toggle="modal" data-target="#upmyModal"' +
+                            'onclick="updateBtn('+data.content[i].itemId+')"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>' +
+                            '修改</button></td>' +
+                            '</tr>')
                     }
                 },
                 error:function () {
                     alert("页码数据填充失败");
                 }
             })
+        });
+
+        //加载公共状态
+        $(function () {
+            $.ajax({
+                url:"/person/statusList",
+                type:"GET",
+                dataType:"JSON",
+                success:function (data) {
+                    //console.log(data);
+                    for(i=0;i<data.length;i++){
+                        $("select#uppublicStatus").append(
+                            '<option id="' + data[i].name + '" value="' + data[i].id + '">' + data[i].name + '</option>'
+                        );
+                    }
+                },
+                error:function () {
+                    alert("状态列表加载失败");
+                }
+            });
         });
 
         //添加分页插件，根据总页数来添加按钮
@@ -352,7 +491,7 @@
       </div>
       <div class="col-md-5 col-xs-12">
           <div class="input-group">
-              <input type="text" id="search" class="form-control" placeholder="输入设备名称/设备型号进行搜索">
+              <input type="text" id="search" class="form-control" placeholder="输入设备类型/设备名称/设备型号进行搜索">
               <span class="input-group-btn">
                  <button type="button" class="btn btn-primary" id="searchButton">搜 索</button>
                 </span>
@@ -362,8 +501,10 @@
           <caption>设备名称展示列表</caption>
           <thead>
               <tr>
+                  <th>设备类型</th>
                   <th>设备名称</th>
                   <th>设备型号</th>
+                  <th>状态</th>
                   <th>操作</th>
               </tr>
           </thead>
@@ -371,7 +512,7 @@
       </table>
       <div id="page"></div>
       <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-          <form method="post" th:action="@{/item/save}" th:autocomplete="off">
+          <form method="post" th:action="@{/item/save}" th:autocomplete="off" id="addForm">
               <div class="modal-dialog">
                   <div class="modal-content">
                       <div class="modal-header">
@@ -382,13 +523,14 @@
                           <select class="form-control" id="equipId" name="equipId"></select>
                           <label for="name">设备型号</label>
                           <input class="form-control" type="text" placeholder="设备型号" name="name" id="name" required="true"/>
-                          <button type="button" class="btn btn-default" id="addItems">
-                              <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增设备型号
-                          </button>
+                          <span id="errorMsg" style="font-weight: bold;color: red"></span><br/>
+                          <!--<button type="button" class="btn btn-default" id="addItems">-->
+                              <!--<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增设备型号-->
+                          <!--</button>-->
                       </div>
                       <div class="modal-footer" id="footer">
                           <button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
-                          <button type="submit" class="btn btn-primary">新增</button>
+                          <button type="button" id="addBtn"  class="btn btn-primary">新增</button>
                       </div>
                   </div>
               </div>
@@ -403,18 +545,27 @@
                       </div>
                       <div class="modal-body" id="updateBody">
                           <div id="updateId"></div>
+                          <div id="check"></div>
+                          <label>设备类型</label>
+                          <input type="text" class="form-control" placeholder="设备类型"
+                          required="required" id="className" name="className" readonly="readonly">
                           <label>设备名称</label>
                           <input type="text" class="form-control"
-                                 id="updateequipName" name="name" placeholder="设备名称" required="true">
+                                 id="equipName" name="equipName" placeholder="设备名称" readonly="readonly" required="true">
                           <label>设备型号</label>
+                          <input type="text" class="form-control" placeholder="设备型号" name="name" id="itemName" required="true" >
+                          <span id="uperrorMsg" style="font-weight: bold;color: red"></span><br/>
+                          <label>设备状态</label>
+                          <select class="form-control" id="publicStatus" name="publicStatus"></select>
+
                           <div id="appendItem"></div>
-                          <button type="button" class="btn btn-default" id="upAddItems">
-                              <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增设备型号
-                          </button>
+                          <!--<button type="button" class="btn btn-default" id="upAddItems">-->
+                              <!--<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增设备型号-->
+                          <!--</button>-->
                       </div>
                       <div class="modal-footer" id="updateFooter">
                           <button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
-                          <button type="submit" class="btn btn-primary" id="updateBtn">修改</button>
+                          <button type="button" id="upBtn" class="btn btn-primary">修改</button>
                       </div>
                   </div>
               </div>

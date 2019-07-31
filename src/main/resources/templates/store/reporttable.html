@@ -63,19 +63,37 @@
                     var colArray = new Array();
                     for (var i = 0; i <classData.length ; i++) {
                         var len = 0;
-                        for (var j = 0; j <classData[i]. equipNames.length ; j++) {
-                            len+=classData[i]. equipNames[j]. itemSet.length;
-                        }
-                        colArray.push(len);
-                    }
-                    for (var i = 0; i <classData.length ; i++) {
-                        str+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+colArray[i]+"'>"+classData[i].name+"</th>";
-                        for (var j = 0; j <classData[i]. equipNames.length; j++) {
-                            str1+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+classData[i]. equipNames[j]. itemSet.length+"'>"+classData[i]. equipNames[j].name+"</th>"
-                            for (var k = 0; k <classData[i]. equipNames[j]. itemSet.length ; k++) {
-                                str2+="<th style=\"vertical-align: middle;text-align:center;\">"+classData[i]. equipNames[j]. itemSet[k].name+"</th>";
+                        if(classData[i]. equipNames.length!=0){
+                            for (var j = 0; j <classData[i]. equipNames.length ; j++) {
+                                 if(classData[i]. equipNames[j]. itemSet.length!=0){
+                                     len+=classData[i]. equipNames[j]. itemSet.length;
+                                 }
+
                             }
                         }
+
+                        colArray.push(len);
+                    }
+                    var chenck  = new Array();
+                    for (var i = 0; i <classData.length ; i++) {
+                        if(classData[i]. equipNames.length!=0){
+                            str+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+colArray[i]+"'>"+classData[i].name+"</th>";
+                            for (var j = 0; j <classData[i]. equipNames.length; j++) {
+                                if(classData[i]. equipNames[j]. itemSet.length!=0){
+                                    str1+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+classData[i]. equipNames[j]. itemSet.length+"'>"+classData[i]. equipNames[j].name+"</th>"
+                                    for (var k = 0; k <classData[i]. equipNames[j]. itemSet.length ; k++) {
+                                        if(classData[i]. equipNames[j]. itemSet.length!=0){
+                                            str2+="<th style=\"vertical-align: middle;text-align:center;\">"+classData[i]. equipNames[j]. itemSet[k].name+"</th>";
+                                        }
+
+                                    }
+                                }
+
+
+
+                            }
+                        }
+
                     }
                     str2+="</tr>";
                     str1+="</tr>";
@@ -92,8 +110,8 @@
                         for (var k = 0; k <classData.length; k++) {
                             for (var l = 0; l <classData[k]. equipNames.length ; l++) {
                                 for (var m = 0; m <classData[k]. equipNames[l]. itemSet.length ; m++) {
-                                    if(store[i].items[classData[k]. equipNames[l]. itemSet[m].name]!=null){
-                                        content+="<td>"+store[i].items[classData[k]. equipNames[l]. itemSet[m].name]+"</td>";
+                                    if(store[i].items[classData[k]. equipNames[l]. itemSet[m].code]!=null){
+                                        content+="<td>"+store[i].items[classData[k]. equipNames[l]. itemSet[m].code]+"</td>";
                                     }else {
                                         content+="<td>0</td>";
                                     }
@@ -136,26 +154,93 @@
                     }
                     pageIteration(page.currPage);
                     isDisabled(page.currPage, storePage.totalPages);
+
                     // console.log("store----->"+store);
+                    // var str="<tr><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店编码</th><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店名称</th>";
+                    // var str1="<tr>";
+                    // var str2="<tr>";
+                    // var colArray = new Array();
+                    // for (var i = 0; i <classData.length ; i++) {
+                    //     var len = 0;
+                    //     for (var j = 0; j <classData[i]. equipNames.length ; j++) {
+                    //         len+=classData[i]. equipNames[j]. itemSet.length;
+                    //     }
+                    //     colArray.push(len);
+                    // }
+                    // for (var i = 0; i <classData.length ; i++) {
+                    //     str+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+colArray[i]+"'>"+classData[i].name+"</th>";
+                    //     for (var j = 0; j <classData[i]. equipNames.length; j++) {
+                    //         str1+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+classData[i]. equipNames[j]. itemSet.length+"'>"+classData[i]. equipNames[j].name+"</th>"
+                    //         for (var k = 0; k <classData[i]. equipNames[j]. itemSet.length ; k++) {
+                    //             str2+="<th style=\"vertical-align: middle;text-align:center;\">"+classData[i]. equipNames[j]. itemSet[k].name+"</th>";
+                    //         }
+                    //     }
+                    // }
+                    // str2+="</tr>";
+                    // str1+="</tr>";
+                    // str+="</tr>";
+                    // str+=str1;
+                    // str+=str2;
+                    // copyHead=str;
+                    // $("thead").html(str);
+                    // <!--填充表格内容-->
+                    // for (var i = 0; i <store.length ; i++) {
+                    //     content+="<tr>";
+                    //     content+="<td>"+store[i].storeCode+"</td>";
+                    //     content+="<td>"+store[i].storeName+"</td>";
+                    //     for (var k = 0; k <classData.length; k++) {
+                    //         for (var l = 0; l <classData[k]. equipNames.length ; l++) {
+                    //             for (var m = 0; m <classData[k]. equipNames[l]. itemSet.length ; m++) {
+                    //                 if(store[i].items[classData[k]. equipNames[l]. itemSet[m].name]!=null){
+                    //                     content+="<td>"+store[i].items[classData[k]. equipNames[l]. itemSet[m].name]+"</td>";
+                    //                 }else {
+                    //                     content+="<td>0</td>";
+                    //                 }
+                    //             }
+                    //         }
+                    //     }
+                    // }
+                    // content+="</tr>";
+                    // copyBody=content;
+                    // $("tbody").html(content);
                     var str="<tr><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店编码</th><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店名称</th>";
                     var str1="<tr>";
                     var str2="<tr>";
+                    //在前台统计各个设备类型下，设备型号的数量
                     var colArray = new Array();
                     for (var i = 0; i <classData.length ; i++) {
                         var len = 0;
-                        for (var j = 0; j <classData[i]. equipNames.length ; j++) {
-                            len+=classData[i]. equipNames[j]. itemSet.length;
-                        }
-                        colArray.push(len);
-                    }
-                    for (var i = 0; i <classData.length ; i++) {
-                        str+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+colArray[i]+"'>"+classData[i].name+"</th>";
-                        for (var j = 0; j <classData[i]. equipNames.length; j++) {
-                            str1+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+classData[i]. equipNames[j]. itemSet.length+"'>"+classData[i]. equipNames[j].name+"</th>"
-                            for (var k = 0; k <classData[i]. equipNames[j]. itemSet.length ; k++) {
-                                str2+="<th style=\"vertical-align: middle;text-align:center;\">"+classData[i]. equipNames[j]. itemSet[k].name+"</th>";
+                        if(classData[i]. equipNames.length!=0){
+                            for (var j = 0; j <classData[i]. equipNames.length ; j++) {
+                                if(classData[i]. equipNames[j]. itemSet.length!=0){
+                                    len+=classData[i]. equipNames[j]. itemSet.length;
+                                }
+
                             }
                         }
+
+                        colArray.push(len);
+                    }
+                    var chenck  = new Array();
+                    for (var i = 0; i <classData.length ; i++) {
+                        if(classData[i]. equipNames.length!=0){
+                            str+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+colArray[i]+"'>"+classData[i].name+"</th>";
+                            for (var j = 0; j <classData[i]. equipNames.length; j++) {
+                                if(classData[i]. equipNames[j]. itemSet.length!=0){
+                                    str1+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+classData[i]. equipNames[j]. itemSet.length+"'>"+classData[i]. equipNames[j].name+"</th>"
+                                    for (var k = 0; k <classData[i]. equipNames[j]. itemSet.length ; k++) {
+                                        if(classData[i]. equipNames[j]. itemSet.length!=0){
+                                            str2+="<th style=\"vertical-align: middle;text-align:center;\">"+classData[i]. equipNames[j]. itemSet[k].name+"</th>";
+                                        }
+
+                                    }
+                                }
+
+
+
+                            }
+                        }
+
                     }
                     str2+="</tr>";
                     str1+="</tr>";
@@ -172,8 +257,8 @@
                         for (var k = 0; k <classData.length; k++) {
                             for (var l = 0; l <classData[k]. equipNames.length ; l++) {
                                 for (var m = 0; m <classData[k]. equipNames[l]. itemSet.length ; m++) {
-                                    if(store[i].items[classData[k]. equipNames[l]. itemSet[m].name]!=null){
-                                        content+="<td>"+store[i].items[classData[k]. equipNames[l]. itemSet[m].name]+"</td>";
+                                    if(store[i].items[classData[k]. equipNames[l]. itemSet[m].code]!=null){
+                                        content+="<td>"+store[i].items[classData[k]. equipNames[l]. itemSet[m].code]+"</td>";
                                     }else {
                                         content+="<td>0</td>";
                                     }
@@ -184,6 +269,7 @@
                     content+="</tr>";
                     copyBody=content;
                     $("tbody").html(content);
+
 
                 }
             });
@@ -211,25 +297,91 @@
                     storePage = data["page"];
                     page.totalPage = storePage.totalPages;
                     // console.log("store----->"+store);
+                    // var str="<tr><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店编码</th><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店名称</th>";
+                    // var str1="<tr>";
+                    // var str2="<tr>";
+                    // var colArray = new Array();
+                    // for (var i = 0; i <classData.length ; i++) {
+                    //     var len = 0;
+                    //     for (var j = 0; j <classData[i]. equipNames.length ; j++) {
+                    //         len+=classData[i]. equipNames[j]. itemSet.length;
+                    //     }
+                    //     colArray.push(len);
+                    // }
+                    // for (var i = 0; i <classData.length ; i++) {
+                    //     str+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+colArray[i]+"'>"+classData[i].name+"</th>";
+                    //     for (var j = 0; j <classData[i]. equipNames.length; j++) {
+                    //         str1+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+classData[i]. equipNames[j]. itemSet.length+"'>"+classData[i]. equipNames[j].name+"</th>"
+                    //         for (var k = 0; k <classData[i]. equipNames[j]. itemSet.length ; k++) {
+                    //             str2+="<th style=\"vertical-align: middle;text-align:center;\">"+classData[i]. equipNames[j]. itemSet[k].name+"</th>";
+                    //         }
+                    //     }
+                    // }
+                    // str2+="</tr>";
+                    // str1+="</tr>";
+                    // str+="</tr>";
+                    // str+=str1;
+                    // str+=str2;
+                    // copyHead=str;
+                    // $("thead").html(str);
+                    // <!--填充表格内容-->
+                    // for (var i = 0; i <store.length ; i++) {
+                    //     content+="<tr>";
+                    //     content+="<td>"+store[i].storeCode+"</td>";
+                    //     content+="<td>"+store[i].storeName+"</td>";
+                    //     for (var k = 0; k <classData.length; k++) {
+                    //         for (var l = 0; l <classData[k]. equipNames.length ; l++) {
+                    //             for (var m = 0; m <classData[k]. equipNames[l]. itemSet.length ; m++) {
+                    //                 if(store[i].items[classData[k]. equipNames[l]. itemSet[m].name]!=null){
+                    //                     content+="<td>"+store[i].items[classData[k]. equipNames[l]. itemSet[m].name]+"</td>";
+                    //                 }else {
+                    //                     content+="<td>0</td>";
+                    //                 }
+                    //             }
+                    //         }
+                    //     }
+                    // }
+                    // content+="</tr>";
+                    // copyBody=content;
+                    // $("tbody").html(content);
                     var str="<tr><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店编码</th><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店名称</th>";
                     var str1="<tr>";
                     var str2="<tr>";
+                    //在前台统计各个设备类型下，设备型号的数量
                     var colArray = new Array();
                     for (var i = 0; i <classData.length ; i++) {
                         var len = 0;
-                        for (var j = 0; j <classData[i]. equipNames.length ; j++) {
-                            len+=classData[i]. equipNames[j]. itemSet.length;
-                        }
-                        colArray.push(len);
-                    }
-                    for (var i = 0; i <classData.length ; i++) {
-                        str+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+colArray[i]+"'>"+classData[i].name+"</th>";
-                        for (var j = 0; j <classData[i]. equipNames.length; j++) {
-                            str1+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+classData[i]. equipNames[j]. itemSet.length+"'>"+classData[i]. equipNames[j].name+"</th>"
-                            for (var k = 0; k <classData[i]. equipNames[j]. itemSet.length ; k++) {
-                                str2+="<th style=\"vertical-align: middle;text-align:center;\">"+classData[i]. equipNames[j]. itemSet[k].name+"</th>";
+                        if(classData[i]. equipNames.length!=0){
+                            for (var j = 0; j <classData[i]. equipNames.length ; j++) {
+                                if(classData[i]. equipNames[j]. itemSet.length!=0){
+                                    len+=classData[i]. equipNames[j]. itemSet.length;
+                                }
+
                             }
                         }
+
+                        colArray.push(len);
+                    }
+                    var chenck  = new Array();
+                    for (var i = 0; i <classData.length ; i++) {
+                        if(classData[i]. equipNames.length!=0){
+                            str+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+colArray[i]+"'>"+classData[i].name+"</th>";
+                            for (var j = 0; j <classData[i]. equipNames.length; j++) {
+                                if(classData[i]. equipNames[j]. itemSet.length!=0){
+                                    str1+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+classData[i]. equipNames[j]. itemSet.length+"'>"+classData[i]. equipNames[j].name+"</th>"
+                                    for (var k = 0; k <classData[i]. equipNames[j]. itemSet.length ; k++) {
+                                        if(classData[i]. equipNames[j]. itemSet.length!=0){
+                                            str2+="<th style=\"vertical-align: middle;text-align:center;\">"+classData[i]. equipNames[j]. itemSet[k].name+"</th>";
+                                        }
+
+                                    }
+                                }
+
+
+
+                            }
+                        }
+
                     }
                     str2+="</tr>";
                     str1+="</tr>";
@@ -246,8 +398,8 @@
                         for (var k = 0; k <classData.length; k++) {
                             for (var l = 0; l <classData[k]. equipNames.length ; l++) {
                                 for (var m = 0; m <classData[k]. equipNames[l]. itemSet.length ; m++) {
-                                    if(store[i].items[classData[k]. equipNames[l]. itemSet[m].name]!=null){
-                                        content+="<td>"+store[i].items[classData[k]. equipNames[l]. itemSet[m].name]+"</td>";
+                                    if(store[i].items[classData[k]. equipNames[l]. itemSet[m].code]!=null){
+                                        content+="<td>"+store[i].items[classData[k]. equipNames[l]. itemSet[m].code]+"</td>";
                                     }else {
                                         content+="<td>0</td>";
                                     }
@@ -286,25 +438,91 @@
                     storePage = data["page"];
                     page.totalPage = storePage.totalPages;
                     // console.log("store----->"+store);
+                    // var str="<tr><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店编码</th><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店名称</th>";
+                    // var str1="<tr>";
+                    // var str2="<tr>";
+                    // var colArray = new Array();
+                    // for (var i = 0; i <classData.length ; i++) {
+                    //     var len = 0;
+                    //     for (var j = 0; j <classData[i]. equipNames.length ; j++) {
+                    //         len+=classData[i]. equipNames[j]. itemSet.length;
+                    //     }
+                    //     colArray.push(len);
+                    // }
+                    // for (var i = 0; i <classData.length ; i++) {
+                    //     str+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+colArray[i]+"'>"+classData[i].name+"</th>";
+                    //     for (var j = 0; j <classData[i]. equipNames.length; j++) {
+                    //         str1+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+classData[i]. equipNames[j]. itemSet.length+"'>"+classData[i]. equipNames[j].name+"</th>"
+                    //         for (var k = 0; k <classData[i]. equipNames[j]. itemSet.length ; k++) {
+                    //             str2+="<th style=\"vertical-align: middle;text-align:center;\">"+classData[i]. equipNames[j]. itemSet[k].name+"</th>";
+                    //         }
+                    //     }
+                    // }
+                    // str2+="</tr>";
+                    // str1+="</tr>";
+                    // str+="</tr>";
+                    // str+=str1;
+                    // str+=str2;
+                    // copyHead=str;
+                    // $("thead").html(str);
+                    // <!--填充表格内容-->
+                    // for (var i = 0; i <store.length ; i++) {
+                    //     content+="<tr>";
+                    //     content+="<td>"+store[i].storeCode+"</td>";
+                    //     content+="<td>"+store[i].storeName+"</td>";
+                    //     for (var k = 0; k <classData.length; k++) {
+                    //         for (var l = 0; l <classData[k]. equipNames.length ; l++) {
+                    //             for (var m = 0; m <classData[k]. equipNames[l]. itemSet.length ; m++) {
+                    //                 if(store[i].items[classData[k]. equipNames[l]. itemSet[m].name]!=null){
+                    //                     content+="<td>"+store[i].items[classData[k]. equipNames[l]. itemSet[m].name]+"</td>";
+                    //                 }else {
+                    //                     content+="<td>0</td>";
+                    //                 }
+                    //             }
+                    //         }
+                    //     }
+                    // }
+                    // content+="</tr>";
+                    // copyBody=content;
+                    // $("tbody").html(content);
                     var str="<tr><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店编码</th><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店名称</th>";
                     var str1="<tr>";
                     var str2="<tr>";
+                    //在前台统计各个设备类型下，设备型号的数量
                     var colArray = new Array();
                     for (var i = 0; i <classData.length ; i++) {
                         var len = 0;
-                        for (var j = 0; j <classData[i]. equipNames.length ; j++) {
-                            len+=classData[i]. equipNames[j]. itemSet.length;
-                        }
-                        colArray.push(len);
-                    }
-                    for (var i = 0; i <classData.length ; i++) {
-                        str+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+colArray[i]+"'>"+classData[i].name+"</th>";
-                        for (var j = 0; j <classData[i]. equipNames.length; j++) {
-                            str1+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+classData[i]. equipNames[j]. itemSet.length+"'>"+classData[i]. equipNames[j].name+"</th>"
-                            for (var k = 0; k <classData[i]. equipNames[j]. itemSet.length ; k++) {
-                                str2+="<th style=\"vertical-align: middle;text-align:center;\">"+classData[i]. equipNames[j]. itemSet[k].name+"</th>";
+                        if(classData[i]. equipNames.length!=0){
+                            for (var j = 0; j <classData[i]. equipNames.length ; j++) {
+                                if(classData[i]. equipNames[j]. itemSet.length!=0){
+                                    len+=classData[i]. equipNames[j]. itemSet.length;
+                                }
+
                             }
                         }
+
+                        colArray.push(len);
+                    }
+                    var chenck  = new Array();
+                    for (var i = 0; i <classData.length ; i++) {
+                        if(classData[i]. equipNames.length!=0){
+                            str+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+colArray[i]+"'>"+classData[i].name+"</th>";
+                            for (var j = 0; j <classData[i]. equipNames.length; j++) {
+                                if(classData[i]. equipNames[j]. itemSet.length!=0){
+                                    str1+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+classData[i]. equipNames[j]. itemSet.length+"'>"+classData[i]. equipNames[j].name+"</th>"
+                                    for (var k = 0; k <classData[i]. equipNames[j]. itemSet.length ; k++) {
+                                        if(classData[i]. equipNames[j]. itemSet.length!=0){
+                                            str2+="<th style=\"vertical-align: middle;text-align:center;\">"+classData[i]. equipNames[j]. itemSet[k].name+"</th>";
+                                        }
+
+                                    }
+                                }
+
+
+
+                            }
+                        }
+
                     }
                     str2+="</tr>";
                     str1+="</tr>";
@@ -321,8 +539,8 @@
                         for (var k = 0; k <classData.length; k++) {
                             for (var l = 0; l <classData[k]. equipNames.length ; l++) {
                                 for (var m = 0; m <classData[k]. equipNames[l]. itemSet.length ; m++) {
-                                    if(store[i].items[classData[k]. equipNames[l]. itemSet[m].name]!=null){
-                                        content+="<td>"+store[i].items[classData[k]. equipNames[l]. itemSet[m].name]+"</td>";
+                                    if(store[i].items[classData[k]. equipNames[l]. itemSet[m].code]!=null){
+                                        content+="<td>"+store[i].items[classData[k]. equipNames[l]. itemSet[m].code]+"</td>";
                                     }else {
                                         content+="<td>0</td>";
                                     }
@@ -360,25 +578,91 @@
                     storePage = data["page"];
                     page.totalPage = storePage.totalPages;
                     // console.log("store----->"+store);
+                    // var str="<tr><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店编码</th><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店名称</th>";
+                    // var str1="<tr>";
+                    // var str2="<tr>";
+                    // var colArray = new Array();
+                    // for (var i = 0; i <classData.length ; i++) {
+                    //     var len = 0;
+                    //     for (var j = 0; j <classData[i]. equipNames.length ; j++) {
+                    //         len+=classData[i]. equipNames[j]. itemSet.length;
+                    //     }
+                    //     colArray.push(len);
+                    // }
+                    // for (var i = 0; i <classData.length ; i++) {
+                    //     str+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+colArray[i]+"'>"+classData[i].name+"</th>";
+                    //     for (var j = 0; j <classData[i]. equipNames.length; j++) {
+                    //         str1+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+classData[i]. equipNames[j]. itemSet.length+"'>"+classData[i]. equipNames[j].name+"</th>"
+                    //         for (var k = 0; k <classData[i]. equipNames[j]. itemSet.length ; k++) {
+                    //             str2+="<th style=\"vertical-align: middle;text-align:center;\">"+classData[i]. equipNames[j]. itemSet[k].name+"</th>";
+                    //         }
+                    //     }
+                    // }
+                    // str2+="</tr>";
+                    // str1+="</tr>";
+                    // str+="</tr>";
+                    // str+=str1;
+                    // str+=str2;
+                    // copyHead=str;
+                    // $("thead").html(str);
+                    // <!--填充表格内容-->
+                    // for (var i = 0; i <store.length ; i++) {
+                    //     content+="<tr>";
+                    //     content+="<td>"+store[i].storeCode+"</td>";
+                    //     content+="<td>"+store[i].storeName+"</td>";
+                    //     for (var k = 0; k <classData.length; k++) {
+                    //         for (var l = 0; l <classData[k]. equipNames.length ; l++) {
+                    //             for (var m = 0; m <classData[k]. equipNames[l]. itemSet.length ; m++) {
+                    //                 if(store[i].items[classData[k]. equipNames[l]. itemSet[m].name]!=null){
+                    //                     content+="<td>"+store[i].items[classData[k]. equipNames[l]. itemSet[m].name]+"</td>";
+                    //                 }else {
+                    //                     content+="<td>0</td>";
+                    //                 }
+                    //             }
+                    //         }
+                    //     }
+                    // }
+                    // content+="</tr>";
+                    // copyBody=content;
+                    // $("tbody").html(content);
                     var str="<tr><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店编码</th><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店名称</th>";
                     var str1="<tr>";
                     var str2="<tr>";
+                    //在前台统计各个设备类型下，设备型号的数量
                     var colArray = new Array();
                     for (var i = 0; i <classData.length ; i++) {
                         var len = 0;
-                        for (var j = 0; j <classData[i]. equipNames.length ; j++) {
-                            len+=classData[i]. equipNames[j]. itemSet.length;
-                        }
-                        colArray.push(len);
-                    }
-                    for (var i = 0; i <classData.length ; i++) {
-                        str+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+colArray[i]+"'>"+classData[i].name+"</th>";
-                        for (var j = 0; j <classData[i]. equipNames.length; j++) {
-                            str1+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+classData[i]. equipNames[j]. itemSet.length+"'>"+classData[i]. equipNames[j].name+"</th>"
-                            for (var k = 0; k <classData[i]. equipNames[j]. itemSet.length ; k++) {
-                                str2+="<th style=\"vertical-align: middle;text-align:center;\">"+classData[i]. equipNames[j]. itemSet[k].name+"</th>";
+                        if(classData[i]. equipNames.length!=0){
+                            for (var j = 0; j <classData[i]. equipNames.length ; j++) {
+                                if(classData[i]. equipNames[j]. itemSet.length!=0){
+                                    len+=classData[i]. equipNames[j]. itemSet.length;
+                                }
+
                             }
                         }
+
+                        colArray.push(len);
+                    }
+                    var chenck  = new Array();
+                    for (var i = 0; i <classData.length ; i++) {
+                        if(classData[i]. equipNames.length!=0){
+                            str+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+colArray[i]+"'>"+classData[i].name+"</th>";
+                            for (var j = 0; j <classData[i]. equipNames.length; j++) {
+                                if(classData[i]. equipNames[j]. itemSet.length!=0){
+                                    str1+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+classData[i]. equipNames[j]. itemSet.length+"'>"+classData[i]. equipNames[j].name+"</th>"
+                                    for (var k = 0; k <classData[i]. equipNames[j]. itemSet.length ; k++) {
+                                        if(classData[i]. equipNames[j]. itemSet.length!=0){
+                                            str2+="<th style=\"vertical-align: middle;text-align:center;\">"+classData[i]. equipNames[j]. itemSet[k].name+"</th>";
+                                        }
+
+                                    }
+                                }
+
+
+
+                            }
+                        }
+
                     }
                     str2+="</tr>";
                     str1+="</tr>";
@@ -395,8 +679,8 @@
                         for (var k = 0; k <classData.length; k++) {
                             for (var l = 0; l <classData[k]. equipNames.length ; l++) {
                                 for (var m = 0; m <classData[k]. equipNames[l]. itemSet.length ; m++) {
-                                    if(store[i].items[classData[k]. equipNames[l]. itemSet[m].name]!=null){
-                                        content+="<td>"+store[i].items[classData[k]. equipNames[l]. itemSet[m].name]+"</td>";
+                                    if(store[i].items[classData[k]. equipNames[l]. itemSet[m].code]!=null){
+                                        content+="<td>"+store[i].items[classData[k]. equipNames[l]. itemSet[m].code]+"</td>";
                                     }else {
                                         content+="<td>0</td>";
                                     }

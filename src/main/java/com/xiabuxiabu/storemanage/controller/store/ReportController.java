@@ -64,7 +64,6 @@ public class ReportController {
         /**
          * 设置页面按钮的
          */
-
         map.put("classitem",classificationService.findAll());
         Page<Store> storePage = storeService.findByRepostList(page,pageSize,searchName);
         //需要生成报表的门店的信息
@@ -80,7 +79,7 @@ public class ReportController {
                     "\"marketName\":\""+storeIndex.getMarketName()+"\"," +
                     "\"items\":{" ;
             for (Items items:storeIndex.getItemsSet()) {
-                store += "\""+items.getItem().getName()+"\":"+ items.getNum();
+                store += "\""+items.getItem().getCode()+"\":"+ items.getNum();
                 if(index!=storeIndex.getItemsSet().size()){
                     store+=",";
                 }

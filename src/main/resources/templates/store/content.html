@@ -220,13 +220,20 @@
                type:"GET",
                success:function (data) {
                    $("#classficationSelect").html("");
+                   $("#equipNameSelect").html("");
+
                    $("#classficationSelect").append('' +
                        '<select onchange="changeClass()" class="form-control" name="className" id="className">' +
-                         '<option value="0">--请选择</option>' +
+                         '<option value="0" style="display: none" selected >--请选择</option>' +
                        '</select>');
+
+
                    for (var i = 0; i <data.length ; i++) {
-                       $("select#className").append('' +
-                           '<option id="'+data[i].classId+'" value="'+data[i].name+'">'+data[i].name+'</option>');
+                     //  $("select#className").html("");
+                       if(data[i].publicStatus.name=="启用"){
+                           $("select#className").append('' +
+                               '<option id="'+data[i].classId+'" value="'+data[i].name+'">'+data[i].name+'</option>');
+                       }
                    }
                },
                error:function () {
@@ -249,12 +256,15 @@
                    $("#equipNameSelect").append('' +
                        '<label>设备名称</label>' +
                        '<select onchange="changeEquipName()" class="form-control" name="equipName" id="equipName">' +
-                         '<option value="0">--请选择</option>' +
+                         '<option value="0" style="display: none" selected>--请选择</option>' +
                        '</select>');
                    if(data.equipNames.length!=0){
                        for (var i = 0; i <data.equipNames.length ; i++) {
-                           $("select#equipName").append('' +
-                               '<option id="'+data.equipNames[i].equipId+'" value="'+data.equipNames[i].name+'">'+data.equipNames[i].name+'</option>');
+                           if(data.equipNames[i].publicStatus.name=="启用"){
+                               $("select#equipName").append('' +
+                                   '<option id="'+data.equipNames[i].equipId+'" value="'+data.equipNames[i].name+'">'+data.equipNames[i].name+'</option>');
+                           }
+
                        }
                    }
                },
@@ -278,13 +288,17 @@
                     $("#itemSelect").append(
                         '<label>设备型号</label>'+
                         '<select class="form-control" name="item" id="item">' +
-                           '<option>--请选择</option>' +
+                           '<option value="0" style="display: none" selected>--请选择</option>' +
                         '</select>'
                     );
                     if(data.itemSet.length!=0){
                         for (var i = 0; i < data.itemSet.length; i++) {
-                            $("select#item").append('' +
-                                '<option id="'+data.itemSet[i].name+'" value="'+data.itemSet[i].itemId+'">'+data.itemSet[i].name+'</option>')
+                           // $("select#item").html("");
+                            if(data.itemSet[i].publicStatus.name=="启用"){
+                                $("select#item").append('' +
+                                    '<option id="'+data.itemSet[i].name+'" value="'+data.itemSet[i].itemId+'">'+data.itemSet[i].name+'</option>')
+                            }
+
                         }
                     }
                 },
@@ -481,11 +495,24 @@
             var result = confirm("请确认您的设备信息，是否要提交");
             if(result){
                 var addItemId = $("#myModal").find("select[name='item']").find("option:checked").val();
+                var className = $("#myModal").find("select[name='className']").find("option:checked").val();
+                var equipName = $("#myModal").find("select[name='equipName']").find("option:checked").val();
+                var itemName = $("#myModal").find("select[name='equipName']").find("option:checked").attr("id");
+                var num =  $("#num").val();
+
+                // console.log("class--->"+className);
+                // console.log("equip----->"+equipName);
+                // console.log("addIteid----->"+addItemId);
+                // console.log("num---->"+num);
+                // console.log(typeof(num)=="undefined");
+
                 //设备id值
                 var pageItems = $("input[name='itemId']");
                 //设备名称
                 var pageItemsName = $("input[name='name']");
+
                 var pageArr = new Array();
+
                 if(pageItems.length!=0){
                     for (var i = 0; i <pageItems.length ; i++) {
                         pageArr[i] = $(pageItems[i]).val();
@@ -495,13 +522,23 @@
                         alert("该设备型号已经存在，请不要重新添加");
                         $(pageItemsName[index]).css("background","pink");
                     }else{
-                        $("#additem").attr("action","/store/additem");
-                        $("#additem").submit();
-
+                        if(addItemId!=0&&className!="0"&&equipName!="0"&&!(typeof(num)=="undefined")){
+                              $("#additem").attr("action","/store/additem");
+                             $("#additem").submit();
+                        }else{
+                            alert("页面信息填充有误，请重新填写");
+                        }
                     }
                 }else {
-                    $("#additem").attr("action","/store/additem");
-                    $("#additem").submit();
+                    if(itemName!="0"&&className!="0"&&equipName!="0"&&!(typeof(num)=="undefined")){
+                        $("#additem").attr("action","/store/additem");
+                        $("#additem").submit();
+                    }else{
+                        alert("页面信息填充有误，请重新填写");
+                    }
+
+                  // $("#additem").attr("action","/store/additem");
+                  // $("#additem").submit();
                 }
             }
         }
@@ -690,6 +727,7 @@
                 </div>
             </form>
         </div>
+
         <!--向门店添加设备信息-->
         <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <form method="post" th:action="@{/store/additem}" th:autocomplete="off" id="additem">

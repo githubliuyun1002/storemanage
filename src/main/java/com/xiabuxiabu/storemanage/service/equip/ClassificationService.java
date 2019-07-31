@@ -2,6 +2,8 @@ package com.xiabuxiabu.storemanage.service.equip;
 
 import com.xiabuxiabu.storemanage.entity.equip.Classification;
 import com.xiabuxiabu.storemanage.entity.equip.EquipName;
+import com.xiabuxiabu.storemanage.entity.equip.Item;
+import com.xiabuxiabu.storemanage.entity.publicutil.PublicStatus;
 import com.xiabuxiabu.storemanage.entity.publicutil.ResultByClassAndEquipName;
 import com.xiabuxiabu.storemanage.repository.equip.ClassificationRepository;
 
@@ -18,6 +20,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.criteria.*;
+import javax.persistence.metamodel.SetAttribute;
 import java.util.List;
 
 
@@ -48,6 +51,35 @@ public class ClassificationService {
         return classificationRepository.findAll(pageable);
 
     }
+
+    public Page<Classification>  findAllListEquipName(int page, int size, String values){
+
+        Sort sort = new Sort(Sort.Direction.ASC,"classId");
+        Pageable pageable = PageRequest.of(page-1,size,sort);
+        if(values!=null){
+            return classificationRepository.findAll(new Specification<Classification>() {
+                @Override
+                public Predicate toPredicate(Root<Classification> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                    Path<String> name = root.get("name");
+                    Path<PublicStatus> publicStatus = root.get("publicStatus");
+                    Join  join = root.join(root.getModel().getSet("equipNames",EquipName.class),JoinType.LEFT);
+                    root.join(root.getModel().getSet("equipNames"),JoinType.LEFT);
+                    Predicate p1 = criteriaBuilder.like(name, "%" + values + "%");
+                    Predicate p2 = criteriaBuilder.like(join.get("name"),"%"+values+"%");
+                    Predicate p = criteriaBuilder.or(p1,p2);
+                    Predicate equal =  criteriaBuilder.equal(publicStatus.get("name"),"启用");
+                    criteriaQuery.where(p,equal);
+
+                    criteriaQuery.distinct(true);
+                    return null;
+                }
+            },pageable);
+        }
+        return classificationRepository.findAll(pageable);
+
+    }
+
+
     public List<Classification> findAll(){
         return  classificationRepository.findAll();
     }
@@ -89,5 +121,8 @@ public class ClassificationService {
     public Classification findByName(String name){
         return  classificationRepository.findByName(name);
     }
+
+
+
 
 }
