@@ -37,6 +37,7 @@ public class StoreRemarks {
     //修改设备数量的时间
     @Temporal(TemporalType.TIMESTAMP)
     private Date updateTime;
+    //设备审批时间
     @Temporal(TemporalType.TIMESTAMP)
     private Date checkTime;
 

@@ -134,7 +134,7 @@
                     '<select class="form-control" id="publicStatus" name="publicStatus"></select>'+
                     '<label>品牌</label>' +
                     '<select onchange="changeBand()" class="form-control" id="band" name="band">' +
-                    '<option>请选择</option>' +
+                    '<option value="0" style="display: none" selected>请选择</option>' +
                     '</select>'+
                     '<label>角色类型</label>'+
                     '<select class="form-control" id="roleTypeSelect" name="roles"></select>' +
@@ -261,6 +261,7 @@
                 data:{"id":id},
                 type:"GET",
                 dataType:"JSON",
+                async:false,
                 success:function (data) {
                     $("#PID").html("");
                     $("#hiddenshow").html("");
@@ -277,14 +278,13 @@
                         '<label>状态</label>'+
                         '<select class="form-control" id="uppublicStatus" name="publicStatus"></select>'+
                         '<label>品牌</label>' +
-                        '<select onchange="changeBand()" class="form-control" id="band" name="band">' +
+                        '<select class="form-control" id="band" name="band">' +
                         '</select>' +
-                        // '<label for="marketName">所属市场</label>'+
-                        // '<select class="form-control" id="upmarketEntity" name="marketName"></select>'+
                         '<label>角色类型</label>'+
                         '<select class="form-control" id="uproleTypeSelect" name="roles"></select>' +
                         '<div id="marketList"></div>'
                     );
+
                     <!--加载角色列表-->
                     $(function () {
                         $.ajax({
@@ -325,6 +325,7 @@
                             }
                         });
                     });
+
                     //加载品牌
                     $(function () {
                         $.ajax({
@@ -345,6 +346,7 @@
                         })
                     });
 
+
                     <!--页面数据回显-->
                     $("#username").val(data.username);
                     $("#name").val(data.name);
@@ -360,6 +362,7 @@
                     var userType = data.userType.id;
                     //人员品牌
                     var band = data.band;
+                   // console.log("band----->"+band);
                     //人员市场信息
                     var market = data.marketName;
                     <!--对状态回显-->
@@ -373,42 +376,28 @@
                     //回显人员类型
                     $("#userType").val(userType);
                     $("#band").val(band);
+                    if(band=="总部"){
+                        $("#marketList").html("");
+                        $("#marketList").append(
+                            '<label for="marketName">所属市场</label>'+
+                            '<select class="form-control" id="marketName" name="marketName">' +
+                            '<option value="总部">总部</option>' +
+                            '</select>');
 
-                    //通过现有的品牌回显市场
-                    $.ajax({
-                        url:"/person/bandMarketList",
-                        data:{"band":band},
-                        type:"GET",
-                        dataType:"JSON",
-                        async:false,
-                        success:function (data) {
-                            $("#marketList").html("");
-                            $("select#marketName").html("");
-                            $("#marketList").append(
-                                '<label for="marketName">所属市场</label>'+
-                                '<select class="form-control" id="marketName" name="marketName"></select>');
-                            for (var i = 0; i < data.length; i++) {
-                                $("select#marketName").append(
-                                    '<option  value="' + data[i] + '">' + data[i] + '</option>'
-                                )
-                            }
-                        },
-                        error:function () {
-                            alert("加载品牌市场失败");
-                        }
-                    });
-                    $("#marketName").val(market);
-                    //添加option的事件
-                    $("select#band").change(function () {
-                        band = $(this).val();
+                    }else{
+                        //通过现有的品牌回显市场
+                        var chenckedVal = $("select[name='band']").find("option:checked").val();
+                        console.log("chenck---->"+chenckedVal);
                         $.ajax({
                             url:"/person/bandMarketList",
-                            data:{"band":band},
+                            data:{"band":chenckedVal},
                             type:"GET",
                             dataType:"JSON",
+                            async:false,
                             success:function (data) {
+                                //console.log("data----->"+data);
                                 $("#marketList").html("");
-                                $("select#marketName").html("");
+                                // $("select#marketName").html("");
                                 $("#marketList").append(
                                     '<label for="marketName">所属市场</label>'+
                                     '<select class="form-control" id="marketName" name="marketName"></select>');
@@ -417,11 +406,50 @@
                                         '<option  value="' + data[i] + '">' + data[i] + '</option>'
                                     )
                                 }
+                                console.log("1111");
                             },
                             error:function () {
                                 alert("加载品牌市场失败");
                             }
-                        })
+                        });
+                    }
+                    console.log("market---->"+market);
+                    $("#marketName").val(market);
+
+                   // 添加option的事件
+                    $("select#band").change(function () {
+                        var  band = $(this).val();
+                        if(band=="总部"){
+                            $("#marketList").html("");
+                            $("#marketList").append(
+                                '<label for="marketName">所属市场</label>'+
+                                '<select class="form-control" id="marketName" name="marketName">' +
+                                '<option value="总部">总部</option>' +
+                                '</select>');
+                         }else{
+                            $.ajax({
+                                url:"/person/bandMarketList",
+                                data:{"band":band},
+                                type:"GET",
+                                dataType:"JSON",
+                                success:function (data) {
+                                    $("#marketList").html("");
+                                    $("select#marketName").html("");
+                                    $("#marketList").append(
+                                        '<label for="marketName">所属市场</label>'+
+                                        '<select class="form-control" id="marketName" name="marketName"></select>');
+                                    for (var i = 0; i < data.length; i++) {
+                                        $("select#marketName").append(
+                                            '<option  value="' + data[i] + '">' + data[i] + '</option>'
+                                        )
+                                    }
+                                },
+                                error:function () {
+                                    alert("加载品牌市场失败");
+                                }
+                            })
+                        }
+
                     });
 
                 },

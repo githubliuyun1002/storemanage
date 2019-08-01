@@ -46,7 +46,7 @@ public class StoreRemarksService {
     }
     //日志实现分页and搜索
     public Page<StoreRemarks> findAll(int page,int size,String values){
-        Sort sort = new Sort(Sort.Direction.ASC,"srId");
+        Sort sort = new Sort(Sort.Direction.DESC,"checkTime");
         Pageable pageable = PageRequest.of(page-1,size,sort);
         if(values!=null){
             return storeRemarksRepository.findAll(new Specification<StoreRemarks>() {

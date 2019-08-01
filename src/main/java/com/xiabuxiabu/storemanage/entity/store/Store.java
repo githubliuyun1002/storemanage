@@ -51,7 +51,7 @@ public class Store {
     private Set<WidthBand> widthBandSet;
 
     //设置门店的设备(items)
-    @ManyToMany(targetEntity = Items.class,fetch = FetchType.EAGER)
+    @ManyToMany(targetEntity = Items.class,fetch = FetchType.EAGER,cascade = CascadeType.REMOVE)
     @JoinTable(name = "store_items",joinColumns = @JoinColumn(name = "store_id"),inverseJoinColumns = @JoinColumn(name = "items_id"))
     private Set<Items> itemsSet;
 

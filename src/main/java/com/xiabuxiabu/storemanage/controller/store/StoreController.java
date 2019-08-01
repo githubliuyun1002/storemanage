@@ -8,8 +8,10 @@ import com.xiabuxiabu.storemanage.entity.equip.Items;
 import com.xiabuxiabu.storemanage.entity.publicutil.MarketEntity;
 import com.xiabuxiabu.storemanage.entity.store.*;
 import com.xiabuxiabu.storemanage.entity.user.User;
+import com.xiabuxiabu.storemanage.publicutils.CompareProperties;
 import com.xiabuxiabu.storemanage.publicutils.DateTool;
 import com.xiabuxiabu.storemanage.publicutils.EMailProperties;
+import com.xiabuxiabu.storemanage.publicutils.WidthCheck;
 import com.xiabuxiabu.storemanage.service.equip.ItemService;
 import com.xiabuxiabu.storemanage.service.publicutil.MarketService;
 import com.xiabuxiabu.storemanage.service.store.*;
@@ -307,8 +309,10 @@ public class StoreController {
 
                             }
                         }
-
                         itemsService.save(itemsDemo);
+
+
+
                     }
                 }
             }
@@ -364,7 +368,7 @@ public class StoreController {
             mailList.setStoreStatus("已确认");
             mailListSerivice.save(mailList);
         }
-        storeDB.setItemsSet(jsonStore.getItemsSet());
+      //  storeDB.setItemsSet(jsonStore.getItemsSet());
 
         storeService.save(storeDB);
         //调整设备时或者已经确认设备时，均需要改变设备的状态
@@ -857,7 +861,8 @@ public class StoreController {
     @RequestMapping("/addMsgStore")
     @ResponseBody
     public Map<String,Object> addMsgStore(String store){
-        System.out.println("store----->"+store);
+       System.out.println("store----->"+store);
+
         Store jsonStore = JSON.parseObject(store,Store.class);
         String userName = (String) httpServletRequest.getSession().getAttribute("userName");
         Set<Items> itemsSetJSON = jsonStore.getItemsSet();
@@ -908,23 +913,35 @@ public class StoreController {
 
                 }
             }
-            storeDB.setItemsSet(jsonStore.getItemsSet());
+          //  storeDB.setItemsSet(jsonStore.getItemsSet());
         }
         if(storeDB.getWidthBandSet().size()!=0){
             for(WidthBand widthBandDB:storeDB.getWidthBandSet()){
                 for(WidthBand widthBandJSON : widthBandSet){
                     if(widthBandDB.getWid()==widthBandJSON.getWid()){
                         WidthBand widthBandDemo = widthBandService.findById(widthBandDB.getWid());
-                        if(widthBandDemo.getServicePerson()!=widthBandJSON.getServicePerson()||
-                           widthBandDemo.getAccessMethod()!=widthBandJSON.getAccessMethod()||
-                           widthBandDemo.getPayMethod()!=widthBandJSON.getPayMethod()||
-                           widthBandDemo.getPayMoney()!=widthBandJSON.getPayMoney()||
-                           widthBandDemo.getIdentity()!=widthBandJSON.getIdentity()||
-                           widthBandDemo.getPassword()!=widthBandJSON.getPassword()||
-                           widthBandDemo.getTapewidth()!=widthBandJSON.getTapewidth()||
-                           widthBandDemo.getEndDate()!=widthBandJSON.getEndDate()
-                        ){
+                        //设置两个新的WidthCheck
+                        WidthCheck widthCheck1 = new WidthCheck();
+                        widthCheck1.setIdentity(widthBandDemo.getIdentity());
+                        widthCheck1.setPassword(widthBandDemo.getPassword());
+                        widthCheck1.setPayMoney(widthBandDemo.getPayMoney());
+                        widthCheck1.setTapewidth(widthBandDemo.getTapewidth());
+                        widthCheck1.setEndDate(widthBandDemo.getEndDate());
 
+                        WidthCheck widthCheck2 = new WidthCheck();
+                        widthCheck2.setIdentity(widthBandJSON.getIdentity());
+                        widthCheck2.setPassword(widthBandJSON.getPassword());
+                        widthCheck2.setPayMoney(widthBandJSON.getPayMoney());
+                        widthCheck2.setTapewidth(widthBandJSON.getTapewidth());
+                        widthCheck2.setEndDate(widthBandJSON.getEndDate());
+
+
+                        CompareProperties compareProperties  = new CompareProperties();
+                        boolean result = compareProperties.contrastObj(widthCheck1, widthCheck2);
+
+                        if(widthBandDemo.getServicePerson().getSid()!=widthBandJSON.getServicePerson().getSid()||
+                           widthBandDemo.getAccessMethod().getAid()!=widthBandJSON.getAccessMethod().getAid()||
+                           widthBandDemo.getPayMethod().getPayid()!=widthBandJSON.getPayMethod().getPayid()||!result){
                             widthBandDemo.setServicePerson(widthBandJSON.getServicePerson());
                             widthBandDemo.setAccessMethod(widthBandJSON.getAccessMethod());
                             widthBandDemo.setPayMethod(widthBandJSON.getPayMethod());
@@ -941,7 +958,7 @@ public class StoreController {
                     }
                 }
             }
-            storeDB.setWidthBandSet(jsonStore.getWidthBandSet());
+           // storeDB.setWidthBandSet(jsonStore.getWidthBandSet());
         }
         storeService.save(storeDB);
         Map<String,Object> map = new HashMap<>();

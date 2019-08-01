@@ -36,6 +36,7 @@
         var methodArr = new Array();
         $(function () {
               var storeId = $("#store_id").val();
+              $("#hiddenDiv").hide();
               $.ajax({
                   url:"/store/findById",
                   data:{"storeId":storeId},
@@ -54,9 +55,15 @@
                       //门店的设备必须是全部通过审核的
                       if(data.itemsSet!=null){
                           var newArr =[];
+                          var hiddenArr = [];
                           for (var i = 0; i < data.itemsSet.length; i++) {
-                              if(newArr.indexOf(data.itemsSet[i].className)==-1){
-                                  newArr.push(data.itemsSet[i].className);
+                              if(data.itemsSet[i].num!=0){
+                                  if(newArr.indexOf(data.itemsSet[i].className)==-1){
+                                      newArr.push(data.itemsSet[i].className);
+                                  }
+
+                              }else{
+                                  hiddenArr.push(data.itemsSet[i].className);
                               }
                           }
                           for (var k = 0; k <newArr.length ; k++) {
@@ -100,32 +107,110 @@
                               for (var p = 0; p <data.itemsSet.length ; p++) {
                                   var show = $("#span"+k).text();
                                   if(show==data.itemsSet[p].className){
-                                      //1表示该设备通过审核
-                                      if(data.itemsSet[p].sign=="1"){
-                                          $("#tbody"+k).append('' +
-                                              '<tr class="hxbgcolor_itemline_normal">' +
-                                              '<td align="center" width="4%">' +
-                                              '</td>' +
-                                              '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="hidden" name="id" value="'+data.itemsSet[p].id+'"><input type="text" readonly="readonly" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly"  name="equipName" value="'+data.itemsSet[p].equipName+'" style="text-align:left;width:100%;overflow-y:auto;"></span></td>' +
-                                              '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="hidden" name="itemId" value="'+data.itemsSet[p].item.itemId+'"><input type="text" name="name" value="'+data.itemsSet[p].item.name+'" readonly="readonly" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly"   style="text-align:left;width:100%;overflow-y:auto;"></span></td>' +
-                                              '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="text"  name="num"  value="'+data.itemsSet[p].num+'" class="hxinputbox hxborder_inputbox hxbgcolor" style="text-align:left;width:100%;overflow-y:auto;font-weight: bold;color: green"></span></td>' +
-                                              '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="text"  name="checkPerson" readonly="readonly" value="'+data.itemsSet[p].checkPerson+'" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly" style="text-align:left;width:100%;overflow-y:auto;font-weight: bold;color: green"><input type="hidden" name="className" value="'+data.itemsSet[p].className+'"></span></td>'+
-                                              '</tr>');
-                                      }else{
-                                          $("#tbody"+k).append('' +
-                                              '<tr class="hxbgcolor_itemline_normal">' +
-                                              '<td align="center" width="4%">' +
-                                              '</td>' +
-                                              '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="hidden" name="id" value="'+data.itemsSet[p].id+'"><input type="text" readonly="readonly" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly"  name="equipName" value="'+data.itemsSet[p].equipName+'" style="text-align:left;width:100%;overflow-y:auto;"></span></td>' +
-                                              '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="hidden" name="itemId" value="'+data.itemsSet[p].item.itemId+'"><input type="text" name="name" value="'+data.itemsSet[p].item.name+'" readonly="readonly" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly"   style="text-align:left;width:100%;overflow-y:auto;"></span></td>' +
-                                              '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="text"  name="num"  value="'+data.itemsSet[p].num+'" class="hxinputbox hxborder_inputbox" style="text-align:left;width:100%;overflow-y:auto;font-weight: bold;color: red"></span></td>' +
-                                              '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="text"  name="checkPerson" readonly="readonly" value="" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly" style="text-align:left;width:100%;overflow-y:auto;font-weight: bold;color: green"><input type="hidden" name="className" value="'+data.itemsSet[p].className+'"></span></td>'+
-                                              '</tr>');
+                                      //数量为零的不进行展示
+                                      if(data.itemsSet[p].num!=0){
+                                          //1表示该设备通过审核
+                                          if(data.itemsSet[p].sign=="1"){
+                                              $("#tbody"+k).append('' +
+                                                  '<tr class="hxbgcolor_itemline_normal">' +
+                                                  '<td align="center" width="4%">' +
+                                                  '</td>' +
+                                                  '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="hidden" name="id" value="'+data.itemsSet[p].id+'"><input type="text" readonly="readonly" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly"  name="equipName" value="'+data.itemsSet[p].equipName+'" style="text-align:left;width:100%;overflow-y:auto;"></span></td>' +
+                                                  '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="hidden" name="itemId" value="'+data.itemsSet[p].item.itemId+'"><input type="text" name="name" value="'+data.itemsSet[p].item.name+'" readonly="readonly" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly"   style="text-align:left;width:100%;overflow-y:auto;"></span></td>' +
+                                                  '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="text"  name="num"  value="'+data.itemsSet[p].num+'" class="hxinputbox hxborder_inputbox hxbgcolor" style="text-align:left;width:100%;overflow-y:auto;font-weight: bold;color: green"></span></td>' +
+                                                  '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="text"  name="checkPerson" readonly="readonly" value="'+data.itemsSet[p].checkPerson+'" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly" style="text-align:left;width:100%;overflow-y:auto;font-weight: bold;color: green"><input type="hidden" name="className" value="'+data.itemsSet[p].className+'"></span></td>'+
+                                                  '</tr>');
+                                          }else{
+                                              $("#tbody"+k).append('' +
+                                                  '<tr class="hxbgcolor_itemline_normal">' +
+                                                  '<td align="center" width="4%">' +
+                                                  '</td>' +
+                                                  '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="hidden" name="id" value="'+data.itemsSet[p].id+'"><input type="text" readonly="readonly" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly"  name="equipName" value="'+data.itemsSet[p].equipName+'" style="text-align:left;width:100%;overflow-y:auto;"></span></td>' +
+                                                  '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="hidden" name="itemId" value="'+data.itemsSet[p].item.itemId+'"><input type="text" name="name" value="'+data.itemsSet[p].item.name+'" readonly="readonly" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly"   style="text-align:left;width:100%;overflow-y:auto;"></span></td>' +
+                                                  '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="text"  name="num"  value="'+data.itemsSet[p].num+'" class="hxinputbox hxborder_inputbox" style="text-align:left;width:100%;overflow-y:auto;font-weight: bold;color: red"></span></td>' +
+                                                  '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="text"  name="checkPerson" readonly="readonly" value="" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly" style="text-align:left;width:100%;overflow-y:auto;font-weight: bold;color: green"><input type="hidden" name="className" value="'+data.itemsSet[p].className+'"></span></td>'+
+                                                  '</tr>');
+                                          }
+
                                       }
+
                                   }
                               }
 
                           }
+                          for (var k = 0; k <hiddenArr.length ; k++) {
+                              $("#hiddenItems").append(
+                                  '<div class="page_section_container hxcontainer_shadow">' +
+                                  '<img class="page_section_title_decorated hxbgcolor_datalist_head" src="./content/hxpub_clear.gif">' +
+                                  '<div class="page_section_title_area">' +
+                                  '<span id="spanhidden'+k+'" class="hxtxt_nowrap hxtxt_section_title" style=";text-align:left;display:inline-block;width:100%;">'+hiddenArr[k]+'</span>' +
+                                  '</div>' +
+                                  '<div class="page_section_title_btn" style="left:300px;"></div>' +
+                                  '<div class="page_section_content_area">' +
+                                  '<table  class="hxtbl_datalist_frame" style="table-layout:fixed;width:100%">' +
+                                  '<thead>' +
+                                  '<tr class="hxbgcolor_datalist_head">' +
+                                  '<td align="center" width="4%">' +
+                                  '<span style=";display:none">' +
+                                  '<span style="display:inline-block;width:100%;" class="hxbtn_container datalist_line_add"></span>' +
+                                  '</span>' +
+                                  '</td>' +
+                                  '<td align="center"  width="19%">' +
+                                  '<span class="hxtxt_list_column_caption hxbold hxtxt_nowrap">设备名称</span>' +
+                                  '</td>' +
+                                  '<td align="center"  width="19%">' +
+                                  '<span class="hxtxt_list_column_caption hxbold hxtxt_nowrap">设备型号</span>' +
+                                  '</td>' +
+                                  '<td align="center"  width="19%">' +
+                                  '<span class="hxtxt_list_column_caption hxbold hxtxt_nowrap">设备数量</span>' +
+                                  '</td>' +
+                                  '<td align="center"  width="19%">' +
+                                  '<span class="hxtxt_list_column_caption hxbold hxtxt_nowrap">审批人</span>' +
+                                  '</td>' +
+                                  '</tr>' +
+                                  '</thead>' +
+                                  '<tbody id="tbodyhidden'+k+'">' +
+                                  '</tbody>' +
+                                  '</table>' +
+                                  '</div>'+
+                                  '</div>'
+                              );
+                              //设置分类的div
+                              for (var p = 0; p <data.itemsSet.length ; p++) {
+                                  var show = $("#spanhidden"+k).text();
+                                  if(show==data.itemsSet[p].className){
+                                      if(data.itemsSet[p].num==0){
+                                          if(data.itemsSet[p].sign=="1"){
+                                              $("#tbodyhidden"+k).append('' +
+                                                  '<tr class="hxbgcolor_itemline_normal">' +
+                                                  '<td align="center" width="4%">' +
+                                                  '</td>' +
+                                                  '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="hidden" name="id" value="'+data.itemsSet[p].id+'"><input type="text" readonly="readonly" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly"  name="equipName" value="'+data.itemsSet[p].equipName+'" style="text-align:left;width:100%;overflow-y:auto;"></span></td>' +
+                                                  '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="hidden" name="itemId" value="'+data.itemsSet[p].item.itemId+'"><input type="text" name="name" value="'+data.itemsSet[p].item.name+'" readonly="readonly" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly"   style="text-align:left;width:100%;overflow-y:auto;"></span></td>' +
+                                                  '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="text"  name="num"  value="'+data.itemsSet[p].num+'" class="hxinputbox hxborder_inputbox hxbgcolor" style="text-align:left;width:100%;overflow-y:auto;font-weight: bold;color: green"></span></td>' +
+                                                  '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="text"  name="checkPerson" readonly="readonly" value="'+data.itemsSet[p].checkPerson+'" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly" style="text-align:left;width:100%;overflow-y:auto;font-weight: bold;color: green"><input type="hidden" name="className" value="'+data.itemsSet[p].className+'"></span></td>'+
+                                                  '</tr>');
+                                          }else{
+                                              $("#tbodyhidden"+k).append('' +
+                                                  '<tr class="hxbgcolor_itemline_normal">' +
+                                                  '<td align="center" width="4%">' +
+                                                  '</td>' +
+                                                  '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="hidden" name="id" value="'+data.itemsSet[p].id+'"><input type="text" readonly="readonly" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly"  name="equipName" value="'+data.itemsSet[p].equipName+'" style="text-align:left;width:100%;overflow-y:auto;"></span></td>' +
+                                                  '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="hidden" name="itemId" value="'+data.itemsSet[p].item.itemId+'"><input type="text" name="name" value="'+data.itemsSet[p].item.name+'" readonly="readonly" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly"   style="text-align:left;width:100%;overflow-y:auto;"></span></td>' +
+                                                  '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="text"  name="num"  value="'+data.itemsSet[p].num+'" class="hxinputbox hxborder_inputbox" style="text-align:left;width:100%;overflow-y:auto;font-weight: bold;color: red"></span></td>' +
+                                                  '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="text"  name="checkPerson" readonly="readonly" value="" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly" style="text-align:left;width:100%;overflow-y:auto;font-weight: bold;color: green"><input type="hidden" name="className" value="'+data.itemsSet[p].className+'"></span></td>'+
+                                                  '</tr>');
+                                          }
+                                      }
+
+
+                                  }
+                              }
+
+                          }
+
+
+
                       }
                       //门店的宽带信息
                       if(data.widthBandSet!=null){
@@ -404,8 +489,9 @@
                 var itemsSet = "";
                 var widthsSet = "";
                 var itemObjects = $("#itemsContent .page_section_content_area .hxtbl_datalist_frame tbody tr");
+                var hiddenItems = $("#hiddenItems .page_section_content_area .hxtbl_datalist_frame tbody tr");
                 var widthObjects = $("#widthShow .page_section_content_area tbody");
-                if (itemObjects.length != 0) {
+                if (itemObjects.length != 0||hiddenItems.length!=0) {
                     itemsSet = "[";
                     for (var i = 0; i < itemObjects.length; i++) {
                         var tdArr = $(itemObjects[i]).find("td");
@@ -424,6 +510,24 @@
                             itemsSet += "},"
                         }
                     }
+                    for (var i = 0; i < hiddenItems.length; i++) {
+                        var tdArr = $(hiddenItems[i]).find("td");
+                        var id = tdArr.eq(1).find("input[type='hidden']").val();
+                        var equipName = tdArr.eq(1).find("input[name='equipName']").val();
+                        var itemId = tdArr.eq(2).find("input[type='hidden']").val();
+                        var name = tdArr.eq(2).find("input[name='name']").val();
+                        var num = tdArr.eq(3).find("input[name='num']").val();
+                        var className = tdArr.eq(4).find("input[name='className']").val();
+                        itemsSet += "{\"className\":\"" + className + "\",\"equipName\":\"" + equipName + "\",\"id\":" + id + "," +
+                            "\"item\":{\"itemId\":" + itemId + ",\"name\":\"" + name + "\"}," +
+                            "\"num\":" + num + "";
+                        if (i == hiddenItems.length - 1) {
+                            itemsSet += "}";
+                        } else {
+                            itemsSet += "},"
+                        }
+                    }
+
                     itemsSet += "]";
                 }
                 if (widthObjects.length != 0) {
@@ -507,7 +611,6 @@
                 var equipName = $("#myModal").find("select[name='equipName']").find("option:checked").val();
                 var itemName = $("#myModal").find("select[name='equipName']").find("option:checked").attr("id");
                 var num =  $("#num").val();
-
                 //设备id值
                 var pageItems = $("input[name='itemId']");
                 //设备名称
@@ -520,6 +623,7 @@
                     var index = $.inArray(addItemId,pageArr);
                     if(index>=0){
                         alert("该设备型号已经存在，请不要重新添加");
+                        $("#hiddenDiv").show();
                         $(pageItemsName[index]).css("background","pink");
                     }else{
                         if(addItemId!=0&&className!="0"&&equipName!="0"&&!(typeof(num)=="undefined")){
@@ -616,6 +720,11 @@
         <div id="widthShow"></div>
         <!--填充已经通过审核的设备信息，此时的设备状态为已经通过审核的状态-->
         <div id="itemsContent"></div>
+
+        <div id="hiddenDiv">
+            <div id="hiddenItems"></div>
+        </div>
+
 
         <!--设置门店设备信息-->
         <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

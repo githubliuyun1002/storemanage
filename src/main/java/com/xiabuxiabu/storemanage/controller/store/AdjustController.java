@@ -87,6 +87,18 @@ public class AdjustController {
                 for (Items itemsJSON:itemsSetJSON) {
                     if(itemsDB.getId()==itemsJSON.getId()){
                         Items itemsDemo = itemsService.findById(itemsJSON.getId());
+//                        //####
+//                        itemsDemo.setClassName(itemsJSON.getClassName());
+//                        itemsDemo.setEquipName(itemsJSON.getEquipName());
+//                        itemsDemo.setItem(itemsJSON.getItem());
+//                        if(itemsJSON.getNum()!=itemsDemo.getNum()){
+//                            itemsDemo.setSign("2");
+//                            itemsDemo.setNum(itemsJSON.getNum());
+//
+//                        }
+//                        itemsService.save(itemsDemo);
+                        //######
+
                         //表示该设备需要更新
                         if(itemsDemo.getSign().equals("2")){
                             itemsDemo.setClassName(itemsJSON.getClassName());
@@ -94,7 +106,9 @@ public class AdjustController {
                             itemsDemo.setItem(itemsJSON.getItem());
                             itemsDemo.setNum(itemsJSON.getNum());
                             itemsService.save(itemsDemo);
+
                         }
+
                     }
                 }
             }
