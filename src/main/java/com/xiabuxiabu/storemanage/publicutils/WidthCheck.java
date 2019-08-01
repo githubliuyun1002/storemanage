@@ -10,13 +10,13 @@ public class WidthCheck {
     private String identity;   //账号
     private String password;   //密码
     private String tapewidth;  //带宽
-    private Date endDate;
+    private String endDate;
 
-    public Date getEndDate() {
+    public String getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(String endDate) {
         this.endDate = endDate;
     }
 

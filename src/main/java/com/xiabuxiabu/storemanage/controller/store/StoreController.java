@@ -924,12 +924,16 @@ public class StoreController {
        System.out.println("store----->"+store);
 
         Store jsonStore = JSON.parseObject(store,Store.class);
+
+        System.out.println("jsonStore---->"+jsonStore);
+
         String userName = (String) httpServletRequest.getSession().getAttribute("userName");
         Set<Items> itemsSetJSON = jsonStore.getItemsSet();
         Set<WidthBand> widthBandSet = jsonStore.getWidthBandSet();
         Store storeDB = storeService.findById(jsonStore.getStoreId());
         //待审批的状态
         StoreStatus storeStatus = storeStatusService.findById(2);
+
         if(storeDB.getItemsSet().size()!=0){
             for (Items itemsDB:storeDB.getItemsSet()) {
                 for (Items itemsJSON:itemsSetJSON) {
@@ -941,35 +945,45 @@ public class StoreController {
                         itemsDemo.setItem(itemsJSON.getItem());
                         //说明此时市场IT修改了门店设备信息
                         if(itemsJSON.getNum()!=itemsDemo.getNum()){
+                            if(itemsDemo.getSign().equals("1")){
+                                StoreRemarks storeRemarks = new StoreRemarks();
+                                storeRemarks.setStoreName(storeDB.getStoreName());
+                                storeRemarks.setStoreCode(storeDB.getStoreCode());
+                                storeRemarks.setMarketName(storeDB.getMarketName());
+                                storeRemarks.setItemName(itemsJSON.getItem().getName());
+                                storeRemarks.setItemId(itemsJSON.getItem().getItemId());
+                                //操作人(修改人)
+                                storeRemarks.setOperatePerson(userName);
+                                storeRemarks.setUpdateTime(new Date());
+                                storeRemarks.setOrignnum(itemsDemo.getNum());
+                                storeRemarks.setNownum(itemsJSON.getNum());
+                                int change = itemsJSON.getNum() - itemsDemo.getNum();
+                                storeRemarks.setChangenum(change);
+                                storeRemarks.setStoreAnditem(storeDB.getStoreName()+""+itemsDemo.getItem().getName());
+                                storeRemarksService.save(storeRemarks);
 
-                            StoreRemarks storeRemarks = new StoreRemarks();
-                            storeRemarks.setStoreName(storeDB.getStoreName());
-                            storeRemarks.setStoreCode(storeDB.getStoreCode());
-                            storeRemarks.setMarketName(storeDB.getMarketName());
-                            storeRemarks.setItemName(itemsJSON.getItem().getName());
-                            storeRemarks.setItemId(itemsJSON.getItem().getItemId());
-                            //操作人(修改人)
-                            storeRemarks.setOperatePerson(userName);
-                            storeRemarks.setUpdateTime(new Date());
-                            storeRemarks.setOrignnum(itemsDemo.getNum());
-                            storeRemarks.setNownum(itemsJSON.getNum());
-                            int change = itemsJSON.getNum() - itemsDemo.getNum();
-                            storeRemarks.setChangenum(change);
-                            storeRemarks.setStoreAnditem(storeDB.getStoreName()+""+itemsDemo.getItem().getName());
-                            storeRemarksService.save(storeRemarks);
+                                //此时有需要管理员进行审批
+                                itemsDemo.setSign("2");
+                                itemsDemo.setNum(itemsJSON.getNum());
+                                itemsService.save(itemsDemo);
 
-                            //此时有需要管理员进行审批
-                            itemsDemo.setSign("2");
-                            itemsDemo.setNum(itemsJSON.getNum());
-                            storeDB.setStoreStatus(storeStatus);
+                                storeDB.setStoreStatus(storeStatus);
+                            }
 
                         }else{
-                            itemsDemo.setNum(itemsJSON.getNum());
-                            if(itemsDemo.getSign()==null){
-                                itemsDemo.setSign("2");
+                            if(itemsDemo.getSign().equals("2")){
+                                itemsDemo.setNum(itemsJSON.getNum());
+                                itemsService.save(itemsDemo);
+                                storeDB.setStoreStatus(storeStatus);
                             }
+
+//                            if(itemsDemo.getSign()==null){
+//                                itemsDemo.setSign("2");
+//
+//                            }
+
                         }
-                        itemsService.save(itemsDemo);
+
                     }
 
                 }
@@ -981,28 +995,50 @@ public class StoreController {
                 for(WidthBand widthBandJSON : widthBandSet){
                     if(widthBandDB.getWid()==widthBandJSON.getWid()){
                         WidthBand widthBandDemo = widthBandService.findById(widthBandDB.getWid());
-                        //设置两个新的WidthCheck
-                        WidthCheck widthCheck1 = new WidthCheck();
-                        widthCheck1.setIdentity(widthBandDemo.getIdentity());
-                        widthCheck1.setPassword(widthBandDemo.getPassword());
-                        widthCheck1.setPayMoney(widthBandDemo.getPayMoney());
-                        widthCheck1.setTapewidth(widthBandDemo.getTapewidth());
-                        widthCheck1.setEndDate(widthBandDemo.getEndDate());
+                        if(widthBandDemo.getSign().equals("1")){
+                            //对比通过审核的设备是否又新的变化
+                            //设置两个新的WidthCheck
+                            WidthCheck widthCheck1 = new WidthCheck();
+                            widthCheck1.setIdentity(widthBandDemo.getIdentity());
+                            widthCheck1.setPassword(widthBandDemo.getPassword());
+                            widthCheck1.setPayMoney(widthBandDemo.getPayMoney());
+                            widthCheck1.setTapewidth(widthBandDemo.getTapewidth());
+                            widthCheck1.setEndDate(String.valueOf(widthBandDemo.getEndDate()));
+                            System.out.println("demo---->"+String.valueOf(widthBandDemo.getEndDate()));
 
-                        WidthCheck widthCheck2 = new WidthCheck();
-                        widthCheck2.setIdentity(widthBandJSON.getIdentity());
-                        widthCheck2.setPassword(widthBandJSON.getPassword());
-                        widthCheck2.setPayMoney(widthBandJSON.getPayMoney());
-                        widthCheck2.setTapewidth(widthBandJSON.getTapewidth());
-                        widthCheck2.setEndDate(widthBandJSON.getEndDate());
+                            WidthCheck widthCheck2 = new WidthCheck();
+                            widthCheck2.setIdentity(widthBandJSON.getIdentity());
+                            widthCheck2.setPassword(widthBandJSON.getPassword());
+                            widthCheck2.setPayMoney(widthBandJSON.getPayMoney());
+                            widthCheck2.setTapewidth(widthBandJSON.getTapewidth());
+
+                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                            String format = simpleDateFormat.format(widthBandJSON.getEndDate());
+                            widthCheck2.setEndDate(format);
+                            System.out.println("jsonDate----->"+format);
 
 
-                        CompareProperties compareProperties  = new CompareProperties();
-                        boolean result = compareProperties.contrastObj(widthCheck1, widthCheck2);
+                            CompareProperties compareProperties  = new CompareProperties();
+                            boolean result = compareProperties.contrastObj(widthCheck1, widthCheck2);
+                            System.out.println("result----->"+result);
 
-                        if(widthBandDemo.getServicePerson().getSid()!=widthBandJSON.getServicePerson().getSid()||
-                           widthBandDemo.getAccessMethod().getAid()!=widthBandJSON.getAccessMethod().getAid()||
-                           widthBandDemo.getPayMethod().getPayid()!=widthBandJSON.getPayMethod().getPayid()||!result){
+                            if(widthBandDemo.getServicePerson().getSid()!=widthBandJSON.getServicePerson().getSid()||
+                                    widthBandDemo.getAccessMethod().getAid()!=widthBandJSON.getAccessMethod().getAid()||
+                                    widthBandDemo.getPayMethod().getPayid()!=widthBandJSON.getPayMethod().getPayid()||!result){
+                                widthBandDemo.setServicePerson(widthBandJSON.getServicePerson());
+                                widthBandDemo.setAccessMethod(widthBandJSON.getAccessMethod());
+                                widthBandDemo.setPayMethod(widthBandJSON.getPayMethod());
+                                widthBandDemo.setPayMoney(widthBandJSON.getPayMoney());
+                                widthBandDemo.setIdentity(widthBandJSON.getIdentity());
+                                widthBandDemo.setPassword(widthBandJSON.getPassword());
+                                widthBandDemo.setTapewidth(widthBandJSON.getTapewidth());
+                                widthBandDemo.setEndDate(widthBandJSON.getEndDate());
+                                widthBandDemo.setSign("2");
+                                storeDB.setStoreStatus(storeStatus);
+                                widthBandService.save(widthBandDemo);
+
+                            }
+                        }else{
                             widthBandDemo.setServicePerson(widthBandJSON.getServicePerson());
                             widthBandDemo.setAccessMethod(widthBandJSON.getAccessMethod());
                             widthBandDemo.setPayMethod(widthBandJSON.getPayMethod());
@@ -1016,6 +1052,7 @@ public class StoreController {
                             widthBandService.save(widthBandDemo);
 
                         }
+
                     }
                 }
             }
