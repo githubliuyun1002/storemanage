@@ -172,13 +172,18 @@ public class StoreController {
      */
     @RequestMapping("/additem")
     public ModelAndView addItem(ModelAndView modelAndView, int storeId,Items items){
-        System.out.println("items------>"+items);
+         System.out.println("items------>"+items);
+        String userName = (String) httpServletRequest.getSession().getAttribute("userName");
         Store store  =  storeService.findById(storeId);
+
         //设置门店的展示样式，再根据门店的基本信息进行填充
         if(store.getItemsSet().size()!=0){
             Set<Items> oldItmsSet = store.getItemsSet();
             //对于新添加的设备，默认状态为待审核状态
             items.setSign("2");
+            items.setOpreationPerson(userName);
+            items.setUpDateTime(new Date());
+
             Items saveItems = itemsService.save(items);
             oldItmsSet.add(saveItems);
             store.setItemsSet(oldItmsSet);
@@ -187,6 +192,8 @@ public class StoreController {
         }else{
             //新添加的设别，默认都需要进行验证
             items.setSign("2");
+            items.setOpreationPerson(userName);
+            items.setUpDateTime(new Date());
             Items saveItems =  itemsService.save(items);
             Set<Items> newItemsSet = new HashSet<>();
             newItemsSet.add(saveItems);
@@ -270,6 +277,9 @@ public class StoreController {
     /**
      * 门店信息确认展示列表
      * 管理员的待审批页面的url--------->管理员审批
+     *
+     * step1:管理员审批过以后，再添加到相应的设备
+     *
      * @param store
      * @return
      */
@@ -297,6 +307,7 @@ public class StoreController {
                         itemsDemo.setNum(itemsJSON.getNum());
                         itemsDemo.setSign(itemsJSON.getSign());
                         itemsDemo.setCheckPerson(userName);
+                        itemsDemo.setChenckTime(new Date());
                         for (int i = 0; i <storeRemarksList.size() ; i++) {
                             StoreRemarks storeRemarks = storeRemarksList.get(i);
                             if(storeRemarks.getItemId()==itemsDemo.getItem().getItemId()&&storeRemarks.getCheckTime()==null&&storeRemarks.getStoreCode().equals(storeDB.getStoreCode())){
@@ -372,6 +383,49 @@ public class StoreController {
 
         storeService.save(storeDB);
         //调整设备时或者已经确认设备时，均需要改变设备的状态
+
+//        Store store1 = storeService.findById(storeDB.getStoreId());
+//        if(store1.getItemsSet().size()!=0&&store1.getStoreStatus().getStatusName().equals("已确认")){
+//            int index = 0;
+//            for(Items items : store1.getItemsSet()){
+//                if(items.getSign().equals("1")){
+//                   // System.out.println("true");
+//                    index++;
+//                }
+//                //System.out.println("index----->"+index);
+//                //System.out.println(store1.getItemsSet().size());
+//            }
+//            if(index==store1.getItemsSet().size()){
+//                for(Items items : store1.getItemsSet()){
+//                    //################### 门店日志
+//                    StoreRemarks storeRemarks = new StoreRemarks();
+//                    storeRemarks.setStoreName(store1.getStoreName());
+//                    storeRemarks.setStoreCode(store1.getStoreCode());
+//                    storeRemarks.setMarketName(store1.getMarketName());
+//                    storeRemarks.setItemName(items.getItem().getName());
+//                    storeRemarks.setItemId(items.getItem().getItemId());
+//                    storeRemarks.setEquipName(items.getEquipName());
+//                    //提交人
+//                    storeRemarks.setOperatePerson(items.getOpreationPerson());
+//                    //设置操作记录的时间
+//                    storeRemarks.setUpdateTime(items.getUpDateTime());
+//                    //审批人
+//                    storeRemarks.setCheckMan(userName);
+//                    storeRemarks.setCheckTime(new Date());
+//
+//                    //设备原来的数量为0
+//                    storeRemarks.setOrignnum(0);
+//                    //设备现在的数量
+//                    storeRemarks.setNownum(items.getNum());
+//                    //设备变化量
+//                    storeRemarks.setChangenum(items.getNum()-0);
+//                    storeRemarks.setStoreAnditem(store1.getStoreName()+""+items.getItem().getName());
+//                    storeRemarksService.save(storeRemarks);
+////                      //#####################################
+//                }
+//
+//            }
+//        }
 
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("code","1");
@@ -749,6 +803,8 @@ public class StoreController {
                          itemsDemo.setEquipName(itemsJSON.getEquipName());
                          itemsDemo.setNum(itemsJSON.getNum());
                          itemsDemo.setItem(itemsJSON.getItem());
+                         itemsDemo.setOpreationPerson(userName);
+                         itemsDemo.setUpDateTime(new Date());
                          //待审核
                          itemsDemo.setSign("2");
                         //################### 门店日志
@@ -839,6 +895,10 @@ public class StoreController {
 
         //状态为待审批状态
         items.setSign("2");
+        items.setOpreationPerson(userName);
+        items.setUpDateTime(new Date());
+
+
         itemsService.save(items);
 
         Set<Items> itemsSet = store.getItemsSet();
@@ -881,6 +941,7 @@ public class StoreController {
                         itemsDemo.setItem(itemsJSON.getItem());
                         //说明此时市场IT修改了门店设备信息
                         if(itemsJSON.getNum()!=itemsDemo.getNum()){
+
                             StoreRemarks storeRemarks = new StoreRemarks();
                             storeRemarks.setStoreName(storeDB.getStoreName());
                             storeRemarks.setStoreCode(storeDB.getStoreCode());

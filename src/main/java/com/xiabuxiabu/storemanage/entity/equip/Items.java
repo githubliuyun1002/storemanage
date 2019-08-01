@@ -26,7 +26,40 @@ public class Items {
 
     private String checkPerson;  //审核
 
-//    @ManyToMany(targetEntity = StoreRemarks.class,fetch = FetchType.EAGER)
+    private String opreationPerson;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date chenckTime;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date upDateTime;
+
+    public String getOpreationPerson() {
+        return opreationPerson;
+    }
+
+    public void setOpreationPerson(String opreationPerson) {
+        this.opreationPerson = opreationPerson;
+    }
+
+    public Date getChenckTime() {
+        return chenckTime;
+    }
+
+    public void setChenckTime(Date chenckTime) {
+        this.chenckTime = chenckTime;
+    }
+
+    public Date getUpDateTime() {
+        return upDateTime;
+    }
+
+    public void setUpDateTime(Date upDateTime) {
+        this.upDateTime = upDateTime;
+    }
+
+
+    //    @ManyToMany(targetEntity = StoreRemarks.class,fetch = FetchType.EAGER)
 //    @JoinTable(name = "items_remark",joinColumns = @JoinColumn(name = "items_id"),inverseJoinColumns = @JoinColumn(name = "remark_id"))
 //    private Set<StoreRemarks> storeRemarksSet;
 

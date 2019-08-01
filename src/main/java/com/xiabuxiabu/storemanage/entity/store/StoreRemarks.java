@@ -41,6 +41,15 @@ public class StoreRemarks {
     @Temporal(TemporalType.TIMESTAMP)
     private Date checkTime;
 
+    private String equipName;
+
+    public String getEquipName() {
+        return equipName;
+    }
+
+    public void setEquipName(String equipName) {
+        this.equipName = equipName;
+    }
 
     public void setItemId(int itemId) {
         this.itemId = itemId;

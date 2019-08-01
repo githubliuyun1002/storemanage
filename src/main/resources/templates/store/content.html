@@ -376,6 +376,7 @@
 
           // history.go(-1);
        }
+
        //确认提交的按钮
        function checkSubmit(){
            var result = confirm("设备提交后将上传至管理员审批，请确认是否进行修改");
@@ -522,17 +523,19 @@
                         alert("该设备型号已经存在，请不要重新添加");
                         $(pageItemsName[index]).css("background","pink");
                     }else{
-                        if(addItemId!=0&&className!="0"&&equipName!="0"&&!(typeof(num)=="undefined")){
+                        if(addItemId!="0"&&className!="0"&&equipName!="0"&&!(typeof(num)=="undefined")&&num!=null){
                               $("#additem").attr("action","/store/additem");
-                             $("#additem").submit();
+                             //$("#additem").submit();
+                            $("#submitItem").attr("type","submit");
                         }else{
                             alert("页面信息填充有误，请重新填写");
                         }
                     }
                 }else {
-                    if(itemName!="0"&&className!="0"&&equipName!="0"&&!(typeof(num)=="undefined")){
+                    if(addItemId!="0"&&className!="0"&&equipName!="0"&&!(typeof(num)=="undefined")&&num!=null){
                         $("#additem").attr("action","/store/additem");
-                        $("#additem").submit();
+                        //$("#additem").submit();
+                        $("#submitItem").attr("type","submit");
                     }else{
                         alert("页面信息填充有误，请重新填写");
                     }

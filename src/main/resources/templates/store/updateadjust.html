@@ -168,7 +168,9 @@
                                 }
 
                             }else{
-                                hiddenArr.push(data.itemsSet[i].className);
+                                if(hiddenArr.indexOf(data.itemsSet[i].className)==-1){
+                                    hiddenArr.push(data.itemsSet[i].className);
+                                }
                             }
                         }
                         for (var k = 0; k <newArr.length ; k++) {
@@ -290,7 +292,7 @@
                                                 '</td>' +
                                                 '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="hidden" name="id" value="'+data.itemsSet[p].id+'"><input type="text" readonly="readonly"  class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly"  name="equipName" value="'+data.itemsSet[p].equipName+'" style="text-align:left;width:100%;overflow-y:auto"></span></td>' +
                                                 '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="hidden" name="itemId" value="'+data.itemsSet[p].item.itemId+'"><input type="text" readonly="readonly" name="name" value="'+data.itemsSet[p].item.name+'"  class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly"   style="text-align:left;width:100%;overflow-y:auto"></span></td>' +
-                                                '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="text" readonly="readonly" name="num"  value="'+data.itemsSet[p].num+'" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly" style="text-align:left;width:100%;overflow-y:auto"></span></td>' +
+                                                '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="text"  name="num"  value="'+data.itemsSet[p].num+'" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly" style="text-align:left;width:100%;overflow-y:auto"></span></td>' +
                                                 '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="hidden" name="className" value="'+data.itemsSet[p].className+'"><input type="text" readonly="readonly" name="checkPerson"  value="'+data.itemsSet[p].checkPerson+'" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly" style="text-align:left;width:100%;overflow-y:auto"></span></td>' +
                                                 '</tr>');
                                         }else{
@@ -602,17 +604,19 @@
 
                         $(pageItemsName[index]).css("background","pink");
                     }else{
-                        if(addItemId!=0&&className!="0"&&equipName!="0"&&!(typeof(num)=="undefined")){
+                        if(addItemId!="0"&&className!="0"&&equipName!="0"&&!(typeof(num)=="undefined")&&num!=null){
                             $("#additem").attr("action","/adjust/additemInfor");
-                            $("#additem").submit();
+                            $("#submitBtn").attr("type","submit");
+                            //$("#additem").submit();
                         }else{
                             alert("页面信息填充有误，请重新填写");
                         }
                     }
                 }else {
-                    if(addItemId!=0&&className!="0"&&equipName!="0"&&!(typeof(num)=="undefined")){
+                    if(addItemId!="0"&&className!="0"&&equipName!="0"&&!(typeof(num)=="undefined")&&num!=null){
                         $("#additem").attr("action","/adjust/additemInfor");
-                        $("#additem").submit();
+                       // $("#additem").submit();
+                        $("#submitBtn").attr("type","submit");
                     }else{
                         alert("页面信息填充有误，请重新填写");
                     }
@@ -713,7 +717,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
-                        <button type="button" onclick="return confirmItems()" class="btn btn-primary">提交</button>
+                        <button type="button" id="submitBtn" onclick="return confirmItems()" class="btn btn-primary">提交</button>
                     </div>
 
                 </div>

@@ -195,8 +195,12 @@ public class StoreService {
                     Predicate p3 = criteriaBuilder.like(market,"%"+values+"%"); //市场名称
                     Predicate p4 = criteriaBuilder.equal(storeStatus.get("statusName"),"已确认");
                     Predicate p5 = criteriaBuilder.like(band,"%"+values+"%");
+                    Join join = root.join(root.getModel().getSet("itemsSet", Items.class),JoinType.LEFT);
+                    Path<String> itemsSign =   join.get("sign");
                     Predicate p =  criteriaBuilder.or(p1,p2,p3,p5);  //符合查询条件
-                    criteriaQuery.where(p,p4,predicateCloseSign);
+                    Predicate equal = criteriaBuilder.equal(itemsSign,"1");
+                    criteriaQuery.where(p,p4,predicateCloseSign,equal);
+                    criteriaQuery.distinct(true);
                     return null;
                 }
             },pageable);

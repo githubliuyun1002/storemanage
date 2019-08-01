@@ -72,18 +72,31 @@ public class ReportController {
         System.out.println("reportSize---->"+reportList.size());
         for (int i = 0; i <reportList.size() ; i++) {
             Store storeIndex = reportList.get(i);
+            Set<Items> itemsSet  = new HashSet<>();
+            for(Items items : storeIndex.getItemsSet()){
+                if(items.getSign().equals("1")){
+                    itemsSet.add(items);
+                }
+            }
             int index = 1;
             store+="{\"storeId\":\""+storeIndex.getStoreId()+"\",\"storeCode\":\""+storeIndex.getStoreCode()+"\",\"storeName\":\""+storeIndex.getStoreName()+"\",\"address\":\""+storeIndex.getAddress()+"\"," +
                     "\"marger\":\""+storeIndex.getMarger()+"\"," +
                     "\"openDate\":\""+storeIndex.getOpenDate()+"\"," +
                     "\"marketName\":\""+storeIndex.getMarketName()+"\"," +
                     "\"items\":{" ;
-            for (Items items:storeIndex.getItemsSet()) {
+            for (Items items:itemsSet) {
                 store += "\""+items.getItem().getCode()+"\":"+ items.getNum();
-                if(index!=storeIndex.getItemsSet().size()){
+                if(index!=itemsSet.size()){
                     store+=",";
                 }
                 index++;
+//                if(items.getSign().equals("1")){
+//                    store += "\""+items.getItem().getCode()+"\":"+ items.getNum();
+//                    if(index!=storeIndex.getItemsSet().size()){
+//                        store+=",";
+//                    }
+//
+//                }
             }
             store+="}}";
             if(i!=reportList.size()-1){

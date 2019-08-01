@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.criteria.*;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -57,6 +58,9 @@ public class StoreRemarksService {
                     Path<String> market = root.get("marketName");  //根据门店所属市场进行查询
                     Path<String> itemName = root.get("itemName");  //根据设备名称进行搜索
                     Path<String>  keyword = root.get("storeAnditem");  //搜索的关键词进行在搜索
+                    Path<String> checkMan = root.get("checkMan");
+                    Path<Date> checkTime =  root.get("checkTime");
+
                   //  Path<String> band= root.get("band");  //根据门店的品牌进行查询
 
                     Predicate p1 = criteriaBuilder.like(name,"%"+ values +"%");
@@ -66,10 +70,14 @@ public class StoreRemarksService {
                     Predicate p5 = criteriaBuilder.like(itemName,"%"+values+"%");
                     Predicate p6 = criteriaBuilder.like(keyword,"%"+values+"%");
 
+
                     //拿到登录人的信息
                     String userName = (String) httpServletRequest.getSession().getAttribute("userName");
                     String marketName = userService.findByUserName(userName).getMarketName();
                     String bandName = userService.findByUserName(userName).getBand();
+
+                    Predicate chenckPerson = criteriaBuilder.isNotNull(checkMan);
+                    Predicate check = criteriaBuilder.isNotNull(checkTime);
 
 
                     Predicate marketNameSerarch=null;
@@ -78,10 +86,10 @@ public class StoreRemarksService {
                         marketNameSerarch = criteriaBuilder.equal(market,marketName);
                      //   bandSearch = criteriaBuilder.equal(band,bandName);
                         Predicate predicate = criteriaBuilder.or(p1,p2,p5,p6);
-                        criteriaQuery.where(predicate,marketNameSerarch);
+                        criteriaQuery.where(predicate,marketNameSerarch,chenckPerson,check);
                     }else{
                         Predicate or = criteriaBuilder.or(p1,p2,p3,p5,p6);
-                        criteriaQuery.where(or);
+                        criteriaQuery.where(or,chenckPerson,check);
                     }
                     return null;
                 }
