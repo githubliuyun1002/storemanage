@@ -1,6 +1,7 @@
 package com.xiabuxiabu.storemanage.security;
 
 
+
 import com.xiabuxiabu.storemanage.entity.user.User;
 import com.xiabuxiabu.storemanage.repository.user.UserRepository;
 import org.apache.juli.logging.Log;
@@ -23,14 +24,37 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
     Log logger = LogFactory.getLog(CustomLoginSuccessHandler.class);
     @Autowired
     private UserRepository userRepository;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) throws IOException, ServletException {
         //验证用户名
         User user = userRepository.findByName(authentication.getName());
-        HttpSession  session = httpServletRequest.getSession();
-        session.setAttribute("userName",user.getUsername());
-        session.setAttribute("userType",user.getUserType().getName());
-        session.setAttribute("name",user.getUsername());
-        httpServletResponse.sendRedirect("/home");
+        if(user.getPublicStatus().getName().equals("启用")){
+            HttpSession  session = httpServletRequest.getSession();
+            session.setAttribute("userName",user.getUsername());
+
+            /*if(null!=user.getUserType().getName()){
+                System.out.println("1111111");
+                session.setAttribute("userType",user.getUserType().getName());
+            }
+            if(null!=user.getCcUserType().getName()){
+                System.out.println("2222222");
+                session.setAttribute("ccuserType",user.getCcUserType().getName());
+            }*/
+
+            session.setAttribute("name",user.getUsername());
+            session.setAttribute("sign",user.getSign());
+            if(user.getSign().equals("it")){
+                httpServletResponse.sendRedirect("/home");
+            }else if(user.getSign().equals("teshu")){
+                httpServletResponse.sendRedirect("/teshu");
+            }else if(user.getSign().equals("super")){
+                httpServletResponse.sendRedirect("/super");
+
+            }
+
+        }
+
+
     }
 }

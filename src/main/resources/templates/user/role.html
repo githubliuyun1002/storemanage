@@ -195,6 +195,7 @@
                 data: {"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
                 success: function (data) {
                     //初始化按钮，即第一次网页面上添加按钮
+                    page.totalPage = data.totalPages;
                     if (data.totalPages > page.pageLength) {
                         addButtons(page.startPage, page.pageLength);
                     } else {
@@ -437,7 +438,6 @@
                 </div>
             </div>
         </form>
-
     </div>
 </div>
 </body>

@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>登录主页面</title>
+    <title>人员页面</title>
     <link th:href="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css}" rel="stylesheet"/>
     <script th:src="@{https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js}"></script>
     <script th:src="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js}"></script>
@@ -148,9 +148,11 @@
                         dataType:"JSON",
                         success:function (data) {
                             for(i=0;i<data.length;i++){
+                                if(data[i].publicStatus.name=="启用"){
                                     $("select#roleTypeSelect").append(
                                         '<option id="' + data[i].name + '" value="' + data[i].id + '">' + data[i].name + '</option>'
                                     );
+                                }
                             }
                         },
                         error:function () {
@@ -270,7 +272,7 @@
                         '<button type="submit" class="btn btn-primary" id="updateBtn">提交</button>'
                     );
                     $("#modalBody").append('<div id="PID"></div>');
-                    $("#show").html("")
+                    $("#show").html("");
                     <!--加载页面id,做成隐藏域-->
                     $("#PID").append('<input  class="form-control" name="id" id="personId" type="hidden" value="' + data.id + '"/>');
                     $("#modalBody").append('<div id="hiddenshow"></div>');
@@ -473,7 +475,9 @@
                 data: {"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
                 success:function (data) {
                     //console.log(data);
+
                     //初始化按钮，即第一次网页面上添加按钮
+                    page.totalPage = data.totalPages;
                     if (data.totalPages > page.pageLength) {
                         addButtons(page.startPage, page.pageLength);
                     } else {

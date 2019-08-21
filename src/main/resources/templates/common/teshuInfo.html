@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>特殊设备信息展示页面</title>
+    <link th:href="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css}" rel="stylesheet"/>
+    <script th:src="@{https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js}"></script>
+    <script th:src="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+    <script src="../pageable/page.js"></script>
+    <script src="/home/jquery.js"></script>
+    <script src="/home/pintuer.js"></script>
+    <link rel="stylesheet" href="/home/pintuer.css">
+    <link rel="stylesheet" href="/home/admin.css">
+    <style>
+        #page {
+            margin-top: 10px;
+        }
+
+        #page .curr-page {
+            background-color: #337AB7;
+            color: white;
+        }
+
+        #page .page-btn:hover, #page .prev:hover, #page .next:hover {
+            background-color: #337AB7;
+            color: white;
+        }
+    </style>
+    <script>
+        var page = {
+            currPage: 1,
+            totalPage: 0,
+            pageLength: 4,
+            startPage: 1,
+            endPage: 4,
+            pageSize: 8
+        };
+        //填充页面
+        $(function () {
+            $.ajax({
+                url:"/ccstore/findAll",
+                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": ""},
+                dataType:"JSON",
+                type:"GET",
+                success:function (data) {
+                   // console.log("页面数据-------》"+JSON.stringify(data));
+                    page.totalPage = data.totalPages;
+                    if (data.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, data.totalPages);
+                    }
+                    pageIteration(page.currPage);
+                    isDisabled(page.currPage, data.totalPages);
+
+                    for (var i = 0; i <data.content.length ; i++) {
+                        $("tbody").append('' +
+                            '<tr>' +
+                            '<td>'+data.content[i].storeName+'</td>' +
+                            '<td>'+data.content[i].storeCode+'</td>' +
+                            '<td>'+data.content[i].equipName+'</td>' +
+                            '<td>'+data.content[i].days+'</td>' +
+                            '<td>'+data.content[i].weeks+'</td>' +
+                            '</tr>');
+                    }
+
+                }
+            })
+        });
+        //对搜索按钮添加点击事件
+        $(document).on("click","#searchButton",function (){
+            page.currPage=1;
+            page.startPage=1;
+            page.endPage=4;
+            var searchName = $('#search').val();
+            $("tbody").html("");
+            $.ajax({
+                url:"/ccstore/findAll",
+                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
+                type:"GET",
+                dataType:"JSON",
+                success:function (data) {
+                    console.log("搜索按钮得数据------->"+JSON.stringify(data));
+                    page.totalPage = data.totalPages;
+                    if (data.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, data.totalPages);
+                    }
+                    pageIteration(page.currPage);
+                    isDisabled(page.currPage, data.totalPages);
+                    for (var i = 0; i <data.content.length ; i++) {
+                        $("tbody").append('' +
+                            '<tr>' +
+                            '<td>'+data.content[i].storeName+'</td>' +
+                            '<td>'+data.content[i].storeCode+'</td>' +
+                            '<td>'+data.content[i].equipName+'</td>' +
+                            '<td>'+data.content[i].days+'</td>' +
+                            '<td>'+data.content[i].weeks+'</td>' +
+                            '</tr>');
+                    }
+                    // for (var i = 0; i <data.content.length ; i++) {
+                    //     for (var j = 0; j <data.content[i].ccItemsSet.length ; j++) {
+                    //         $("tbody").append('' +
+                    //             '<tr>' +
+                    //             '<td>'+data.content[i].storeName+'</td>' +
+                    //             '<td>'+data.content[i].storeCode+'</td>' +
+                    //             '<td>'+data.content[i].ccItemsSet[j].ccEquip.name+'</td>' +
+                    //             '<td>'+data.content[i].ccItemsSet[j].days+'</td>' +
+                    //             '<td>'+data.content[i].ccItemsSet[j].lastDate+'</td>' +
+                    //             '</tr>');
+                    //     }
+                    // }
+                }
+            })
+            
+        });
+
+        //对上一页添加事件
+        $(document).on("click", "#page .prev", function (){
+            var searchName = $('#search').val();
+            page.currPage = parseInt(page.currPage) - 1;
+            curr_page = page.currPage;
+            $("tbody").html("");
+            pageIteration(page.currPage);
+            isDisabled(page.currPage, page.totalPage);
+            $.ajax({
+                url:"/ccstore/findAll",
+                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
+                type:"GET",
+                dataType:"JSON",
+                success:function (data) {
+                    page.totalPage = data.totalPages;
+                    for (var i = 0; i <data.content.length ; i++) {
+                        $("tbody").append('' +
+                            '<tr>' +
+                            '<td>'+data.content[i].storeName+'</td>' +
+                            '<td>'+data.content[i].storeCode+'</td>' +
+                            '<td>'+data.content[i].equipName+'</td>' +
+                            '<td>'+data.content[i].days+'</td>' +
+                            '<td>'+data.content[i].weeks+'</td>' +
+                            '</tr>');
+                    }
+                    // for (var i = 0; i <data.content.length ; i++) {
+                    //     for (var j = 0; j <data.content[i].ccItemsSet.length ; j++) {
+                    //         $("tbody").append('' +
+                    //             '<tr>' +
+                    //             '<td>'+data.content[i].storeName+'</td>' +
+                    //             '<td>'+data.content[i].storeCode+'</td>' +
+                    //             '<td>'+data.content[i].ccItemsSet[j].ccEquip.name+'</td>' +
+                    //             '<td>'+data.content[i].ccItemsSet[j].days+'</td>' +
+                    //             '<td>'+data.content[i].ccItemsSet[j].lastDate+'</td>' +
+                    //             '</tr>');
+                    //     }
+                    // }
+
+                }
+            })
+        });
+        //对页面添加事件
+        $(document).on("click", ".page-btn", function (){
+            searchName = $('#search').val();
+            $this = $(this);
+            $("tbody").html("");
+            page.currPage = parseInt($this.text());
+            curr_page = page.currPage;
+            pageIteration(page.currPage);
+            isDisabled(page.currPage, page.totalPage);
+            $.ajax({
+                url:"/ccstore/findAll",
+                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
+                type:"GET",
+                dataType:"JSON",
+                success:function (data) {
+                    page.totalPage = data.totalPages;
+                    for (var i = 0; i <data.content.length ; i++) {
+                        $("tbody").append('' +
+                            '<tr>' +
+                            '<td>'+data.content[i].storeName+'</td>' +
+                            '<td>'+data.content[i].storeCode+'</td>' +
+                            '<td>'+data.content[i].equipName+'</td>' +
+                            '<td>'+data.content[i].days+'</td>' +
+                            '<td>'+data.content[i].weeks+'</td>' +
+                            '</tr>');
+                    }
+                    // for (var i = 0; i <data.content.length ; i++) {
+                    //     for (var j = 0; j <data.content[i].ccItemsSet.length; j++) {
+                    //         $("tbody").append('' +
+                    //             '<tr>' +
+                    //             '<td>'+data.content[i].storeName+'</td>' +
+                    //             '<td>'+data.content[i].storeCode+'</td>' +
+                    //             '<td>'+data.content[i].ccItemsSet[j].ccEquip.name+'</td>' +
+                    //             '<td>'+data.content[i].ccItemsSet[j].days+'</td>' +
+                    //             '<td>'+data.content[i].ccItemsSet[j].lastDate+'</td>' +
+                    //             '</tr>');
+                    //     }
+                    // }
+
+                }
+            })
+        });
+        //对下一页添加事件
+        $(document).on("click", "#page .next", function (){
+            searchName = $('#search').val();
+            page.currPage = parseInt(page.currPage) + 1;
+            $("tbody").html("");
+            curr_page = page.currPage;
+            pageIteration(page.currPage);
+            isDisabled(page.currPage, page.totalPage);
+            $.ajax({
+                url:"/ccstore/findAll",
+                data:{"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
+                type:"GET",
+                dataType:"JSON",
+                success:function (data) {
+                    page.totalPage = data.totalPages;
+                    for (var i = 0; i <data.content.length ; i++) {
+                        $("tbody").append('' +
+                            '<tr>' +
+                            '<td>'+data.content[i].storeName+'</td>' +
+                            '<td>'+data.content[i].storeCode+'</td>' +
+                            '<td>'+data.content[i].equipName+'</td>' +
+                            '<td>'+data.content[i].days+'</td>' +
+                            '<td>'+data.content[i].weeks+'</td>' +
+                            '</tr>');
+                    }
+                    // for (var i = 0; i <data.content.length ; i++) {
+                    //     for (var j = 0; j <data.content[i].ccItemsSet.length ; j++) {
+                    //         $("tbody").append('' +
+                    //             '<tr>' +
+                    //             '<td>'+data.content[i].storeName+'</td>' +
+                    //             '<td>'+data.content[i].storeCode+'</td>' +
+                    //             '<td>'+data.content[i].ccItemsSet[j].ccEquip.name+'</td>' +
+                    //             '<td>'+data.content[i].ccItemsSet[j].days+'</td>' +
+                    //             '<td>'+data.content[i].ccItemsSet[j].lastDate+'</td>' +
+                    //             '</tr>');
+                    //     }
+                    // }
+
+
+                }
+            })
+        });
+        
+
+    </script>
+</head>
+<body>
+<div class="container">
+    <div class="col-md-5 col-xs-12" style="float: right">
+        <div class="input-group">
+            <input type="text" id="search" class="form-control" placeholder="输入门店名称/编码/设备名称/进行搜索">
+            <span class="input-group-btn">
+                         <button class="btn btn-primary" id="searchButton">搜 索</button>
+           </span>
+        </div>
+    </div>
+    <div class="panel panel-default" style="margin-top: 50px;">
+        <table class="table">
+            <thead>
+            <tr>
+                <th width="20%" style="text-align: left; padding-left: 20px;">门店名称</th>
+                <th width="20%" style="text-align: left;">门店编码</th>
+                <th width="20%" style="text-align: left;">设备名称</th>
+                <th width="20%" style="text-align: left;">维护周期(天)</th>
+                <th width="20%" style="text-align: left;">到期时间</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+<div id="page"></div>
+</body>
+</html>

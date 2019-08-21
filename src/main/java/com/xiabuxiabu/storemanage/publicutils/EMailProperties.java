@@ -20,6 +20,15 @@ public class EMailProperties {
     private String additems;
     private String checkitems;
     private String updateitems;
+    private String equipname;
+
+    public String getEquipname() {
+        return equipname;
+    }
+
+    public void setEquipname(String equipname) {
+        this.equipname = equipname;
+    }
 
     public String getUpdateitems() {
         return updateitems;

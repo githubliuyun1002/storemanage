@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>人员列表</title>
+    <link th:href="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css}" rel="stylesheet"/>
+    <script th:src="@{https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js}"></script>
+    <script th:src="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+    <script src="../pageable/page.js"></script>
+    <style>
+        #page {
+            margin-top: 10px;
+        }
+
+        #page .curr-page {
+            background-color: #337AB7;
+            color: white;
+        }
+
+        #page .page-btn:hover, #page .prev:hover, #page .next:hover {
+            background-color: #337AB7;
+            color: white;
+        }
+    </style>
+    <script>
+        var page = {
+            currPage: 1,
+            totalPage: 0,
+            pageLength: 4,
+            startPage: 1,
+            endPage: 4,   //endPage与pageLength保持一致
+            pageSize: 5
+        };
+        //填充user页面
+
+        //填充页面List数据
+        $(function () {
+            $.ajax({
+                url:"/ccperson/findAll",
+                type: "GET",
+                dataType: "JSON",
+                data: {"page": page.currPage, "pageSize": page.pageSize, "searchName": ""},
+                success:function (data) {
+                    //在页面打印对象是。JSON.stringify(data)
+                    //console.log("data----->"+JSON.stringify(data));
+                    page.totalPage = data.totalPages;
+                    //初始化页面按钮
+                    if (data.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, data.totalPages);
+                    }
+                    pageIteration(page.currPage);
+                    isDisabled(page.currPage, data.totalPages);
+                    for (var i = 0; i <data.content.length ; i++) {
+                        $("tbody").append('' +
+                            '<tr>' +
+                              '<td>'+data.content[i].username+'</td>' +
+                              '<td>'+data.content[i].name+'</td>' +
+                              '<td>'+data.content[i].ccUserType.name+'</td>' +
+                              '<td>' + data.content[i].publicStatus.name + '</td>' +
+                              '<td>'+data.content[i].marketName+'</td>'+
+                              '<td><button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].id + ')" ' +
+                              'data-target="#myModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button></td>' +
+                            '</tr>');
+
+                    }
+
+                }
+
+            })
+        });
+        //加载市场信息marketName
+        // $(function () {
+        //     $.ajax({
+        //         url:"/person/bandMarketList",
+        //         data:{"band":"湊湊"},
+        //         type:"GET",
+        //         dataType:"JSON",
+        //         success:function (data) {
+        //             console.log("市场信息----->"+JSON.stringify(data));
+        //             for (var i = 0; i < data.length; i++) {
+        //                 $("select#marketName").append(
+        //                     '<option  value="' + data[i] + '">' + data[i] + '</option>'
+        //                 )
+        //             }
+        //         },
+        //         error:function () {
+        //             alert("加载品牌市场失败");
+        //         }
+        //     })
+        // });
+
+        //加载人员类型信息
+        $(function () {
+            $.ajax({
+                url:"/ccperson/userTypeList",
+                type:"GET",
+                dataType:"JSON",
+                success:function (data) {
+                    console.log("人员类型的信息----->"+JSON.stringify(data));
+                    for (var i = 0; i <data.length ; i++) {
+                        $("select#ccUserType").append('' +
+                            '<option value="'+data[i].typeId+'" id="'+data[i].name+'" >'+data[i].name+'</option>')
+                    }
+                }
+            })
+
+        });
+
+        //加载角色类型
+        $(function () {
+            $.ajax({
+                url:"/ccperson/roleList",
+                dataType:"JSON",
+                type:"GET",
+                success:function (data) {
+                    for(i=0;i<data.length;i++){
+                        if(data[i].publicStatus.name=="启用"){
+                            $("select#roleTypeSelect").append(
+                                '<option id="' + data[i].name + '" value="' + data[i].roleId + '">' + data[i].name + '</option>'
+                            );
+                        }
+                    }
+                }
+            })
+        });
+
+        //加载人员状态
+        $(function () {
+            $.ajax({
+                url:"/person/statusList",
+                type:"GET",
+                dataType:"JSON",
+                success:function (data) {
+                    //console.log(data);
+                    for(i=0;i<data.length;i++){
+                        //publicStatus
+                        $("select#publicStatus").append(
+                            '<option id="' + data[i].name + '" value="' + data[i].id + '">' + data[i].name + '</option>'
+                        );
+                    }
+                },
+                error:function () {
+                    alert("状态列表加载失败");
+                }
+            });
+        });
+
+        //输入框是失去焦点的事件
+        function check(){
+            var userName=$("#username").val();
+            $.ajax({
+                url:"/person/checkUserName",
+                data:{"userName":userName},
+                type:"GET",
+                dataType:"JSON",
+                success:function (data) {
+                    $("#errorMsg").html("");
+                    if(data.code=="true"){
+                        $("#errorMsg").html("该用户已经被注册不能再使用，请重新输入");
+                    }
+                }
+            });
+        }
+
+        //新增人员
+        $(function () {
+            $("#add").click(function () {
+                $("#formData").attr("action","/ccperson/addSave");
+                $("#footer").html("");
+                $("#PID").html("");
+                $("#show").html("");
+                $("#footer").append(
+                    '<button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>'+
+                    '<button type="submit" class="btn btn-primary" id="submitBtn">新增</button>'
+                );
+                $("#username").val("");
+                $("#name").val("");
+                $("#password").val("");
+                $("#mail").val("");
+                $("#hiddenshow").html("");
+                //门店的人员类型，添加市场
+                $("select#ccUserType").change(function () {
+                    userType = $(this).val();
+                    console.log("人员类型------>"+userType);
+                    //对门店管理员，加载的市场信息为总部
+                    if(userType=="1"){
+                        $("select#marketName").html("");
+                        $("select#marketName").append('' +
+                            '<option value="总部">总部</option>');
+                    }else{
+                        $("select#marketName").html("");
+                        $.ajax({
+                            url:"/person/bandMarketList",
+                            data:{"band":"湊湊"},
+                            type:"GET",
+                            dataType:"JSON",
+                            success:function (data) {
+                               // console.log("市场信息----->"+JSON.stringify(data));
+                                $("select#marketName").html("");
+                                for (var i = 0; i < data.length; i++) {
+                                    $("select#marketName").append(
+                                        '<option  value="' + data[i] + '">' + data[i] + '</option>'
+                                    )
+                                }
+                            },
+                            error:function () {
+                                alert("加载品牌市场失败");
+                            }
+                        })
+                    }
+                })
+            });
+        });
+
+        //修改人员
+        function updateBtn(id) {
+            $("#footer").html("");
+            $("#formData").attr("action","/ccperson/updateSave");
+            //对人员进行修改
+            $.ajax({
+                url:"/ccperson/findById",
+                data:{"id":id},
+                type:"GET",
+                dataType:"JSON",
+                async:false,
+                success:function (data) {
+                    $("#PID").html("");
+                    $("#hiddenshow").html("");
+                    $("#footer").append(
+                        '<button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>'+
+                        '<button type="submit" class="btn btn-primary" id="updateBtn">提交</button>'
+                    );
+                    $("#modalBody").append('<div id="PID"></div>');
+                    $("#show").html("");
+                    $("#PID").append('<input  class="form-control" name="id" id="personId" type="hidden" value="' + data.id + '"/>');
+
+                    <!--页面数据回显-->
+                    $("#username").val(data.username);
+                    $("#name").val(data.name);
+                    $("#password").val(data.password);
+                    $("#mail").val(data.mail);
+                    //公共状态
+                    var publicStatusName=data.publicStatus.id;
+                    //角色类型
+                    var ccroleTypeName=data.ccRoleSet[0].roleId;
+                    //所属市场名
+                    var marketName = data.marketName;
+                    //人员类型
+                    var userType = data.ccUserType.typeId;
+                    //分别对人员的属性进行回显
+
+                    $("select#publicStatus").val(publicStatusName);
+                    $("select#roleTypeSelect").val(ccroleTypeName);
+                    $("select#marketName").val(marketName);
+                    $("select#ccUserType").val(userType);
+
+                    //对市场信息进行回显
+                    if(userType==1){
+                        $("select#marketName").html("");
+                        $("select#marketName").append('' +
+                            '<option value="总部">总部</option>');
+                    }else{
+                        $.ajax({
+                            url:"/person/bandMarketList",
+                            data:{"band":"湊湊"},
+                            type:"GET",
+                            dataType:"JSON",
+                            async:false,
+                            success:function (data) {
+                                //console.log("市场信息----->"+JSON.stringify(data));
+                                $("select#marketName").html("");
+                                for (var i = 0; i < data.length; i++) {
+                                    $("select#marketName").append(
+                                        '<option  value="' + data[i] + '">' + data[i] + '</option>'
+                                    )
+                                }
+                            },
+                            error:function () {
+                                alert("加载品牌市场失败");
+                            }
+                        })
+                    }
+
+
+                    $("select#ccUserType").change(function () {
+                        userType = $(this).val();
+                        //console.log("人员类型------>"+userType);
+                        //对门店管理员，加载的市场信息为总部
+                        if(userType=="1"){
+                            $("select#marketName").html("");
+                            $("select#marketName").append('' +
+                                '<option value="总部">总部</option>');
+                        }else{
+                            $("select#marketName").html("");
+                            $.ajax({
+                                url:"/person/bandMarketList",
+                                data:{"band":"湊湊"},
+                                type:"GET",
+                                dataType:"JSON",
+                                success:function (data) {
+                                    console.log("市场信息----->"+JSON.stringify(data));
+                                    for (var i = 0; i < data.length; i++) {
+                                        $("select#marketName").append(
+                                            '<option  value="' + data[i] + '">' + data[i] + '</option>'
+                                        )
+                                    }
+                                },
+                                error:function () {
+                                    alert("加载品牌市场失败");
+                                }
+                            })
+                        }
+                    });
+                    $("select#marketName").val(marketName);
+
+                }
+
+            })
+
+
+        }
+        
+        //搜索按钮添加事件
+        $(document).on("click","#searchButton",function () {
+            page.currPage=1;
+            page.startPage=1;
+            page.endPage=4;
+            var searchName = $('#search').val();
+            $("tbody").html("");
+            $.ajax({
+                url:"/ccperson/findAll",
+                type: "GET",
+                dataType: "JSON",
+                data: {"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
+                success:function (data) {
+                    //初始化按钮，即第一次网页面上添加按钮
+                    page.totalPage = data.totalPages;
+                    if (data.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, data.totalPages);
+                    }
+                    pageIteration(page.currPage);
+                    //禁用"上一页"按钮，因为默认是第一页，第一页没有上一页
+                    isDisabled(page.currPage, data.totalPages);
+                    for (var i = 0; i <data.content.length ; i++) {
+                        $("tbody").append('' +
+                            '<tr>' +
+                            '<td>'+data.content[i].username+'</td>' +
+                            '<td>'+data.content[i].name+'</td>' +
+                            '<td>'+data.content[i].ccUserType.name+'</td>' +
+                            '<td>' + data.content[i].publicStatus.name + '</td>' +
+                            '<td>'+data.content[i].marketName+'</td>'+
+                            '<td><button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].id + ')" ' +
+                            'data-target="#myModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button></td>' +
+                            '</tr>');
+
+                    }
+
+                }
+                
+            })
+            
+        });
+
+        //上一页按钮添加事件
+        $(document).on("click", "#page .prev", function () {
+            searchName = $('#search').val();
+            page.currPage = parseInt(page.currPage) - 1;
+            curr_page = page.currPage;
+            $("tbody").html("");
+            pageIteration(page.currPage);
+            isDisabled(page.currPage, page.totalPage);
+            $.ajax({
+                url:"/ccperson/findAll",
+                type: "GET",
+                dataType: "JSON",
+                data: {"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
+                success:function (data) {
+                    page.totalPage = data.totalPages;
+                    for (var i = 0; i <data.content.length ; i++) {
+                        $("tbody").append('' +
+                            '<tr>' +
+                            '<td>'+data.content[i].username+'</td>' +
+                            '<td>'+data.content[i].name+'</td>' +
+                            '<td>'+data.content[i].ccUserType.name+'</td>' +
+                            '<td>' + data.content[i].publicStatus.name + '</td>' +
+                            '<td>'+data.content[i].marketName+'</td>'+
+                            '<td><button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].id + ')" ' +
+                            'data-target="#myModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button></td>' +
+                            '</tr>');
+
+                    }
+
+                }
+
+            })
+
+        });
+
+        //页码添加事件
+        $(document).on("click", ".page-btn", function () {
+            searchName = $('#search').val();
+            $this = $(this);
+            $("tbody").html("");
+            page.currPage = parseInt($this.text());
+            curr_page = page.currPage;
+            pageIteration(page.currPage);
+            isDisabled(page.currPage, page.totalPage);
+            $.ajax({
+                url:"/ccperson/findAll",
+                type: "GET",
+                dataType: "JSON",
+                data: {"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
+                success:function (data) {
+                    page.totalPage = data.totalPages;
+                    for (var i = 0; i <data.content.length ; i++) {
+                        $("tbody").append('' +
+                            '<tr>' +
+                            '<td>'+data.content[i].username+'</td>' +
+                            '<td>'+data.content[i].name+'</td>' +
+                            '<td>'+data.content[i].ccUserType.name+'</td>' +
+                            '<td>' + data.content[i].publicStatus.name + '</td>' +
+                            '<td>'+data.content[i].marketName+'</td>'+
+                            '<td><button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].id + ')" ' +
+                            'data-target="#myModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button></td>' +
+                            '</tr>');
+
+                    }
+
+                }
+
+            })
+
+        });
+
+        //下一页添加事件
+        $(document).on("click", "#page .next", function () {
+            searchName = $('#search').val();
+            page.currPage = parseInt(page.currPage) + 1;
+            $("tbody").html("");
+            curr_page = page.currPage;
+            pageIteration(page.currPage);
+            isDisabled(page.currPage, page.totalPage);
+            $.ajax({
+                url:"/ccperson/findAll",
+                type: "GET",
+                dataType: "JSON",
+                data: {"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
+                success:function (data) {
+                    page.totalPage = data.totalPages;
+                    for (var i = 0; i <data.content.length ; i++) {
+                        $("tbody").append('' +
+                            '<tr>' +
+                            '<td>'+data.content[i].username+'</td>' +
+                            '<td>'+data.content[i].name+'</td>' +
+                            '<td>'+data.content[i].ccUserType.name+'</td>' +
+                            '<td>' + data.content[i].publicStatus.name + '</td>' +
+                            '<td>'+data.content[i].marketName+'</td>'+
+                            '<td><button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].id + ')" ' +
+                            'data-target="#myModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button></td>' +
+                            '</tr>');
+
+                    }
+
+                }
+
+            })
+        });
+
+    </script>
+</head>
+<body>
+  <div class="container">
+      <div class="col-md-7 col-xs-12">
+          <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal" id="add"
+                  data-backdrop="static" data-keyboard="false"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增人员
+          </button>
+      </div>
+      <div class="col-md-5 col-xs-12">
+          <div class="input-group">
+              <input type="text" id="search" class="form-control" placeholder="输入中文名/市场进行搜索">
+              <span class="input-group-btn">
+                 <button class="btn btn-primary" id="searchButton">搜 索</button>
+            </span>
+          </div>
+      </div>
+      <table class="table table-striped">
+          <caption>员工列表展示</caption>
+          <thead>
+          <tr>
+              <th>登录名</th>
+              <th>中文名</th>
+              <th>人员类型</th>
+              <th>状态</th>
+              <th>所属市场</th>
+              <th>操作</th>
+          </tr>
+          </thead>
+          <tbody>
+          </tbody>
+      </table>
+      <div id="page"></div>
+      <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <form th:action="@{/person/updateSave}" th:autocomplete="off" method="post" id="formData">
+              <div class="modal-dialog">
+                  <div class="modal-content">
+                      <div class="modal-header">
+                          <h4 class="modal-title" id="myModalLabel">人员操作</h4>
+                      </div>
+                      <div class="modal-body" id="modalBody">
+                          <label for="username">登录名</label>
+                          <input class="form-control" type="text" onblur="check()" placeholder="人员名称" name="username" id="username"
+                                 required="true"/>
+                          <span id="errorMsg" style="font-weight: bold;color: red"></span><br/>
+                          <label for="password">密码</label>
+                          <input class="form-control" type="text" placeholder="密码" name="password" id="password"
+                                 required="true"/>
+                          <label for="name">中文名</label>
+                          <input class="form-control" type="text" placeholder="中文名" name="name" id="name"
+                                 required="true"/>
+                          <label for="mail">邮箱</label>
+                          <input class="form-control"  type="email" placeholder="邮箱" name="mail" id="mail" required="true"/>
+                          <label for="ccUserType" >人员类型</label>
+                          <select class="form-control" id="ccUserType" name="ccUserType">
+                              <option value="0" style="display: none" selected>请选择</option>
+                          </select>
+                          <label>状态</label>
+                          <select class="form-control" id="publicStatus" name="publicStatus"></select>
+                          <label>所属市场</label>
+                          <select class="form-control" id="marketName" name="marketName"></select>
+                          <label>角色类型</label>
+                          <select class="form-control" id="roleTypeSelect" name="ccRoleSet"></select>
+                      </div>
+                      <div class="modal-footer" id="footer"></div>
+                  </div>
+              </div>
+          </form>
+      </div>
+
+
+  </div>
+</body>
+</html>

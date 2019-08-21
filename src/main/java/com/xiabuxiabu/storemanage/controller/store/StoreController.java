@@ -1151,7 +1151,6 @@ public class StoreController {
                         //待审核
                         itemsDemo.setSign("2");
                         itemsService.save(itemsDemo);
-
                     }
                 }
             }

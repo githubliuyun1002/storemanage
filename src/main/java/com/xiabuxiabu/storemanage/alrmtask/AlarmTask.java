@@ -1,17 +1,11 @@
 package com.xiabuxiabu.storemanage.alrmtask;
-import com.xiabuxiabu.storemanage.entity.publicutil.Band;
-import com.xiabuxiabu.storemanage.entity.publicutil.MarketEntity;
-import com.xiabuxiabu.storemanage.entity.store.MailList;
-import com.xiabuxiabu.storemanage.entity.store.Store;
-import com.xiabuxiabu.storemanage.entity.store.StoreBOH;
-import com.xiabuxiabu.storemanage.entity.store.StoreStatus;
-import com.xiabuxiabu.storemanage.service.publicutil.BandService;
-import com.xiabuxiabu.storemanage.service.publicutil.MarketService;
-import com.xiabuxiabu.storemanage.service.store.MailListSerivice;
-import com.xiabuxiabu.storemanage.service.store.StoreBOHService;
-import com.xiabuxiabu.storemanage.service.store.StoreService;
-import com.xiabuxiabu.storemanage.service.store.StoreStatusService;
+import com.xiabuxiabu.storemanage.entity.ccstore.CCStore;
+import com.xiabuxiabu.storemanage.entity.store.*;
+import com.xiabuxiabu.storemanage.service.ccstore.CCStoreService;
+import com.xiabuxiabu.storemanage.service.store.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -28,10 +22,12 @@ public class AlarmTask {
     @Autowired
     private StoreService storeService;
     @Autowired
+    private CCStoreService ccStoreService;
+
+    @Autowired
     private MailListSerivice mailListSerivice;
-    //@Scheduled(cron = "0 0 12 * * ?")   //每天12点触发 0 0 12 * * ?
-    @Scheduled(cron = "0 0 */1 * * ?")    //每三个小时执行一次
-   // @Scheduled(cron = "0 0/4 * * * ?")    //每三个小时执行一次
+    //整合门店信息，每两个小时执行一次
+    @Scheduled(cron = "0 0 0/2 * * ? ")
     public void run() {
          List<StoreBOH> storeBOHList = storeBOHService.findALlStoreBOH();
          System.out.println("size数据的长度---->"+storeBOHList.size());
@@ -80,6 +76,55 @@ public class AlarmTask {
         }
 
     }
+
+    /**
+     * 整合湊湊门店的信息，每三个小时整合一次
+     */
+    @Scheduled(cron = "0 0 0/3 * * ? ")
+    public void ccrun(){
+        List<StoreBOH> storeBOHList = storeBOHService.findALlStoreBOH();
+        System.out.println("整合湊湊数据长度------》"+storeBOHList.size());
+        for (int i = 0; i <storeBOHList.size() ; i++) {
+            StoreBOH storeBOH = storeBOHList.get(i);
+            String storeCode = storeBOH.getStorecode();
+
+            //step1:从boh数据库中同步所有的门店信息，然后再同步湊湊门店的信息
+
+            if(storeBOH.getBand().equals("湊湊")){
+                if(ccStoreService.findByStoreCode(storeCode)!=null){
+                    CCStore ccStoreOld = ccStoreService.findById(ccStoreService.findByStoreCode(storeCode).getStoreId());
+                    //该门店已经存在，需要更新信息的门店
+                    if(ccStoreOld!=null){
+                        ccStoreOld.setStoreName(storeBOH.getStorename());
+                        ccStoreOld.setStoreCode(storeBOH.getStorecode());
+                        ccStoreOld.setMarketName(storeBOH.getMarketname());
+                        ccStoreOld.setStoreManage(storeBOH.getMarger());
+                        // ccStoreOld.setBand(storeBOH.getBand());
+                        ccStoreOld.setAddress(storeBOH.getAddress());
+                        ccStoreOld.setStoreMail(storeBOH.getStorecode()+"@coucouchn.com");
+                        ccStoreService.save(ccStoreOld);
+                        System.out.println("湊湊门店的更新操作-------》"+ccStoreOld.getStoreCode());
+                    }
+                }else{
+                    CCStore ccStore = new CCStore();
+                    ccStore.setStoreCode(storeBOH.getStorecode());
+                    ccStore.setStoreName(storeBOH.getStorename());
+                    ccStore.setMarketName(storeBOH.getMarketname());
+                    ccStore.setStoreManage(storeBOH.getMarger());
+                    //ccStore.setBand(storeBOH.getBand());
+                    ccStore.setAddress(storeBOH.getAddress());
+                    ccStore.setStoreMail(storeBOH.getStorecode()+"@coucouchn.com");
+                    ccStoreService.save(ccStore);
+                    System.out.println("湊湊门店信息初始化----->");
+
+                }
+
+            }
+        }
+
+    }
+
+
 
 
 

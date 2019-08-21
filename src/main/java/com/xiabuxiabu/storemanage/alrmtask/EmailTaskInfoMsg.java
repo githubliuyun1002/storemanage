@@ -8,6 +8,8 @@ import com.xiabuxiabu.storemanage.service.store.MailListSerivice;
 import com.xiabuxiabu.storemanage.service.user.UserService;
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -16,9 +18,15 @@ import java.util.List;
 
 /**
  * 门店状态扭转通知（通知添加设备、审批等工作）
+ * //@EnableAsync   //开启多线程
+ * // @Async
+ *
  */
+
+
 @Component
 @EnableScheduling
+
 public class EmailTaskInfoMsg {
     @Autowired
     private MailListSerivice mailListSerivice;
@@ -30,8 +38,8 @@ public class EmailTaskInfoMsg {
     private EMailProperties eMailProperties;
     private static Logger log    = Logger.getLogger(EmailTaskInfoMsg.class);
 
-    //发送给市场IT,让市场IT及时进行添加相应的设备（每2个小时执行一次）
-    @Scheduled(cron = "0 0 */2 * * ?")
+    //发送给市场IT,让市场IT及时进行添加相应的设备（每4个小时执行一次）
+    @Scheduled(cron = "0 0 0/4 * * ? ")
     public void emailRun() {
         //市场名称
         List<String> marketNameList = mailListSerivice.marketList();
@@ -39,7 +47,7 @@ public class EmailTaskInfoMsg {
         for (int i = 0; i < marketNameList.size(); i++) {
             String marketName = marketNameList.get(i);
             List<MailList> mailListList = mailListSerivice.findByMarketName(marketName);
-            List<User> userList = userService.findByMarketName(marketName);
+            List<User> userList = userService.findByMarketName(marketName,"it");
             if (mailListList.size() != 0 && userList.size() != 0) {
                 System.out.println("市场基本信息:市场名称" + marketName + ",门店数：" + mailListList.size() + ",人员数：" + userList.size());
                 for (int j = 0; j < mailListList.size(); j++) {
@@ -106,8 +114,9 @@ public class EmailTaskInfoMsg {
             }
         }
     }
-    //发送给管理员的邮件列表
-   @Scheduled(cron = "0 0 */3 * * ?")
+    //发送给管理员的邮件列表(没两个小时执行一次)
+   // @Async
+    @Scheduled(fixedDelay = 7200000)
     public void  adminRun(){
         //对于管理员拿到所有的待发邮件的信息
         System.out.println("发送管理员定时任务开始执行");
@@ -116,6 +125,7 @@ public class EmailTaskInfoMsg {
         List<User> adminUserList = new ArrayList<>();
         for (int i = 0; i < userList.size(); i++) {
             User user = userList.get(i);
+
             if(user.getUserType().getName().equals("系统管理员")){
                 adminUserList.add(user);
             }

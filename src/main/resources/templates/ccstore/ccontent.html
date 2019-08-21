@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="-1">
+    <title>特殊设备展示页面</title>
+    <script th:src="@{https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js}"></script>
+    <script th:src="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+    <link hx_element_type="css_shared" href="/content/hxcssstylev3_shared.css" type="text/css" rel="stylesheet">
+    <link hx_element_type="css_theme" href="/content/hxcssstylev3_blue.css" type="text/css" rel="stylesheet">
+    <link th:href="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css}" rel="stylesheet"/>
+    <link href="/content/project_customized.css" type="text/css" rel="stylesheet">
+    <style type="text/css">
+        /*长文本输入框高度设置*/
+        #hxinputbox__vwhxco_lease_contract__decoration_desc,#hxinputbox__vwhxco_lease_contract__breach_of_contract_clause,
+        #hxinputbox__vwhxco_lease_contract__contract_comment,#hxinputbox__vwhxco_lease_contract__rtn_comment,
+        #hxinputbox__vwhxco_lease_contract__breach_of_contract_clause,#hxinputbox__vwhxco_lease_contract__query_keyword,
+        #hxinputbox__vwhxco_lease_contract__free_contract_content,#hxinputbox__vwhxco_lease_contract__payment_begin_remarks,
+        #hxinputbox__vwhxco_lease_contract__turnover_report_remark,#hxinputbox__vwhxco_lease_contract__open_issue_of_contract,
+        #hxinputbox__vwhxco_lease_contract__other_commonts{
+            height:75px;
+        }
+        .supplier_remark {left:110px;position:absolute;top:10px;}
+
+        /*隐藏长文本弹出输入框水平方向的滚动条*/
+        textarea[hx_allow_popup_pick='1']{
+            overflow-x:hidden;
+        }
+    </style>
+    <script>
+        $(function () {
+            var storeId = $("#store_id").val();
+            $.ajax({
+                url:"/ccstore/findById",
+                data:{"id":storeId},
+                type:"GET",
+                dataType:"JSON",
+                success:function (data) {
+                    $("#storeCode").val(data.storeCode);
+                    $("#storeName").val(data.storeName);
+                    $("#address").val(data.address);
+                    $("#marketName").val(data.marketName);
+                    $("#storeManage").val(data.storeManage);
+                    //进行填充门店设备
+                    if(data.ccItemsSet.length!=0){
+                        $("#itemShow").append('' +
+                            '<div class="page_section_container hxcontainer_shadow">' +
+                            '<img class="page_section_title_decorated hxbgcolor_datalist_head" src="./content/hxpub_clear.gif">' +
+                            '<div class="page_section_title_area">' +
+                            '<span class="hxtxt_nowrap hxtxt_section_title" style=";text-align:left;display:inline-block;width:100%;">特殊设备信息列表</span>' +
+                            '</div>' +
+                            '<div class="page_section_content_area">' +
+                            '<table  class="hxtbl_datalist_frame" style="table-layout:fixed;width:100%">' +
+                            '<thead>' +
+                            '<tr class="hxbgcolor_datalist_head">' +
+                            '<td align="center" width="4%">' +
+                            '<span style=";display:none">' +
+                            '<span style="display:inline-block;width:100%;" class="hxbtn_container datalist_line_add"></span>' +
+                            '</span>' +
+                            '</td>' +
+                            '<td align="center"  width="19%">' +
+                            '<span class="hxtxt_list_column_caption hxbold hxtxt_nowrap">设备名称</span>' +
+                            '</td>' +
+                            '<td align="center"  width="19%">' +
+                            '<span class="hxtxt_list_column_caption hxbold hxtxt_nowrap">维修周期(单位:天)</span>' +
+                            '</td>' +
+                            '<td align="center"  width="19%">' +
+                            '<span class="hxtxt_list_column_caption hxbold hxtxt_nowrap">到期日期</span>' +
+                            '</td>' +
+                            '<td align="center"  width="19%">' +
+                            '<span class="hxtxt_list_column_caption hxbold hxtxt_nowrap">设备操作</span>' +
+                            '</td>' +
+                            '</tr>' +
+                            '</thead>' +
+                            '<tbody id="itemContent"></tbody>' +
+                            '</table>' +
+                            '</div>' +
+                            '</div>');
+                        for (var i = 0; i <data.ccItemsSet.length ; i++) {
+                            $("#itemContent").append('' +
+                                '<tr class="hxbgcolor_itemline_normal">' +
+                                   '<td align="center" width="4%"></td>' +
+                                   '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="hidden" name="equipId" id="equipId" value="'+data.ccItemsSet[i].ccEquip.equipId+'"><input type="text" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly"  readonly="readonly" name="name" id="name" value="'+data.ccItemsSet[i].ccEquip.name+'"></td>' +
+                                   '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="text" name="days" id="days" value="'+data.ccItemsSet[i].days+'" class="hxinputbox hxborder_inputbox"></td>' +
+                                   '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="text" name="lastDate" id="lastDate" value="'+data.ccItemsSet[i].lastDate+'" class="hxinputbox hxborder_inputbox"></td>' +
+                                   '<td align="center" width="19%"><span style="display:inline-block;width:100%;padding-right:18px;;margin-left:-11px;padding-left:11px;"><input type="hidden" name="itemsId" id="itemsId" value="'+data.ccItemsSet[i].itemsId+'"><button class="btn btn-default" onclick="remove('+data.ccItemsSet[i].itemsId+')"><span class="glyphicon glyphicon-remove"></span>移除</button></td>' +
+                                '</tr>');
+                        }
+                    }
+
+                }
+            })
+        });
+
+        //对设备信息进行填充
+        $(function () {
+             $.ajax({
+                 url:"/ccstore/equipAll",
+                 dataType:"JSON",
+                 type:"GET",
+                 success:function (data) {
+                     for (var i = 0; i <data.length ; i++) {
+                         $("select#ccEquip").append('' +
+                             '<option value="'+data[i].equipId+'" id="'+data[i].name+'">'+data[i].name+'</option>');
+                     }
+                 }
+             })
+
+        });
+
+        //确认门店信息
+        function confirmItems() {
+            var result = confirm("请检查设备信息，是否要提交");
+            //选择设备时，要注意不能添加重复的设备信息
+            if(result){
+                <!--检查页面是否有重复的设备添加信息，如有重复，不允许再次添加-->
+                var equipId = $("#myModal").find("select[name='ccEquip']").find("option:checked").val();
+
+                var pageEquipIds = $("input[name='equipId']");
+
+                //设备名称
+                var equipName = $("input[name='name']");
+
+               // console.log("页面的长度-----》"+pageEquipIds.length);
+
+                var pageArr = new Array();
+
+                if(pageEquipIds.length!=0){
+
+                    for (var i = 0; i <pageEquipIds.length ; i++) {
+                        pageArr[i] = $(pageEquipIds[i]).val();
+                    }
+                    var index = $.inArray(equipId,pageArr);
+                    if(index>0){
+                        alert("该设备已经存在，请不要重新添加");
+                        $(equipName[index]).css("background","pink");
+                    }else{
+                        $("#submitItem").attr("type","submit");
+                    }
+                }else{
+                    $("#submitItem").attr("type","submit");
+                }
+
+            }
+        }
+
+        //移除项目
+        function remove(id) {
+            var storeId = $("#store_id").val();
+            //根据id删除相应的设备
+            $.ajax({
+                url:"/ccstore/deleteItemsById",
+                data:{"id":id},
+                dataType:"JSON",
+                type:"GET",
+                success:function (data) {
+                    if(data["code"]=="true"){
+                        var link = "/ccstore/content?id="+storeId;
+                        window.location.href=link;
+
+                    }
+                }
+            })
+        }
+        
+        //保存页面数据
+        function saveInfor() {
+            var itemsSet = "";
+            var itemObjects = $("#itemShow .page_section_content_area .hxtbl_datalist_frame tbody tr");
+           // console.log("length---->"+itemObjects.length);
+            if(itemObjects.length!=0){
+                itemsSet="[";
+                for (var i = 0; i <itemObjects.length ; i++) {
+                    //通过tr得到td.然后获取单元格中的内容
+                    var tdArr = $(itemObjects[i]).find("td");
+                    var equipId = tdArr.eq(1).find("input[type='hidden']").val();
+                    var name = tdArr.eq(1).find("input[name='name']").val();
+                    var days = tdArr.eq(2).find("input[name='days']").val();
+                    var lastDate = tdArr.eq(3).find("input[name='lastDate']").val();
+                    //itemsId
+                    var itemsId = tdArr.eq(4).find("input[name='itemsId']").val();
+
+                   itemsSet+="{\"itemsId\":"+itemsId+",\"days\":"+days+",\"lastDate\":" +
+                       "\""+lastDate+"\",\"ccEquip\":{\"equipId\":"+equipId+",\"name\":\""+name+"\"}"
+                   if(i==itemObjects.length-1){
+                       itemsSet+="}";
+                   }else{
+                       itemsSet+="},";
+                   }
+                }
+                itemsSet += "]";
+               // console.log("itemset----->"+itemsSet);
+            }
+            //添加门店的基本信息
+            var storeId = $("#store_id").val();
+            var storeCode = $("#storeCode").val();
+            var storeMsg = "{\"storeId\":"+storeId+",\"storeCode\":\""+storeCode+"\"";
+            if(itemObjects.length!=0){
+                storeMsg+=",\"ccItemsSet\":"+itemsSet+""
+            }
+            storeMsg+="}";
+            $.ajax({
+                url:"/ccstore/saveStoreInfor",
+                data:{"store":storeMsg},
+                dataType:"JSON",
+                type:"GET",
+                success:function (data) {
+                    if(data["code"]=="true"){
+                        var link = "/ccstore/content?id="+storeId;
+                        window.location.href=link;
+                    }
+
+                }
+            })
+        }
+
+        //返回上级按钮
+        function goback() {
+            window.location.href="/ccstore/home";
+        }
+
+    </script>
+</head>
+<body class="hxbgcolor_webpage">
+    <div id="ContentPageDisplayArea" class="page_content_container hide_menu">
+        <input type="hidden"  th:value="${storeId}" id="store_id">
+        <!--表头信息-->
+        <table style="table-layout:fixed;width:100%;margin-top:12px;">
+            <tbody>
+            <tr>
+                <td width="30%">
+                    <div hx_element_type="text" id="WebPageTitleContainer" style="">
+                        <span hx_text_webpart__cnt="1" class="hxtxt_nowrap hxtxt_page_title" style=";text-align:left;display:inline-block;width:100%;">门店信息展示列表</span>
+                    </div>
+                </td>
+                <td width="70%">
+                    <button onclick="goback()" style="float: right" type="button" class="btn btn-default">
+                        <span class="glyphicon glyphicon-share-alt"></span>返回上级
+                    </button>
+                    <button style="float: right;" onclick="saveInfor()" class="btn btn-default">
+                        <span class="glyphicon glyphicon-edit">提交信息</span>
+                    </button>
+                    <button style="float: right" type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal">
+                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>添加设备信息
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <!--门店基本信息展示-->
+        <div class="page_section_container hxcontainer_shadow">
+            <img class="page_section_title_decorated hxbgcolor_datalist_head" src="./content/hxpub_clear.gif">
+            <div class="page_section_title_area" hx_element_type="text">
+                <span class="hxtxt_nowrap hxtxt_section_title" style=";text-align:left;display:inline-block;width:100%;">门店基本信息</span>
+            </div>
+            <div class="page_section_content_area">
+                <table style="table-layout:fixed;width:100%;">
+                    <tbody>
+                    <tr>
+                        <td class="hxfld_container"><label class="hxtxt_caption hxtxt_nowrap" style="display:inline-block;width:24%;padding-right:10px;text-align:left">门店编码</label><span style="display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;"><input type="text" name="storeCode" id="storeCode" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly" readonly="readonly" style="text-align:left;width:100%;overflow-y:auto"></span></td>
+                        <td class="hxfld_container"><label class="hxtxt_caption hxtxt_nowrap" style="display:inline-block;width:24%;padding-right:10px;text-align:left">门店名称</label><span style="display:inline-block;width:76%;z-index:100;padding-right:18px;;padding-left:1px;margin-left:-1px;"><input type="text"  name="storeName" id="storeName" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly" readonly="readonly" style="text-align:left;width:100%;overflow-y:auto"/></span></td>
+                        <td class="hxfld_container"><label class="hxtxt_caption hxtxt_nowrap" style="display:inline-block;width:24%;padding-right:10px;text-align:left">所属区域</label><span style="display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;"><input type="text"  name="marketName"  id="marketName" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly" readonly="readonly" style="text-align:left;width:100%;overflow-y:auto"></span></td>
+                    </tr>
+                    <tr>
+                        <td class="hxfld_container"><label class="hxtxt_caption hxtxt_nowrap" style="display:inline-block;width:24%;padding-right:10px;text-align:left">门店经理</label><span style="display:inline-block;width:76%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;"><input type="text"  name="storeManage"  id="storeManage" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly" readonly="readonly" style="text-align:left;width:100%;overflow-y:auto"></span></td>
+                        <td hx_element_type="field" class="hxfld_container" colspan="2"><label class="hxtxt_caption hxtxt_nowrap" style="display:inline-block;width:12%;padding-right:10px;text-align:left">门店地址</label><span style="display:inline-block;width:88%;z-index:100;padding-right:18px;padding-left:1px;margin-left:-1px;"><input type="text" name="address" id="address" class="hxinputbox hxborder_inputbox hxbgcolor_inputbox_readonly" readonly="readonly" style="text-align:left;width:100%;overflow-y:auto"></span></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+        <!--门店设备信息添加-->
+        <div id="itemShow"></div>
+
+        <!--添加门店的设备信息，模态窗口-->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <form method="post" th:action="@{/ccstore/additems}" th:autocomplete="off" id="additem">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">设备添加</h4>
+                        </div>
+                        <div class="modal-body">
+                            <input class="form-control" type="hidden"  name="storeId" th:value="${storeId}">
+                            <label>设备名称</label>
+                            <select class="form-control" name="ccEquip" id="ccEquip"></select>
+                            <label>维护周期</label>
+                            <input type="number" class="form-control" placeholder="维护周期(天)" id="days" name="days" required="true">
+                            <label>到期日期</label>
+                            <input type="date" class="form-control" placeholder="最近一次到期日期" id="lastDate" name="lastDate" required="true">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
+                            <button type="button" id="submitItem" onclick="return confirmItems()" class="btn btn-primary">提交</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+</body>
+</html>

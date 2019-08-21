@@ -52,6 +52,9 @@ public class UserController {
     @RequestMapping("/findAll")
     @ResponseBody
     public Page<User> findAll(@RequestParam("page")int page, @RequestParam("pageSize") int pageSize, @RequestParam("searchName") String searchName){
+        System.out.println("page---->"+page);
+        System.out.println("size----->"+pageSize);
+        System.out.println("search----->"+searchName);
         return userService.findAll(page,pageSize,searchName);
     }
     /**

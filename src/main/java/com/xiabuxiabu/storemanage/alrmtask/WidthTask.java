@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -34,7 +35,10 @@ import java.util.concurrent.TimeUnit;
 /**
  * 宽带到期提醒，项目启动后成功后执行下面的代码
  */
+
+
 @Component
+@Order(value = 1)
 public class WidthTask implements ApplicationRunner {
     @Autowired
     private StoreService storeService;
@@ -58,15 +62,15 @@ public class WidthTask implements ApplicationRunner {
         for (int i = 0; i <marketNameList.size() ; i++) {
             String marketName = marketNameList.get(i);
             List<Store> storeList = storeService.findByMarketName(marketName);
-            List<User> userList = userService.findByMarketName(marketName);
+            List<User> userList = userService.findByMarketName(marketName,"it");
             if(storeList.size()!=0&&userList.size()!=0){
                 String mailAddress = "";
                 for (int j = 0; j <userList.size() ; j++) {
                     mailAddress += userList.get(j).getMail() + ",";
                 }
                 String[] allSend = mailAddress.split(",");
-
-                logger.info("市场基本信息:市场名称" + marketName + ",门店数：" + storeList.size() + ",人员数：" + userList.size());
+                System.out.println("市场基本信息:市场名称" + marketName + ",门店数：" + storeList.size() + ",人员数：" + userList.size());
+               // logger.info("市场基本信息:市场名称" + marketName + ",门店数：" + storeList.size() + ",人员数：" + userList.size());
                 for (int j = 0; j <storeList.size() ; j++) {
                     Store store = storeList.get(j);
                     if(store.getWidthBandSet().size()!=0){

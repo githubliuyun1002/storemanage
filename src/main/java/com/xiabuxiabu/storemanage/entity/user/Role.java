@@ -21,6 +21,7 @@ public class Role {
     @JoinTable(name = "role_permission",joinColumns = @JoinColumn(name = "role_id"),inverseJoinColumns = @JoinColumn(name = "permission_id"))
     @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private Set<Permission> permissions;
+
     public int getId() {
         return id;
     }

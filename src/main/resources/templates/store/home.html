@@ -93,6 +93,7 @@
                 type:"GET",
                 dataType:"JSON",
                 success:function (data) {
+                    page.totalPage = data.totalPages;
                     if (data.totalPages > page.pageLength) {
                         addButtons(page.startPage, page.pageLength);
                     } else {
@@ -510,7 +511,7 @@
 <body>
   <div class="container">
       <!--人员类型-->
-      <input class="form-control" type="hidden" id="userType" th:value="${session.userType}">
+     <!-- <input class="form-control" type="hidden" id="userType" th:value="${session.userType}">-->
       <div class="col-md-7 col-xs-12">
           <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal" id="add"
                   data-backdrop="static" data-keyboard="false"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增餐厅
@@ -525,7 +526,7 @@
           </div>
       </div>
       <table class="table table-striped">
-          <caption>门店列表展示信息</caption>
+          <caption>门店信息展示列表</caption>
           <thead>
           <tr id="theadShow">
               <th>门店名称</th>

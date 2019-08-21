@@ -29,7 +29,16 @@ public interface UserRepository extends JpaRepository<User,Integer> {
     @Query("select distinct(marketName) from User ")
     List<String> marketList();
     
-    @Query("from User where marketName=:name")
-    List<User> findByMarketName(@Param("name") String name);
+    @Query("from User where marketName=:name and sign =:signFind")
+    List<User> findByMarketName(@Param("name") String name,@Param("signFind") String signFind);
+
+    @Query("from User where marketName=:name and sign =:signFind ")
+    List<User> ccfindByMarketName(@Param("name")String name, @Param("signFind") String signFind);
+
+
+
+
+
+
 
 }

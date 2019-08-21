@@ -14,4 +14,7 @@ public class DateTool {
         int days = (int) ((date2.getTime() - date1.getTime()) / (1000*3600*24));
         return days;
     }
+
+
+
 }

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>湊湊设备基本信息添加</title>
+    <link th:href="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css}" rel="stylesheet"/>
+    <script th:src="@{https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js}"></script>
+    <script th:src="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+    <script src="../pageable/page.js"></script>
+
+    <style>
+        #page {
+            margin-top: 10px;
+        }
+
+        #page .curr-page {
+            background-color: #337AB7;
+            color: white;
+        }
+
+        #page .page-btn:hover, #page .prev:hover, #page .next:hover {
+            background-color: #337AB7;
+            color: white;
+        }
+    </style>
+    <script>
+        var page = {
+            currPage: 1,
+            totalPage: 0,
+            pageLength: 4,
+            startPage: 1,
+            endPage: 4,   //endPage与pageLength保持一致
+            pageSize: 5
+        };
+        //List展示数据
+        $(function () {
+            $.ajax({
+                url:"/ccequip/findAll",
+                type: "GET",
+                dataType: "JSON",
+                data: {"page": page.currPage, "pageSize": page.pageSize, "searchName": ""},
+                success:function (data) {
+                    page.totalPage = data.totalPages;
+                    //初始化页面按钮
+                    if (data.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, data.totalPages);
+                    }
+                    pageIteration(page.currPage);
+                    isDisabled(page.currPage, data.totalPages);
+                    for (var i = 0; i <data.content.length ; i++) {
+                        $("tbody").append('' +
+                            '<tr>' +
+                               '<td>' +data.content[i].name+ '</td>' +
+                               '<td>' +data.content[i].publicStatus.name+ '</td>' +
+                               '<td><button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].equipId + ')" ' +
+                               'data-target="#upmyModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button></td>' +
+                               '</tr>');
+
+                    }
+
+                }
+
+            })
+        });
+
+        //搜索数据
+        $(document).on("click","#searchButton",function () {
+            page.currPage=1;
+            page.startPage=1;
+            page.endPage=4;
+            var searchName = $('#search').val();
+            $("tbody").html("");
+            $.ajax({
+                url:"/ccequip/findAll",
+                type: "GET",
+                dataType: "JSON",
+                data: {"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
+                success:function (data) {
+                    page.totalPage = data.totalPages;
+                    //初始化页面按钮
+                    if (data.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, data.totalPages);
+                    }
+                    pageIteration(page.currPage);
+                    isDisabled(page.currPage, data.totalPages);
+                    for (var i = 0; i <data.content.length ; i++) {
+                        $("tbody").append('' +
+                            '<tr>' +
+                            '<td>' +data.content[i].name+ '</td>' +
+                            '<td>' +data.content[i].publicStatus.name+ '</td>' +
+                            '<td><button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].equipId + ')" ' +
+                            'data-target="#upmyModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button></td>' +
+                            '</tr>');
+
+                    }
+
+                }
+
+            })
+        });
+
+        //上一页按钮添加事件
+        $(document).on("click", "#page .prev", function () {
+            searchName = $('#search').val();
+            page.currPage = parseInt(page.currPage) - 1;
+            curr_page = page.currPage;
+            $("tbody").html("");
+            pageIteration(page.currPage);
+            isDisabled(page.currPage, page.totalPage);
+            $.ajax({
+                url:"/ccequip/findAll",
+                type: "GET",
+                dataType: "JSON",
+                data: {"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
+                success:function (data) {
+                    page.totalPage = data.totalPages;
+                    for (var i = 0; i <data.content.length ; i++) {
+                        $("tbody").append('' +
+                            '<tr>' +
+                            '<td>' +data.content[i].name+ '</td>' +
+                            '<td>' +data.content[i].publicStatus.name+ '</td>' +
+                            '<td><button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].equipId + ')" ' +
+                            'data-target="#upmyModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button></td>' +
+                            '</tr>');
+
+                    }
+
+                }
+
+            })
+        });
+
+        //页码添加事件
+        $(document).on("click", ".page-btn", function () {
+            searchName = $('#search').val();
+            $this = $(this);
+            $("tbody").html("");
+            page.currPage = parseInt($this.text());
+            curr_page = page.currPage;
+            pageIteration(page.currPage);
+            isDisabled(page.currPage, page.totalPage);
+            $.ajax({
+                url:"/ccequip/findAll",
+                type: "GET",
+                dataType: "JSON",
+                data: {"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
+                success:function (data) {
+                    page.totalPage = data.totalPages;
+                    for (var i = 0; i <data.content.length ; i++) {
+                        $("tbody").append('' +
+                            '<tr>' +
+                            '<td>' +data.content[i].name+ '</td>' +
+                            '<td>' +data.content[i].publicStatus.name+ '</td>' +
+                            '<td><button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].equipId + ')" ' +
+                            'data-target="#upmyModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button></td>' +
+                            '</tr>');
+
+                    }
+
+                }
+            })
+        });
+
+        //对下一页添加事件
+        $(document).on("click", "#page .next", function () {
+            searchName = $('#search').val();
+            page.currPage = parseInt(page.currPage) + 1;
+            $("tbody").html("");
+            curr_page = page.currPage;
+            pageIteration(page.currPage);
+            isDisabled(page.currPage, page.totalPage);
+            $.ajax({
+                url:"/ccequip/findAll",
+                type: "GET",
+                dataType: "JSON",
+                data: {"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
+                success:function (data) {
+                    page.totalPage = data.totalPages;
+                    for (var i = 0; i <data.content.length ; i++) {
+                        $("tbody").append('' +
+                            '<tr>' +
+                            '<td>' +data.content[i].name+ '</td>' +
+                            '<td>' +data.content[i].publicStatus.name+ '</td>' +
+                            '<td><button type="button" class="btn btn-default" data-toggle="modal"   onclick="updateBtn(' + data.content[i].equipId + ')" ' +
+                            'data-target="#upmyModal"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改</button></td>' +
+                            '</tr>');
+
+                    }
+
+                }
+            })
+        });
+
+
+
+
+
+        //新增设备信息
+        $(function () {
+            $("#name").val("");
+            //新增设备，失去焦点时添加设备信息
+            $("#name").on('blur',function () {
+                var equipname = $("#name").val();
+                $.ajax({
+                    url:"/ccequip/findByName",
+                    data:{"name":equipname},
+                    dataType:"JSON",
+                    type:"GET",
+                    //数据回复成功时，进行页面数据的处理。
+                    success:function (data) {
+                        if(data["code"]=="true"){
+                            $("#errorMsg").html("该设备已经存在，请不要重复输入");
+                        }else{
+                            $("#formData").attr("action","/ccequip/save");
+                            $("#addBtn").attr("type","submit");
+                        }
+
+                    }
+
+                })
+
+            })
+
+        });
+
+
+        //修改设备
+        function updateBtn(id){
+            $.ajax({
+                url:"/ccequip/findById",
+                data:{"id":id},
+                dataType:"JSON",
+                type:"GET",
+                success:function (data) {
+                    //console.log("data------->"+JSON.stringify(data));
+                    $("#uperrorMsg").html("");
+                    $("#check").html("");
+                    $("#PID").html("");
+                    $("#upmodalBody").append('<div id="PID"></div>');
+                    $("#PID").append('' +
+                        '<input  class="form-control" name="equipId" id="equipId" type="hidden" value="' + data.equipId + '"/>');
+                    $("#check").append('' +
+                        '<input type="hidden" id="checkvalue" class="form-control" value="'+data.name+'">');
+                    //对设备的状态进行回显
+                    $("#upname").val(data.name);
+                    $("#uppublicStatus").val(data.publicStatus.id);
+
+                    //修改设备时至已经有的设备信息无需再次进行添加
+                    //对修改按钮添加事件
+                    $("#upBtn").click(function () {
+                        var values = $("#checkvalue").val();
+                        var equipname = $("#upname").val();
+                        console.log("values---->"+values);
+                        console.log("equip----->"+equipname);
+                        if(values==equipname){
+                            $("#updateForm").attr("action","/ccequip/updateSave");
+                            $("#upBtn").attr("type","submit");
+                        }else{
+                            $.ajax({
+                                url:"/ccequip/findByName",
+                                data:{"name":equipname},
+                                dataType:"JSON",
+                                type:"GET",
+                                //数据回复成功时，进行页面数据的处理。
+                                success:function (data) {
+                                    if(data["code"]=="true"){
+                                        $("#uperrorMsg").html("该设备已经存在，请不要重复输入");
+                                    }else{
+                                        $("#updateForm").attr("action","/ccequip/updateSave");
+                                        $("#upBtn").attr("type","submit");
+                                    }
+                                }
+                            })
+                        }
+                    })
+                }
+            })
+        }
+
+
+        //填充设备状态
+        //设置设备的使使用状态，禁用和启用。若是禁用的状态，在门店中添加设置时，这种状态不在存在
+        $(function () {
+            $.ajax({
+                url:"/person/statusList",
+                type:"GET",
+                dataType:"JSON",
+                success:function (data) {
+                    for(i=0;i<data.length;i++){
+                        $("select[name='publicStatus']").append(
+                            '<option id="' + data[i].name + '" value="' + data[i].id + '">' + data[i].name + '</option>'
+                        );
+                    }
+                },
+                error:function () {
+                    alert("状态列表加载失败");
+                }
+            });
+        });
+
+
+    </script>
+
+</head>
+<body>
+<div class="container">
+    <div class="col-md-7 col-xs-12">
+        <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal" id="add"
+                data-backdrop="static" data-keyboard="false"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增设备
+        </button>
+    </div>
+    <div class="col-md-5 col-xs-12">
+        <div class="input-group">
+            <input type="text" id="search" class="form-control" placeholder="输入设备名称进行搜索">
+            <span class="input-group-btn">
+                 <button type="button" class="btn btn-primary" id="searchButton">搜 索</button>
+                </span>
+        </div>
+    </div>
+    <table class="table table-striped">
+        <caption>特殊设备展示列表</caption>
+        <thead>
+        <tr>
+            <th>设备名称</th>
+            <th>状态</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <div id="page"></div>
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <form method="post" th:action="@{/ccequip/save}" id="formDate" th:autocomplete="off">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="myModalLabel">特殊设备新增</h4>
+                    </div>
+                    <div class="modal-body" id="modalBody">
+                        <label for="name">设备名称</label>
+                        <input class="form-control" type="text"  placeholder="设备类型名称" name="name" id="name" required="true"/>
+                        <span id="errorMsg" style="font-weight: bold;color: red"></span><br/>
+                        <label>设备状态</label>
+                        <select class="form-control" id="publicStatus" name="publicStatus"></select>
+                    </div>
+                    <div class="modal-footer" id="footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
+                        <button type="button" id="addBtn" class="btn btn-primary">新增</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="modal fade" id="upmyModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <form method="post" th:action="@{/ccequip/updateSave}" id="updateForm" th:autocomplete="off">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">特殊设备修改</h4>
+                    </div>
+                    <div class="modal-body" id="upmodalBody">
+                        <label for="name">设备名称</label>
+                        <input class="form-control" type="text"  placeholder="设备类型名称" name="name" id="upname" required="true"/>
+                        <span id="uperrorMsg" style="font-weight: bold;color: red"></span><br/>
+                        <div id="check"></div>
+                        <label>设备状态</label>
+                        <select class="form-control" name="publicStatus" id="uppublicStatus"></select>
+                    </div>
+                    <div class="modal-footer" id="upfooter">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
+                        <button type="button" id="upBtn" class="btn btn-primary">修改</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+
+
+</div>
+
+</body>
+</html>

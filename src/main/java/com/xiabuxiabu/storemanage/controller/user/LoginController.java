@@ -31,6 +31,15 @@ public class LoginController {
         return "/home";
     }
 
+    @RequestMapping("/teshu")
+    public String teshu(){
+        return "/teshu";
+    }
+    @RequestMapping("/super")
+    public String superHome(){
+        return "/admin";
+    }
+
     /**
      * 展示宽带到期情况列表
      * @return
@@ -52,6 +61,13 @@ public class LoginController {
         } else {
             response.sendRedirect("/login");
         }
+    }
+    /**
+     * 特殊设备展示页面
+     */
+    @RequestMapping("/teshuInfo")
+    public String teshuInfo(){
+        return "/common/teshuInfo";
     }
 
 

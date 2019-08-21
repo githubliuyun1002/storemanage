@@ -31,6 +31,7 @@ public class UserService {
     private HttpServletRequest httpServletRequest;
 
     public List<User> findAll() {
+
         return userRepository.findAll();
     }
 
@@ -50,11 +51,14 @@ public class UserService {
                     Path<String> name = root.get("name");  //人员的中文名
                     Path<String> band = root.get("band");  //根据品牌进行搜索
                     Path<String> marketName = root.get("marketName");  //根据人员的市场进行查询
+                    Path<String> sign = root.get("sign");
+
                     Predicate p1 = criteriaBuilder.like(name, "%" + values + "%");
                     Predicate p2 = criteriaBuilder.like(marketName,"%"+values+"%");
                     Predicate p3 = criteriaBuilder.like(band,"%"+values+"%");
                     Predicate goals = criteriaBuilder.or(p1,p2,p3);
-                    criteriaQuery.where(goals);
+                    Predicate equal =  criteriaBuilder.equal(sign,"it");
+                    criteriaQuery.where(goals,equal);
                     return null;
                 }
             }, pageable);
@@ -102,8 +106,8 @@ public class UserService {
         return userRepository.marketList();
 
     }
-    public List<User> findByMarketName(String name){
-        return  userRepository.findByMarketName(name);
+    public List<User> findByMarketName(String name,String sign){
+        return  userRepository.findByMarketName(name,sign);
     }
 }
 

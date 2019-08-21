@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>呷哺呷哺门店信息管理平台</title>
+    <script th:src="@{https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js}"></script>
+    <script th:src="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+    <link  th:href="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css}" rel="stylesheet"/>
+    <script src="home/jquery.js"></script>
+    <script src="home/pintuer.js"></script>
+    <link rel="stylesheet" href="home/pintuer.css">
+    <link rel="stylesheet" href="home/admin.css">
+    <style>
+        #iframeshow{
+            width: 100%;
+            border: 0;
+            overflow: hidden;
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+            $(document).ajaxComplete(function(event,obj,settings){
+                if (obj.responseText == 'timeout') { //超时标识
+                    location.href='/login'; //跳转到登录页面
+                }
+            });
+        });
+        $(function () {
+            //全局的ajax访问，处理ajax清求时sesion超时
+            $.ajaxSetup({
+                contentType: "application/x-www-form-urlencoded;charset=utf-8",
+                complete: function (XMLHttpRequest, textStatus) {
+                    var sessionstatus = XMLHttpRequest.getResponseHeader("sessionstatus"); // 通过XMLHttpRequest取得响应头，sessionstatus，
+                    if (sessionstatus == "timeout") {
+                        // 如果超时就处理 ，指定要跳转的页面
+                        window.location.replace("/login");
+                    }
+                }
+
+            });
+        });
+        function setIframeHeight(iframe) {
+            if (iframe) {
+                var iframeWin = iframe.contentWindow || iframe.contentDocument.parentWindow;
+                if (iframeWin.document.body) {
+                    iframe.height = iframeWin.document.documentElement.scrollHeight || iframeWin.document.body.scrollHeight;
+                }
+            }
+        };
+        window.onload = function () {
+            setIframeHeight(document.getElementById('iframeshow'));
+        };
+
+    </script>
+    <script>
+        //在js页面中比较两个日期类型变量的大小
+        //现在先是什么都不要做调整，然后等待页面中设置的文件
+        $(function () {
+            var loginName=$("#loginName").val();
+            $.ajax({
+                url: "/person/findByUserName",
+                type: "GET",
+                data: {"userName": loginName},
+                dataType: "JSON",
+                success: function (data) {
+                    //首先默认所有的div为不展示状态
+                    $("#ccperson").hide();
+                    $("#ccequip").hide();
+                    $("#ccstore").hide();
+
+                    var ccroles =  data.ccRoleSet[0];
+                    for (var i = 0; i < ccroles.ccPermissions.length; i++) {
+                        var permisName = ccroles.ccPermissions[i].name;
+                        if(permisName=="人员管理"){
+                            $("#ccperson").show();
+                        }else if(permisName=="门店管理"){
+                            $("#ccstore").show();
+                        }else if(permisName=="设备管理"){
+                            $("#ccequip").show();
+                        }
+                    }
+
+
+                },
+                error:function () {
+                    alert("主菜单加载失败");
+                }
+            });
+        });
+    </script>
+    <style>
+        a:link{text-decoration: none}
+        a:visited{text-decoration: none}
+        a:hover{text-decoration: none}
+        a:active{text-decoration: none}
+    </style>
+</head>
+<body style="background-color:#f2f9fd;">
+<input class="form-control" type="hidden" id="loginName" th:value="${session.userName}">
+<div class="header bg-main">
+    <div class="logo margin-big-left fadein-top">
+        <h1><img src="images/呷哺黄色标.png"  height="40" alt=""><!--&nbsp;&nbsp;<span style="font-family: STXinwei">门店信息管理平台</span>--></h1>
+    </div>
+    <div class="head-l">
+        <a class="button button-little bg-green" target="right" th:href="@{/person/personPage}">
+            <span class="icon-user-md"></span> <span th:text="${session.userName}"></span>个人信息
+        </a>  &nbsp;&nbsp;
+        <a class="button button-little bg-red"  th:href="@{/j_spring_security_logout}">
+            <span class="icon-power-off"></span> 退出登录
+        </a>
+    </div>
+</div>
+<div class="leftnav">
+    <div class="leftnav-title">
+        <strong><span class="icon-list"></span>菜单列表</strong>
+    </div>
+    <div id="append">
+        <div id="ccperson">
+            <h2><span class="icon-pencil-square-o"></span>人员管理</h2>
+            <ul>
+                <li><a href="/ccrole/home" target="right"><span class="icon-caret-right"></span>角色列表</a></li>
+                <li><a href="/ccperson/home" target="right"><span class="icon-caret-right"></span>人员列表</a></li>
+            </ul>
+        </div>
+        <div id="ccequip">
+            <h2><span class="icon-pencil-square-o"></span>设备管理</h2>
+            <ul>
+                <li><a href="/ccequip/home" target="right"><span class="icon-caret-right"></span>设备信息维护</a></li>
+            </ul>
+        </div>
+
+        <div id="ccstore">
+            <h2><span class="icon-pencil-square-o"></span>门店管理</h2>
+            <ul>
+                <li><a href="/ccstore/home" target="right"><span class="icon-caret-right"></span>门店设备维护</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function(){
+        $(".leftnav h2").click(function(){
+            $(this).next().slideToggle(200);
+            $(this).toggleClass("on");
+        });
+        $(".leftnav ul li a").click(function(){
+            $("#a_leader_txt").text($(this).text());
+            $(".leftnav ul li a").removeClass("on");
+            $(this).addClass("on");
+        });
+        $(".icon-home").click(function(){
+            $("#a_leader_txt").text("所有公告");
+            $(".leftnav ul li a").removeClass("on");
+            $(this).addClass("on");
+        });
+    });
+</script>
+<ul class="bread">
+    <li><a href="/info" target="right" class="icon-home"> 首页</a></li>
+    <li><a href="/info" target="right" id="a_leader_txt">公告信息</a></li>
+</ul>
+<div class="admin">
+    <iframe id="iframeshow" rameborder="0" src="/teshuInfo" name="right" width="100%" height="100%"></iframe>
+</div>
+<div style="text-align:center;"></div>
+</body>
+</html>

@@ -1,5 +1,7 @@
 package com.xiabuxiabu.storemanage.entity.user;
 import com.alibaba.fastjson.JSONObject;
+import com.xiabuxiabu.storemanage.entity.ccuser.CCRole;
+import com.xiabuxiabu.storemanage.entity.ccuser.CCUserType;
 import com.xiabuxiabu.storemanage.entity.publicutil.MarketEntity;
 import com.xiabuxiabu.storemanage.entity.publicutil.PublicStatus;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -31,7 +33,38 @@ public class User {
 
     private String marketName;  //市场名称
     private String band;        //品牌
+    private String sign;     //标记人员的登录系统
+    @OneToOne
+    @JoinColumn(name = "cctype")
+    private CCUserType ccUserType;
+    @ManyToMany(targetEntity = CCRole.class,fetch = FetchType.EAGER)
+    @JoinTable(name = "ccuser_ccrole",joinColumns = @JoinColumn(name = "ccuser_id"),inverseJoinColumns = @JoinColumn(name = "ccrole_id"))
+    @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    private Set<CCRole> ccRoleSet;
 
+    public CCUserType getCcUserType() {
+        return ccUserType;
+    }
+
+    public void setCcUserType(CCUserType ccUserType) {
+        this.ccUserType = ccUserType;
+    }
+
+    public Set<CCRole> getCcRoleSet() {
+        return ccRoleSet;
+    }
+
+    public void setCcRoleSet(Set<CCRole> ccRoleSet) {
+        this.ccRoleSet = ccRoleSet;
+    }
+
+    public String getSign() {
+        return sign;
+    }
+
+    public void setSign(String sign) {
+        this.sign = sign;
+    }
 
     public String getBand() {
         return band;

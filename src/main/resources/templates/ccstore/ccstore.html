@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>湊湊门店信息基本信息</title>
+    <link th:href="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css}" rel="stylesheet"/>
+    <script th:src="@{https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js}"></script>
+    <script th:src="@{https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+    <script src="../pageable/page.js"></script>
+    <style>
+        #page {
+            margin-top: 10px;
+        }
+
+        #page .curr-page {
+            background-color: #337AB7;
+            color: white;
+        }
+
+        #page .page-btn:hover, #page .prev:hover, #page .next:hover {
+            background-color: #337AB7;
+            color: white;
+        }
+    </style>
+    <script>
+        var page = {
+            currPage: 1,
+            totalPage: 0,
+            pageLength: 4,
+            startPage: 1,
+            endPage: 4,   //endPage与pageLength保持一致
+            pageSize: 5
+        };
+
+        //List展示数据
+        $(function () {
+            $.ajax({
+                url:"/ccstore/findAllList",
+                type: "GET",
+                dataType: "JSON",
+                data: {"page": page.currPage, "pageSize": page.pageSize, "searchName": ""},
+                success:function (data) {
+                    page.totalPage = data.totalPages;
+                    if (data.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, data.totalPages);
+                    }
+                    pageIteration(page.currPage);
+                    isDisabled(page.currPage, data.totalPages);
+                    for (var i = 0; i <data.content.length ; i++) {
+                        $("tbody").append('<tr>' +
+                              '<td>'+data.content[i].storeName+'</td>' +
+                              '<td>'+data.content[i].storeCode+'</td>' +
+                              '<td>'+data.content[i].marketName+'</td>' +
+                              "<td>" +
+                              "<button class=\"btn btn-default\" onclick=\"window.location.href='/ccstore/content?id="+data.content[i].storeId+"'\" >" +
+                              "<span class=\"glyphicon glyphicon-pencil\" aria-hidden=\"true\"></span>添加信息</button>" +
+                              "</td>"+
+                            '</tr>');
+                    }
+
+                }
+
+            })
+
+        });
+
+        //对搜索按钮添加事件
+        $(document).on("click","#searchButton",function (){
+            page.currPage=1;
+            page.startPage=1;
+            page.endPage=4;
+            var searchName = $('#search').val();
+            $("tbody").html("");
+            $.ajax({
+                url:"/ccstore/findAllList",
+                type: "GET",
+                dataType: "JSON",
+                data: {"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
+                success:function (data) {
+                    page.totalPage = data.totalPages;
+                    if (data.totalPages > page.pageLength) {
+                        addButtons(page.startPage, page.pageLength);
+                    } else {
+                        addButtons(page.startPage, data.totalPages);
+                    }
+                    pageIteration(page.currPage);
+                    isDisabled(page.currPage, data.totalPages);
+                    for (var i = 0; i <data.content.length ; i++) {
+                        $("tbody").append('<tr>' +
+                            '<td>'+data.content[i].storeName+'</td>' +
+                            '<td>'+data.content[i].storeCode+'</td>' +
+                            '<td>'+data.content[i].marketName+'</td>' +
+                            "<td>" +
+                            "<button class=\"btn btn-default\" onclick=\"window.location.href='/ccstore/content?id="+data.content[i].storeId+"'\" >" +
+                            "<span class=\"glyphicon glyphicon-pencil\" aria-hidden=\"true\"></span>添加信息</button>" +
+                            "</td>"+
+                            '</tr>');
+                    }
+                } 
+                
+            });
+
+        });
+
+        //对上一页添加事件
+        $(document).on("click", "#page .prev", function () {
+            searchName = $('#search').val();
+            page.currPage = parseInt(page.currPage) - 1;
+            curr_page = page.currPage;
+            $("tbody").html("");
+            pageIteration(page.currPage);
+            isDisabled(page.currPage, page.totalPage);
+
+            $.ajax({
+                url:"/ccstore/findAllList",
+                type: "GET",
+                dataType: "JSON",
+                data: {"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
+                success:function (data) {
+                    page.totalPage = data.totalPages;
+                    for (var i = 0; i <data.content.length ; i++) {
+                        $("tbody").append('<tr>' +
+                            '<td>'+data.content[i].storeName+'</td>' +
+                            '<td>'+data.content[i].storeCode+'</td>' +
+                            '<td>'+data.content[i].marketName+'</td>' +
+                            "<td>" +
+                            "<button class=\"btn btn-default\" onclick=\"window.location.href='/ccstore/content?id="+data.content[i].storeId+"'\" >" +
+                            "<span class=\"glyphicon glyphicon-pencil\" aria-hidden=\"true\"></span>添加信息</button>" +
+                            "</td>"+
+                            '</tr>');
+                    }
+
+                }
+            })
+        });
+
+        //对页码添加事件
+        $(document).on("click", ".page-btn", function () {
+            searchName = $('#search').val();
+            $this = $(this);
+            $("tbody").html("");
+            page.currPage = parseInt($this.text());
+            curr_page = page.currPage;
+            pageIteration(page.currPage);
+            pageIteration(page.currPage);
+            isDisabled(page.currPage, page.totalPage);
+            $.ajax({
+                url:"/ccstore/findAllList",
+                type: "GET",
+                dataType: "JSON",
+                data: {"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
+                success:function (data) {
+                    page.totalPage = data.totalPages;
+                    for (var i = 0; i <data.content.length ; i++) {
+                        $("tbody").append('<tr>' +
+                            '<td>'+data.content[i].storeName+'</td>' +
+                            '<td>'+data.content[i].storeCode+'</td>' +
+                            '<td>'+data.content[i].marketName+'</td>' +
+                            "<td>" +
+                            "<button class=\"btn btn-default\" onclick=\"window.location.href='/ccstore/content?id="+data.content[i].storeId+"'\" >" +
+                            "<span class=\"glyphicon glyphicon-pencil\" aria-hidden=\"true\"></span>添加信息</button>" +
+                            "</td>"+
+                            '</tr>');
+                    }
+                }
+
+            })
+        });
+
+        //对下一页添加事件
+        $(document).on("click", "#page .next", function () {
+            searchName = $('#search').val();
+            page.currPage = parseInt(page.currPage) + 1;
+            $("tbody").html("");
+            pageIteration(page.currPage);
+            isDisabled(page.currPage, page.totalPage);
+            $.ajax({
+                url:"/ccstore/findAllList",
+                type: "GET",
+                dataType: "JSON",
+                data: {"page": page.currPage, "pageSize": page.pageSize, "searchName": searchName},
+                success:function (data) {
+                    page.totalPage = data.totalPages;
+                    for (var i = 0; i <data.content.length ; i++) {
+                        $("tbody").append('<tr>' +
+                            '<td>'+data.content[i].storeName+'</td>' +
+                            '<td>'+data.content[i].storeCode+'</td>' +
+                            '<td>'+data.content[i].marketName+'</td>' +
+                            "<td>" +
+                            "<button class=\"btn btn-default\" onclick=\"window.location.href='/ccstore/content?id="+data.content[i].storeId+"'\" >" +
+                            "<span class=\"glyphicon glyphicon-pencil\" aria-hidden=\"true\"></span>添加信息</button>" +
+                            "</td>"+
+                            '</tr>');
+                    }
+                }
+            })
+
+        })
+
+    </script>
+
+</head>
+<body>
+<div class="container">
+    <div class="col-md-5 col-xs-12" style="float:right">
+        <div class="input-group">
+            <input type="text" id="search" class="form-control" placeholder="输入门店名称/编码/市场/进行搜索">
+            <span class="input-group-btn">
+                 <button class="btn btn-primary" id="searchButton">搜 索</button>
+            </span>
+        </div>
+    </div>
+    <table class="table table-striped">
+        <caption>门店信息展示列表</caption>
+        <thead>
+            <tr>
+                <th>门店名称</th>
+                <th>门店编码</th>
+                <th>所属区域</th>
+                <th>门店操作</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <div id="page"></div>
+
+
+
+</div>
+</body>
+</html>

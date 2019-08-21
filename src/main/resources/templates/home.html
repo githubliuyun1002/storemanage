@@ -90,6 +90,8 @@
                             $("#servicePerson").show();
                         }
                     }
+
+
                 },
                 error:function () {
                     alert("主菜单加载失败");
@@ -108,7 +110,7 @@
  <input class="form-control" type="hidden" id="loginName" th:value="${session.userName}">
    <div class="header bg-main">
       <div class="logo margin-big-left fadein-top">
-          <h1><img src="images/呷哺黑logo.png"  height="50" alt="">&nbsp;&nbsp;<span style="font-family: STXinwei">门店信息管理平台</span></h1>
+          <h1><img src="images/呷哺黄色标.png"  height="40" alt=""><!--&nbsp;&nbsp;<span style="font-family: STXinwei">门店信息管理平台</span>--></h1>
       </div>
       <div class="head-l">
           <a class="button button-little bg-green" target="right" th:href="@{/person/personPage}">
