@@ -1,6 +1,7 @@
 package com.xiabuxiabu.storemanage.entity.ccstore;
 
 import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.xiabuxiabu.storemanage.entity.ccequip.ccItems;
 import com.xiabuxiabu.storemanage.entity.publicutil.PublicStatus;
 
@@ -19,8 +20,10 @@ public class CCStore {
     private String storeManage;
     private String storeMail;
 
-    @ManyToMany(targetEntity = ccItems.class,fetch = FetchType.EAGER,cascade = CascadeType.REMOVE)
+    //targetEntity = ccItems.class,
+    @ManyToMany(fetch = FetchType.EAGER,cascade = CascadeType.REMOVE)
     @JoinTable(name = "ccstore_items",joinColumns = @JoinColumn(name = "ccstore_id"),inverseJoinColumns = @JoinColumn(name = "items_id"))
+    @JsonIgnoreProperties("ccStoresSet")
     private Set<ccItems> ccItemsSet;
 
 

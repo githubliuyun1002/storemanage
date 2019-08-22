@@ -63,8 +63,8 @@ public class CCStoreController {
      */
     @RequestMapping("/findAll")
     @ResponseBody
-    public Page<CCEquipInfo> findAll(int page, int pageSize, String searchName){
-       return ccEquipInfoService.findAll(page,pageSize,searchName);
+    public Page<ccItems> findAll(int page, int pageSize, String searchName){
+        return ccItemsService.findAll(page,pageSize,searchName);
     }
 
     /**

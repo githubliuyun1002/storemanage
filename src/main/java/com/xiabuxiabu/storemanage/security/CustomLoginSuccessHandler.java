@@ -33,17 +33,11 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
             HttpSession  session = httpServletRequest.getSession();
             session.setAttribute("userName",user.getUsername());
 
-            /*if(null!=user.getUserType().getName()){
-                System.out.println("1111111");
-                session.setAttribute("userType",user.getUserType().getName());
-            }
-            if(null!=user.getCcUserType().getName()){
-                System.out.println("2222222");
-                session.setAttribute("ccuserType",user.getCcUserType().getName());
-            }*/
-
             session.setAttribute("name",user.getUsername());
             session.setAttribute("sign",user.getSign());
+            /**
+             * 根据不同的人员类型进行跳转，不同的页面
+             */
             if(user.getSign().equals("it")){
                 httpServletResponse.sendRedirect("/home");
             }else if(user.getSign().equals("teshu")){

@@ -41,6 +41,12 @@ public class UserController {
     public List<String> bandMarketList(String band) {
         return storeBOHService.bandMarketList(band);
     }
+
+    /**
+     * 通过用户名查找用户信息
+     * @param userName
+     * @return
+     */
     @RequestMapping("/findByUserName")
     @ResponseBody
     public User findByUserName(String userName){

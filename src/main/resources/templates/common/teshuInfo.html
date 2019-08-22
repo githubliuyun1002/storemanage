@@ -36,7 +36,7 @@
             pageLength: 4,
             startPage: 1,
             endPage: 4,
-            pageSize: 8
+            pageSize: 5
         };
         //填充页面
         $(function () {
@@ -57,15 +57,21 @@
                     isDisabled(page.currPage, data.totalPages);
 
                     for (var i = 0; i <data.content.length ; i++) {
-                        $("tbody").append('' +
-                            '<tr>' +
-                            '<td>'+data.content[i].storeName+'</td>' +
-                            '<td>'+data.content[i].storeCode+'</td>' +
-                            '<td>'+data.content[i].equipName+'</td>' +
-                            '<td>'+data.content[i].days+'</td>' +
-                            '<td>'+data.content[i].weeks+'</td>' +
-                            '</tr>');
+                        for (var j = 0; j <data.content[i].ccStoresSet.length ; j++) {
+                            $("tbody").append('' +
+                                '<tr>' +
+                                '<td>'+data.content[i].ccStoresSet[j].storeName+'</td>' +
+                                '<td>'+data.content[i].ccStoresSet[j].storeCode+'</td>' +
+                                '<td>'+data.content[i].ccEquip.name+'</td>' +
+                                '<td>'+data.content[i].days+'</td>' +
+                                '<td>'+data.content[i].lastDate+'</td>' +
+                                '</tr>');
+
+                        }
+
                     }
+
+
 
                 }
             })
@@ -93,14 +99,18 @@
                     pageIteration(page.currPage);
                     isDisabled(page.currPage, data.totalPages);
                     for (var i = 0; i <data.content.length ; i++) {
-                        $("tbody").append('' +
-                            '<tr>' +
-                            '<td>'+data.content[i].storeName+'</td>' +
-                            '<td>'+data.content[i].storeCode+'</td>' +
-                            '<td>'+data.content[i].equipName+'</td>' +
-                            '<td>'+data.content[i].days+'</td>' +
-                            '<td>'+data.content[i].weeks+'</td>' +
-                            '</tr>');
+                        for (var j = 0; j <data.content[i].ccStoresSet.length ; j++) {
+                            $("tbody").append('' +
+                                '<tr>' +
+                                '<td>'+data.content[i].ccStoresSet[j].storeName+'</td>' +
+                                '<td>'+data.content[i].ccStoresSet[j].storeCode+'</td>' +
+                                '<td>'+data.content[i].ccEquip.name+'</td>' +
+                                '<td>'+data.content[i].days+'</td>' +
+                                '<td>'+data.content[i].lastDate+'</td>' +
+                                '</tr>');
+
+                        }
+
                     }
                     // for (var i = 0; i <data.content.length ; i++) {
                     //     for (var j = 0; j <data.content[i].ccItemsSet.length ; j++) {
@@ -135,14 +145,18 @@
                 success:function (data) {
                     page.totalPage = data.totalPages;
                     for (var i = 0; i <data.content.length ; i++) {
-                        $("tbody").append('' +
-                            '<tr>' +
-                            '<td>'+data.content[i].storeName+'</td>' +
-                            '<td>'+data.content[i].storeCode+'</td>' +
-                            '<td>'+data.content[i].equipName+'</td>' +
-                            '<td>'+data.content[i].days+'</td>' +
-                            '<td>'+data.content[i].weeks+'</td>' +
-                            '</tr>');
+                        for (var j = 0; j <data.content[i].ccStoresSet.length ; j++) {
+                            $("tbody").append('' +
+                                '<tr>' +
+                                '<td>'+data.content[i].ccStoresSet[j].storeName+'</td>' +
+                                '<td>'+data.content[i].ccStoresSet[j].storeCode+'</td>' +
+                                '<td>'+data.content[i].ccEquip.name+'</td>' +
+                                '<td>'+data.content[i].days+'</td>' +
+                                '<td>'+data.content[i].lastDate+'</td>' +
+                                '</tr>');
+
+                        }
+
                     }
                     // for (var i = 0; i <data.content.length ; i++) {
                     //     for (var j = 0; j <data.content[i].ccItemsSet.length ; j++) {
@@ -177,14 +191,18 @@
                 success:function (data) {
                     page.totalPage = data.totalPages;
                     for (var i = 0; i <data.content.length ; i++) {
-                        $("tbody").append('' +
-                            '<tr>' +
-                            '<td>'+data.content[i].storeName+'</td>' +
-                            '<td>'+data.content[i].storeCode+'</td>' +
-                            '<td>'+data.content[i].equipName+'</td>' +
-                            '<td>'+data.content[i].days+'</td>' +
-                            '<td>'+data.content[i].weeks+'</td>' +
-                            '</tr>');
+                        for (var j = 0; j <data.content[i].ccStoresSet.length ; j++) {
+                            $("tbody").append('' +
+                                '<tr>' +
+                                '<td>'+data.content[i].ccStoresSet[j].storeName+'</td>' +
+                                '<td>'+data.content[i].ccStoresSet[j].storeCode+'</td>' +
+                                '<td>'+data.content[i].ccEquip.name+'</td>' +
+                                '<td>'+data.content[i].days+'</td>' +
+                                '<td>'+data.content[i].lastDate+'</td>' +
+                                '</tr>');
+
+                        }
+
                     }
                     // for (var i = 0; i <data.content.length ; i++) {
                     //     for (var j = 0; j <data.content[i].ccItemsSet.length; j++) {
@@ -218,14 +236,18 @@
                 success:function (data) {
                     page.totalPage = data.totalPages;
                     for (var i = 0; i <data.content.length ; i++) {
-                        $("tbody").append('' +
-                            '<tr>' +
-                            '<td>'+data.content[i].storeName+'</td>' +
-                            '<td>'+data.content[i].storeCode+'</td>' +
-                            '<td>'+data.content[i].equipName+'</td>' +
-                            '<td>'+data.content[i].days+'</td>' +
-                            '<td>'+data.content[i].weeks+'</td>' +
-                            '</tr>');
+                        for (var j = 0; j <data.content[i].ccStoresSet.length ; j++) {
+                            $("tbody").append('' +
+                                '<tr>' +
+                                '<td>'+data.content[i].ccStoresSet[j].storeName+'</td>' +
+                                '<td>'+data.content[i].ccStoresSet[j].storeCode+'</td>' +
+                                '<td>'+data.content[i].ccEquip.name+'</td>' +
+                                '<td>'+data.content[i].days+'</td>' +
+                                '<td>'+data.content[i].lastDate+'</td>' +
+                                '</tr>');
+
+                        }
+
                     }
                     // for (var i = 0; i <data.content.length ; i++) {
                     //     for (var j = 0; j <data.content[i].ccItemsSet.length ; j++) {

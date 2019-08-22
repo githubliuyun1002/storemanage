@@ -109,6 +109,28 @@ public class CCUserController {
 
         return  ccUserService.findById(id);
     }
+    /**
+     * 个人信息展示页面
+     */
+    @RequestMapping("/personPage")
+    public String personPage(){
+        return "/ccuser/personMsg";
+    }
+    /**
+     * 添加修改的密码信息
+     */
+    @RequestMapping("/pwdSave")
+    public String pwdSave(User user){
+        User userDB = userService.findById(user.getId());
+        String password = user.getPassword();
+        password = new BCryptPasswordEncoder().encode(password);
+        userDB.setPassword(password);
+        userService.save(userDB);
+        return "redirect:/ccperson/personPage";
+    }
+
+
+
    /* @RequestMapping("/findByUser")
     @ResponseBody
     public List<User> findByUser(String market){

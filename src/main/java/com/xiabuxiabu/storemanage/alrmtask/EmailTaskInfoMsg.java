@@ -116,7 +116,7 @@ public class EmailTaskInfoMsg {
     }
     //发送给管理员的邮件列表(没两个小时执行一次)
    // @Async
-    @Scheduled(fixedDelay = 7200000)
+    @Scheduled(cron = "0 0 0/5 * * ? ")
     public void  adminRun(){
         //对于管理员拿到所有的待发邮件的信息
         System.out.println("发送管理员定时任务开始执行");

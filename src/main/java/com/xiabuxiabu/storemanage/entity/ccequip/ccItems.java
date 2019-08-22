@@ -1,6 +1,10 @@
 package com.xiabuxiabu.storemanage.entity.ccequip;
 
 import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.xiabuxiabu.storemanage.entity.ccstore.CCStore;
+import java.util.Set;
+
 
 import javax.persistence.*;
 import java.util.Date;
@@ -26,8 +30,21 @@ public class ccItems {
 
     private String keywords;
 
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "ccItemsSet")
+    //不要使用CascadeType.REMOVE会级联删除门店
+    @JsonIgnoreProperties("ccItemsSet")
+    private Set<CCStore> ccStoresSet;
+
     public String getKeywords() {
         return keywords;
+    }
+
+    public Set<CCStore> getCcStoresSet() {
+        return ccStoresSet;
+    }
+
+    public void setCcStoresSet(Set<CCStore> ccStoresSet) {
+        this.ccStoresSet = ccStoresSet;
     }
 
     public void setKeywords(String keywords) {
