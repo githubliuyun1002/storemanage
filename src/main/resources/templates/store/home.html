@@ -434,6 +434,25 @@
                 });
             })
         });
+        
+        //新增餐厅时触发的事件
+        function check() {
+            //餐厅编码
+            var storeCode = $("#storeCode").val();
+            $.ajax({
+                url:"/store/findByStoreCode",
+                data:{"storeCode":storeCode},
+                dataType:"JSON",
+                type:"GET",
+                success:function (data) {
+                    $("#errorMsg").html("");
+                    if(data.code=="true"){
+                        $("#errorMsg").html("该门店信息已经存在，不需要重复添加");
+                    }
+                }
+            })
+
+        }
 
         //添加分页插件，根据总页数来添加按钮
         function addButtons(startPage, pageLength) {
@@ -510,8 +529,6 @@
 </head>
 <body>
   <div class="container">
-      <!--人员类型-->
-     <!-- <input class="form-control" type="hidden" id="userType" th:value="${session.userType}">-->
       <div class="col-md-7 col-xs-12">
           <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal" id="add"
                   data-backdrop="static" data-keyboard="false"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增餐厅
@@ -551,7 +568,8 @@
                       </div>
                       <div class="modal-body">
                           <label for="storeCode">餐厅编码</label>
-                          <input class="form-control" type="text" placeholder="餐厅编码" name="storeCode" id="storeCode" required="true"/>
+                          <input class="form-control" type="text"  onblur="check()" placeholder="餐厅编码" name="storeCode" id="storeCode" required="true"/>
+                          <span id="errorMsg" style="font-weight: bold;color: red"></span><br/>
                           <label for="storeName">餐厅名称</label>
                           <input class="form-control" type="text" placeholder="餐厅名称" name="storeName" id="storeName" required="true"/>
                           <label for="address">餐厅地址</label>

@@ -1227,7 +1227,21 @@ public class StoreController {
         map.put("code","true");
         return map;
     }
+    /**
+     * 通过餐厅编码，找到门店
+     */
+    @RequestMapping("/findByStoreCode")
+    @ResponseBody
+    public Map<String,Object> findByStoreCode(String storeCode){
+        Map<String,Object> map = new HashMap<>();
+        if(storeService.findByStoreCode(storeCode)!=null){
+            map.put("code","true");
+        }else{
+            map.put("code","false");
+        }
+        return  map;
 
+    }
 
 
 

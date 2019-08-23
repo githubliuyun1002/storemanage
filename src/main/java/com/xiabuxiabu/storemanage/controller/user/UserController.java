@@ -58,9 +58,6 @@ public class UserController {
     @RequestMapping("/findAll")
     @ResponseBody
     public Page<User> findAll(@RequestParam("page")int page, @RequestParam("pageSize") int pageSize, @RequestParam("searchName") String searchName){
-        System.out.println("page---->"+page);
-        System.out.println("size----->"+pageSize);
-        System.out.println("search----->"+searchName);
         return userService.findAll(page,pageSize,searchName);
     }
     /**
@@ -101,6 +98,7 @@ public class UserController {
         String password = user.getPassword();
         password = new BCryptPasswordEncoder().encode(password);
         user.setPassword(password);
+        user.setSign("it");
         userService.addSave(user);
         return "redirect:/person/home";
     }
@@ -124,6 +122,7 @@ public class UserController {
             password = new BCryptPasswordEncoder().encode(password);
             user.setPassword(password);
         }
+        user.setSign("it");
         userService.updateSave(user);
         return "redirect:/person/home";
     }
