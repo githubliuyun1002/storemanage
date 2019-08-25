@@ -25,13 +25,25 @@
         }
     </style>
     <script>
+        $(function () {
+            var userName = $("#userName").val();
+           $.ajax({
+               url:"/person/findByUserName",
+               data:{"userName":userName},
+               dataType:"JSON",
+               type:"GET",
+               success:function (data) {
+                   $("#userType").val(data.userType.name);
+               }
+           })
+        });
         var page = {
             currPage: 1,
             totalPage: 0,
             pageLength: 4,
             startPage: 1,
             endPage: 4,
-            pageSize: 5
+            pageSize: 8
         };
         //填充页面
         $(function () {
@@ -529,6 +541,9 @@
 </head>
 <body>
   <div class="container">
+      <input type="hidden" name="userName" id="userName" th:value="${session.userName}">
+      <input type="hidden" name="userType" id="userType">
+
       <div class="col-md-7 col-xs-12">
           <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal" id="add"
                   data-backdrop="static" data-keyboard="false"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增餐厅

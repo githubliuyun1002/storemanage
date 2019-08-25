@@ -74,73 +74,72 @@ public class WidthTask implements ApplicationRunner {
                 for (int j = 0; j <storeList.size() ; j++) {
                     Store store = storeList.get(j);
                     if(store.getWidthBandSet().size()!=0){
-                        for(WidthBand widthBand : store.getWidthBandSet()){
+                        for(WidthBand widthBand : store.getWidthBandSet()) {
+                            if (widthBand.getPayMethod().getMethod().equals("年付")) {
                             Date endDate = widthBand.getEndDate();
                             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
                             try {
                                 Date nowDate = simpleDateFormat.parse(simpleDateFormat.format(new Date()));
-                                int lastDays = dateTool.differentDaysByMillisecond(nowDate,endDate);
+                                int lastDays = dateTool.differentDaysByMillisecond(nowDate, endDate);
                                 StringBuffer content = new StringBuffer();
                                 content.append("<html><head></head>");
                                 content.append("<body><div><h2>宽带到期通知</h2>" +
-                                        "亲爱的用户:您好!门店："+store.getStoreName()+"("+store.getStoreCode()+")的宽带还有"+lastDays+"天即将到期。请您及时进行处理，" +
+                                        "亲爱的用户:您好!门店：" + store.getStoreName() + "(" + store.getStoreCode() + ")的宽带还有" + lastDays + "天即将到期。请您及时进行处理，" +
                                         "如已处理，请忽略。谢谢！</div>");
                                 content.append("<div><span style ='float: right;'>总部资讯</span></div>");
                                 content.append("</body></html>");
-
-                                if(lastDays>=30&&lastDays<40){
-
+                                if (lastDays >= 30 && lastDays < 40) {
                                     Runnable runnable = new Runnable() {
                                         @Override
                                         public void run() {
                                             try {
-                                                eMailTask.sendHtmlMail(eMailProperties.getNickname(),allSend,eMailProperties.getAdditems(),content.toString(),
-                                                        eMailProperties.getHost(),eMailProperties.getUsername(),eMailProperties.getPassword());
+                                                eMailTask.sendHtmlMail(eMailProperties.getNickname(), allSend, eMailProperties.getAdditems(), content.toString(),
+                                                        eMailProperties.getHost(), eMailProperties.getUsername(), eMailProperties.getPassword());
                                                 logger.info("邮件发送成功");
                                             } catch (Exception e) {
-                                                logger.error(e+"-----邮件未发出去");
+                                                logger.error(e + "-----邮件未发出去");
                                             }
                                         }
                                     };
                                     ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
                                     service.scheduleAtFixedRate(runnable, 0, 1, TimeUnit.DAYS);
-                                }else if(lastDays>15&&lastDays<30){
+                                } else if (lastDays > 15 && lastDays < 30) {
                                     Runnable runnable = new Runnable() {
                                         @Override
                                         public void run() {
                                             try {
-                                                eMailTask.sendHtmlMail(eMailProperties.getNickname(),allSend,eMailProperties.getAdditems(),content.toString(),
-                                                        eMailProperties.getHost(),eMailProperties.getUsername(),eMailProperties.getPassword());
+                                                eMailTask.sendHtmlMail(eMailProperties.getNickname(), allSend, eMailProperties.getAdditems(), content.toString(),
+                                                        eMailProperties.getHost(), eMailProperties.getUsername(), eMailProperties.getPassword());
                                                 logger.info("邮件发送成功");
                                             } catch (Exception e) {
-                                                logger.error(e+"-----邮件未发出去");
+                                                logger.error(e + "-----邮件未发出去");
                                             }
                                         }
                                     };
                                     ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
                                     service.scheduleAtFixedRate(runnable, 0, 12, TimeUnit.HOURS);
-                                }else if(lastDays>0&&lastDays<=15){
+                                } else if (lastDays > 0 && lastDays <= 15) {
                                     Runnable runnable = new Runnable() {
                                         @Override
                                         public void run() {
                                             try {
-                                                eMailTask.sendHtmlMail(eMailProperties.getNickname(),allSend,eMailProperties.getAdditems(),content.toString(),
-                                                        eMailProperties.getHost(),eMailProperties.getUsername(),eMailProperties.getPassword());
+                                                eMailTask.sendHtmlMail(eMailProperties.getNickname(), allSend, eMailProperties.getAdditems(), content.toString(),
+                                                        eMailProperties.getHost(), eMailProperties.getUsername(), eMailProperties.getPassword());
                                                 logger.info("邮件发送成功");
                                             } catch (Exception e) {
-                                                logger.error(e+"-----邮件未发出去");
+                                                logger.error(e + "-----邮件未发出去");
                                             }
 
                                         }
                                     };
                                     ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
                                     service.scheduleAtFixedRate(runnable, 0, 8, TimeUnit.HOURS);
-                                }else if(lastDays==0){
-                                    long yearAfter = (endDate.getTime()/1000)+60*60*24*365;
-                                    endDate.setTime(yearAfter*1000);
+                                } else if (lastDays == 0) {
+                                    long yearAfter = (endDate.getTime() / 1000) + 60 * 60 * 24 * 365;
+                                    endDate.setTime(yearAfter * 1000);
                                     String yearAfterStr = simpleDateFormat.format(endDate);
                                     Date parse = simpleDateFormat.parse(yearAfterStr);
-                                    System.out.println("一年以后的日期----》"+parse);
+                                    System.out.println("一年以后的日期----》" + parse);
                                     widthBand.setEndDate(parse);
                                     widthBandService.save(widthBand);
                                     store.getWidthBandSet().add(widthBand);
@@ -150,7 +149,7 @@ public class WidthTask implements ApplicationRunner {
                             } catch (ParseException e) {
                                 e.printStackTrace();
                             }
-
+                          }
 
                         }
                     }
