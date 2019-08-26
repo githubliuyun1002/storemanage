@@ -61,22 +61,23 @@ public class CCEquipTask implements ApplicationRunner {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        System.out.println("调用定时任务进行执行");
+        System.out.println("湊湊特殊设备调用定时任务进行执行");
         //湊湊门店的市场信息
         List<String> marketList = storeBOHService.bandMarketList("湊湊");
+       // System.out.println("湊湊门店的市场信息-----》"+marketList.size());
         for (int i = 0; i <marketList.size() ; i++) {
 
             String marketName = marketList.get(i);
             List<CCStore> ccStoreList = ccStoreService.findByMarketName(marketName);
+            //System.out.println("湊湊门店数量统计-------》"+marketName+",门店数量----》"+ccStoreList.size());
             List<User>  ccUserList = ccUserService.ccfindByMarketName(marketName,"teshu");
             if(ccStoreList.size()!=0 && ccUserList.size()!=0){
                 String mailAddress = "";
                 for (int j = 0; j <ccUserList.size() ; j++) {
                     mailAddress += ccUserList.get(j).getMail() + ",";
                 }
-
                 for (int j = 0; j <ccStoreList.size() ; j++) {
-                    CCStore ccStore = ccStoreList.get(i);
+                    CCStore ccStore = ccStoreList.get(j);
 
                     if(ccStore.getCcItemsSet().size()!=0){
                         for(ccItems items : ccStore.getCcItemsSet()){
