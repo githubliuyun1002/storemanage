@@ -97,6 +97,39 @@ public class StoreRemarksService {
         }
         return storeRemarksRepository.findAll(pageable);
 
+    }
+
+    /**
+     * 按条件查询，返回所有的记录
+     * @return
+     */
+    public List<StoreRemarks> findAllList(){
+        Sort sort = new Sort(Sort.Direction.DESC,"checkTime");
+        return storeRemarksRepository.findAll(new Specification<StoreRemarks>() {
+            @Override
+            public Predicate toPredicate(Root<StoreRemarks> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                Path<String> checkMan = root.get("checkMan");
+                Path<Date> checkTime =  root.get("checkTime");
+                Path<String> market = root.get("marketName");  //根据门店所属市场进行查询
+                //检查人不为空，时间不为空
+                Predicate chenckPerson = criteriaBuilder.isNotNull(checkMan);
+                Predicate check = criteriaBuilder.isNotNull(checkTime);
+
+                String userName = (String) httpServletRequest.getSession().getAttribute("userName");
+                String marketName = userService.findByUserName(userName).getMarketName();
+                //市场IT
+                if(!marketName.equals("总部")){
+                    Predicate marketNameSerarch = criteriaBuilder.equal(market,marketName);
+                    criteriaQuery.where(marketNameSerarch,chenckPerson,check);
+                }else{
+
+                    //管理员
+                    criteriaQuery.where(chenckPerson,check);
+                }
+
+                return null;
+            }
+        },sort);
 
     }
 

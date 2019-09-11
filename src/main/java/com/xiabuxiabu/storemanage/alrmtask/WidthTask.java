@@ -153,15 +153,9 @@ public class WidthTask implements ApplicationRunner {
 
                         }
                     }
-
-
                 }
-
             }
-
-
         }
-
     }
 
 }

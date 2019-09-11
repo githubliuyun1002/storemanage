@@ -14,11 +14,13 @@ import java.util.Map;
 @Controller
 @RequestMapping("/ccequip")
 public class CCEquipController {
+
     @Autowired
     private CCEquipService ccEquipService;
 
     @RequestMapping("/home")
     public String home(){
+
         return "/ccequip/ccequip";
     }
 

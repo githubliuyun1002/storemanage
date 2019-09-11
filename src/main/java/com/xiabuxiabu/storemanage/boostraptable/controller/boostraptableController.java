@@ -38,7 +38,11 @@ public class boostraptableController {
         map.put("total",pageList.getTotalElements());
         return map;
     }
-
+   /* @RequestMapping("/api")
+    public String api(){
+        return "/apitest";
+    }
+*/
 
 
 

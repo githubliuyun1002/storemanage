@@ -50,8 +50,8 @@
                     isDisabled(page.currPage, data.totalPages);
                     for (var i = 0; i <data.content.length ; i++) {
                         $("tbody").append('<tr>' +
-                             '<td>'+data.content[i].storeName+'</td>' +
                              '<td>'+data.content[i].storeCode+'</td>' +
+                             '<td>'+data.content[i].storeName+'</td>' +
                              '<td>'+data.content[i].marketName+'</td>' +
                              '<td>'+data.content[i].storeStatus.statusName+'</td>' +
                              '<td><button class="btn btn-default" onclick="window.location.href=\'/store/searchObject?id='+data.content[i].storeId+'\'">' +
@@ -87,8 +87,8 @@
                     isDisabled(page.currPage, data.totalPages);
                     for (var i = 0; i <data.content.length ; i++) {
                         $("tbody").append('<tr>' +
-                            '<td>'+data.content[i].storeName+'</td>' +
                             '<td>'+data.content[i].storeCode+'</td>' +
+                            '<td>'+data.content[i].storeName+'</td>' +
                             '<td>'+data.content[i].marketName+'</td>' +
                             '<td>'+data.content[i].storeStatus.statusName+'</td>' +
                             '<td><button class="btn btn-default" onclick="window.location.href=\'/store/searchObject?id='+data.content[i].storeId+'\'">' +
@@ -120,8 +120,8 @@
                     page.totalPage  = data.totalPages;
                     for (var i = 0; i <data.content.length ; i++) {
                         $("tbody").append('<tr>' +
-                            '<td>'+data.content[i].storeName+'</td>' +
                             '<td>'+data.content[i].storeCode+'</td>' +
+                            '<td>'+data.content[i].storeName+'</td>' +
                             '<td>'+data.content[i].marketName+'</td>' +
                             '<td>'+data.content[i].storeStatus.statusName+'</td>' +
                             '<td><button class="btn btn-default" onclick="window.location.href=\'/store/searchObject?id='+data.content[i].storeId+'\'">' +
@@ -151,8 +151,8 @@
                     page.totalPage  = data.totalPages;
                     for (var i = 0; i <data.content.length ; i++) {
                         $("tbody").append('<tr>' +
-                            '<td>'+data.content[i].storeName+'</td>' +
                             '<td>'+data.content[i].storeCode+'</td>' +
+                            '<td>'+data.content[i].storeName+'</td>' +
                             '<td>'+data.content[i].marketName+'</td>' +
                             '<td>'+data.content[i].storeStatus.statusName+'</td>' +
                             '<td><button class="btn btn-default" onclick="window.location.href=\'/store/searchObject?id='+data.content[i].storeId+'\'">' +
@@ -181,8 +181,9 @@
                     page.totalPage  = data.totalPages;
                     for (var i = 0; i <data.content.length ; i++) {
                         $("tbody").append('<tr>' +
-                            '<td>'+data.content[i].storeName+'</td>' +
+
                             '<td>'+data.content[i].storeCode+'</td>' +
+                            '<td>'+data.content[i].storeName+'</td>' +
                             '<td>'+data.content[i].marketName+'</td>'+
                             '<td>'+data.content[i].storeStatus.statusName+'</td>' +
                             '<td><button class="btn btn-default" onclick="window.location.href=\'/store/searchObject?id='+data.content[i].storeId+'\'">' +
@@ -250,8 +251,8 @@
             <caption>门店列表展示信息</caption>
             <thead>
             <tr>
-                <th>门店名称</th>
                 <th>门店编码</th>
+                <th>门店名称</th>
                 <th>所属市场</th>
                 <th>门店状态</th>
                 <th>门店操作</th>

@@ -54,8 +54,8 @@
                     var tableContent="";
                     for (var i = 0; i <data.content.length ; i++) {
                         tableContent="<tr>" +
-                            "<td><a style=\"text-decoration: none;color: black\">"+data.content[i].storeName+"</a></td>" +
                             "<td>"+data.content[i].storeCode+"</td>"+
+                            "<td><a style=\"text-decoration: none;color: black\">"+data.content[i].storeName+"</a></td>" +
                             "<td>"+data.content[i].marketName+"</td>" +
                             "<td>"+data.content[i].band+"</td>" +
                             "<td style=\"color: red;font-weight: bold\">"+data.content[i].storeStatus.statusName+"</td>" +
@@ -97,8 +97,8 @@
                     var tableContent="";
                     for (var i = 0; i <data.content.length ; i++) {
                         tableContent="<tr>" +
-                            "<td><a style=\"text-decoration: none;color: black\">"+data.content[i].storeName+"</a></td>" +
                             "<td>"+data.content[i].storeCode+"</td>"+
+                            "<td><a style=\"text-decoration: none;color: black\">"+data.content[i].storeName+"</a></td>" +
                             "<td>"+data.content[i].marketName+"</td>" +
                             "<td>"+data.content[i].band+"</td>" +
                             "<td style=\"color: red;font-weight: bold\">"+data.content[i].storeStatus.statusName+"</td>" +
@@ -136,8 +136,8 @@
                     var tableContent="";
                     for (var i = 0; i <data.content.length ; i++) {
                         tableContent="<tr>" +
-                            "<td><a style=\"text-decoration: none;color: black\">"+data.content[i].storeName+"</a></td>" +
                             "<td>"+data.content[i].storeCode+"</td>"+
+                            "<td><a style=\"text-decoration: none;color: black\">"+data.content[i].storeName+"</a></td>" +
                             "<td>"+data.content[i].marketName+"</td>" +
                             "<td>"+data.content[i].band+"</td>" +
                             "<td style=\"color: red;font-weight: bold\">"+data.content[i].storeStatus.statusName+"</td>" +
@@ -174,8 +174,8 @@
                     var tableContent="";
                     for (var i = 0; i <data.content.length ; i++) {
                         tableContent="<tr>" +
-                            "<td><a style=\"text-decoration: none;color: black\">"+data.content[i].storeName+"</a></td>" +
                             "<td>"+data.content[i].storeCode+"</td>"+
+                            "<td><a style=\"text-decoration: none;color: black\">"+data.content[i].storeName+"</a></td>" +
                             "<td>"+data.content[i].marketName+"</td>" +
                             "<td>"+data.content[i].band+"</td>" +
                             "<td style=\"color: red;font-weight: bold\">"+data.content[i].storeStatus.statusName+"</td>" +
@@ -213,8 +213,8 @@
                     var tableContent="";
                     for (var i = 0; i <data.content.length ; i++) {
                         tableContent="<tr>" +
-                            "<td><a style=\"text-decoration: none;color: black\">"+data.content[i].storeName+"</a></td>" +
                             "<td>"+data.content[i].storeCode+"</td>"+
+                            "<td><a style=\"text-decoration: none;color: black\">"+data.content[i].storeName+"</a></td>" +
                             "<td>"+data.content[i].marketName+"</td>" +
                             "<td>"+data.content[i].band+"</td>" +
                             "<td style=\"color: red;font-weight: bold\">"+data.content[i].storeStatus.statusName+"</td>" +
@@ -260,8 +260,8 @@
                     var tableContent="";
                     for (var i = 0; i <data.content.length ; i++) {
                         tableContent="<tr>" +
-                            "<td><a style=\"text-decoration: none;color: black\">"+data.content[i].storeName+"</a></td>" +
                             "<td>"+data.content[i].storeCode+"</td>"+
+                            "<td><a style=\"text-decoration: none;color: black\">"+data.content[i].storeName+"</a></td>" +
                             "<td>"+data.content[i].marketName+"</td>" +
                             "<td>"+data.content[i].band+"</td>" +
                             "<td style=\"color: red;font-weight: bold\">"+data.content[i].storeStatus.statusName+"</td>" +
@@ -279,6 +279,7 @@
             })
 
         });
+
         //对末页添加点击事件
         $(document).on("click","#page .last",function (){
             searchName = $('#search').val();
@@ -319,8 +320,8 @@
                     var tableContent="";
                     for (var i = 0; i <data.content.length ; i++) {
                         tableContent="<tr>" +
-                            "<td><a style=\"text-decoration: none;color: black\">"+data.content[i].storeName+"</a></td>" +
                             "<td>"+data.content[i].storeCode+"</td>"+
+                            "<td><a style=\"text-decoration: none;color: black\">"+data.content[i].storeName+"</a></td>" +
                             "<td>"+data.content[i].marketName+"</td>" +
                             "<td>"+data.content[i].band+"</td>" +
                             "<td style=\"color: red;font-weight: bold\">"+data.content[i].storeStatus.statusName+"</td>" +
@@ -424,8 +425,9 @@
           <caption>门店列表展示信息</caption>
           <thead>
           <tr>
-              <th>门店名称</th>
+
               <th>门店编码</th>
+              <th>门店名称</th>
               <th>所属市场</th>
               <th>所属品牌</th>
               <th>门店状态</th>

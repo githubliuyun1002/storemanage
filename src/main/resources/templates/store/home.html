@@ -69,8 +69,8 @@
                     var userType = $("#userType").val();
                     for (var i = 0; i <data.content.length ; i++) {
                         tableContent="<tr>" +
-                            "<td>"+data.content[i].storeName+"</td>" +
                             "<td>"+data.content[i].storeCode+"</td>"+
+                            "<td>"+data.content[i].storeName+"</td>" +
                             "<td>"+data.content[i].marketName+"</td>" +
                             "<td>"+data.content[i].band+"</td>"+
                             "<td><code>"+data.content[i].storeStatus.statusName+"</code></td>";
@@ -92,6 +92,7 @@
                 }
             })
         });
+
         //对搜索按钮添加事件
         $(document).on("click","#searchButton",function (){
             page.currPage=1;
@@ -118,8 +119,8 @@
                     var userType = $("#userType").val();
                     for (var i = 0; i <data.content.length ; i++) {
                         tableContent="<tr>" +
-                            "<td>"+data.content[i].storeName+"</td>" +
                             "<td>"+data.content[i].storeCode+"</td>"+
+                            "<td>"+data.content[i].storeName+"</td>" +
                             "<td>"+data.content[i].marketName+"</td>" +
                             "<td>"+data.content[i].band+"</td>"+
                             "<td><code>"+data.content[i].storeStatus.statusName+"</code></td>";
@@ -162,8 +163,9 @@
                     var userType = $("#userType").val();
                     for (var i = 0; i <data.content.length ; i++) {
                         tableContent="<tr>" +
-                            "<td>"+data.content[i].storeName+"</td>" +
                             "<td>"+data.content[i].storeCode+"</td>"+
+                            "<td>"+data.content[i].storeName+"</td>" +
+
                             "<td>"+data.content[i].marketName+"</td>" +
                             "<td>"+data.content[i].band+"</td>"+
                             "<td><code>"+data.content[i].storeStatus.statusName+"</code></td>";
@@ -207,8 +209,8 @@
                     var userType = $("#userType").val();
                     for (var i = 0; i <data.content.length ; i++) {
                         tableContent="<tr>" +
-                            "<td>"+data.content[i].storeName+"</td>" +
                             "<td>"+data.content[i].storeCode+"</td>"+
+                            "<td>"+data.content[i].storeName+"</td>" +
                             "<td>"+data.content[i].marketName+"</td>" +
                             "<td>"+data.content[i].band+"</td>"+
                             "<td><code>"+data.content[i].storeStatus.statusName+"</code></td>";
@@ -251,8 +253,8 @@
                     var userType = $("#userType").val();
                     for (var i = 0; i <data.content.length ; i++) {
                         tableContent="<tr>" +
-                            "<td>"+data.content[i].storeName+"</td>" +
                             "<td>"+data.content[i].storeCode+"</td>"+
+                            "<td>"+data.content[i].storeName+"</td>" +
                             "<td>"+data.content[i].marketName+"</td>" +
                             "<td>"+data.content[i].band+"</td>"+
                             "<td><code>"+data.content[i].storeStatus.statusName+"</code></td>";
@@ -275,6 +277,7 @@
                 }
             })
         });
+
         //对首页添加点击事件
         $(document).on("click","#page .first",function () {
             page.currPage=1;
@@ -304,8 +307,8 @@
                     var userType = $("#userType").val();
                     for (var i = 0; i <data.content.length ; i++) {
                         tableContent="<tr>" +
-                            "<td>"+data.content[i].storeName+"</td>" +
                             "<td>"+data.content[i].storeCode+"</td>"+
+                            "<td>"+data.content[i].storeName+"</td>" +
                             "<td>"+data.content[i].marketName+"</td>" +
                             "<td>"+data.content[i].band+"</td>"+
                             "<td><code>"+data.content[i].storeStatus.statusName+"</code></td>";
@@ -327,6 +330,7 @@
                 }
             })
         });
+
         //对末页添加点击事件
         $(document).on("click","#page .last",function () {
             searchName = $('#search').val();
@@ -367,8 +371,8 @@
                     var userType = $("#userType").val();
                     for (var i = 0; i <data.content.length ; i++) {
                         tableContent="<tr>" +
-                            "<td>"+data.content[i].storeName+"</td>" +
                             "<td>"+data.content[i].storeCode+"</td>"+
+                            "<td>"+data.content[i].storeName+"</td>" +
                             "<td>"+data.content[i].marketName+"</td>" +
                             "<td>"+data.content[i].band+"</td>"+
                             "<td><code>"+data.content[i].storeStatus.statusName+"</code></td>";
@@ -561,8 +565,8 @@
           <caption>门店信息展示列表</caption>
           <thead>
           <tr id="theadShow">
-              <th>门店名称</th>
               <th>门店编码</th>
+              <th>门店名称</th>
               <th>所属市场</th>
               <th>所属品牌</th>
               <th>门店状态</th>

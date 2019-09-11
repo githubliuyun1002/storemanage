@@ -52,8 +52,9 @@
                     isDisabled(page.currPage, data.totalPages);
                     for (var i = 0; i <data.content.length ; i++) {
                         $("tbody").append('<tr>' +
-                              '<td>'+data.content[i].storeName+'</td>' +
+
                               '<td>'+data.content[i].storeCode+'</td>' +
+                            '<td>'+data.content[i].storeName+'</td>' +
                               '<td>'+data.content[i].marketName+'</td>' +
                               "<td>" +
                               "<button class=\"btn btn-default\" onclick=\"window.location.href='/ccstore/content?id="+data.content[i].storeId+"'\" >" +
@@ -91,8 +92,9 @@
                     isDisabled(page.currPage, data.totalPages);
                     for (var i = 0; i <data.content.length ; i++) {
                         $("tbody").append('<tr>' +
-                            '<td>'+data.content[i].storeName+'</td>' +
+
                             '<td>'+data.content[i].storeCode+'</td>' +
+                            '<td>'+data.content[i].storeName+'</td>' +
                             '<td>'+data.content[i].marketName+'</td>' +
                             "<td>" +
                             "<button class=\"btn btn-default\" onclick=\"window.location.href='/ccstore/content?id="+data.content[i].storeId+"'\" >" +
@@ -124,8 +126,9 @@
                     page.totalPage = data.totalPages;
                     for (var i = 0; i <data.content.length ; i++) {
                         $("tbody").append('<tr>' +
-                            '<td>'+data.content[i].storeName+'</td>' +
+
                             '<td>'+data.content[i].storeCode+'</td>' +
+                            '<td>'+data.content[i].storeName+'</td>' +
                             '<td>'+data.content[i].marketName+'</td>' +
                             "<td>" +
                             "<button class=\"btn btn-default\" onclick=\"window.location.href='/ccstore/content?id="+data.content[i].storeId+"'\" >" +
@@ -157,8 +160,9 @@
                     page.totalPage = data.totalPages;
                     for (var i = 0; i <data.content.length ; i++) {
                         $("tbody").append('<tr>' +
-                            '<td>'+data.content[i].storeName+'</td>' +
+
                             '<td>'+data.content[i].storeCode+'</td>' +
+                            '<td>'+data.content[i].storeName+'</td>' +
                             '<td>'+data.content[i].marketName+'</td>' +
                             "<td>" +
                             "<button class=\"btn btn-default\" onclick=\"window.location.href='/ccstore/content?id="+data.content[i].storeId+"'\" >" +
@@ -187,8 +191,9 @@
                     page.totalPage = data.totalPages;
                     for (var i = 0; i <data.content.length ; i++) {
                         $("tbody").append('<tr>' +
-                            '<td>'+data.content[i].storeName+'</td>' +
+
                             '<td>'+data.content[i].storeCode+'</td>' +
+                            '<td>'+data.content[i].storeName+'</td>' +
                             '<td>'+data.content[i].marketName+'</td>' +
                             "<td>" +
                             "<button class=\"btn btn-default\" onclick=\"window.location.href='/ccstore/content?id="+data.content[i].storeId+"'\" >" +
@@ -218,8 +223,8 @@
         <caption>门店信息展示列表</caption>
         <thead>
             <tr>
-                <th>门店名称</th>
                 <th>门店编码</th>
+                <th>门店名称</th>
                 <th>所属区域</th>
                 <th>门店操作</th>
             </tr>

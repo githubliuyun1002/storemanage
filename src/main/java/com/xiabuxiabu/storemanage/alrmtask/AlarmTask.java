@@ -1,8 +1,10 @@
+/*
 package com.xiabuxiabu.storemanage.alrmtask;
 import com.xiabuxiabu.storemanage.entity.ccstore.CCStore;
 import com.xiabuxiabu.storemanage.entity.store.*;
 import com.xiabuxiabu.storemanage.service.ccstore.CCStoreService;
 import com.xiabuxiabu.storemanage.service.store.*;
+import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -12,6 +14,12 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+*/
+/**
+ * 整合门店信息的定时任务
+ *//*
+
+@Async
 @Component
 @EnableScheduling
 public class AlarmTask {
@@ -26,8 +34,11 @@ public class AlarmTask {
 
     @Autowired
     private MailListSerivice mailListSerivice;
+
+    private static Logger log    = Logger.getLogger(EmailTaskInfoMsg.class);
     //整合门店信息，每两个小时执行一次
-    @Scheduled(cron = "0 0 0/2 * * ? ")
+    //0 0 0/2 * * ?   测试时两分钟执行一次
+    @Scheduled(cron = "0 0/2 * * * ?")
     public void run() {
          List<StoreBOH> storeBOHList = storeBOHService.findALlStoreBOH();
          System.out.println("size数据的长度---->"+storeBOHList.size());
@@ -74,13 +85,16 @@ public class AlarmTask {
                 System.out.println("<----执行保存操作----->");
             }
         }
+        System.out.println("整合所有的门店信息--->>>>>>>>>>>>>>>>>>>>"+System.currentTimeMillis());
 
     }
 
-    /**
-     * 整合湊湊门店的信息，每三个小时整合一次
-     */
-    @Scheduled(cron = "0 0 0/3 * * ? ")
+    */
+/**
+     * 整合湊湊门店的信息，每三个小时整合一次 0 0 0/3 * * ?
+     *//*
+
+    @Scheduled(cron = "0 0/3 * * * ?")
     public void ccrun(){
         List<StoreBOH> storeBOHList = storeBOHService.findALlStoreBOH();
         System.out.println("整合湊湊数据长度------》"+storeBOHList.size());
@@ -118,9 +132,9 @@ public class AlarmTask {
                     System.out.println("湊湊门店信息初始化----->");
 
                 }
-
             }
         }
+        System.out.println("整合所有湊湊门店的信息--->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"+System.currentTimeMillis());
 
     }
 
@@ -133,3 +147,4 @@ public class AlarmTask {
 
 
 }
+*/

@@ -30,9 +30,9 @@ public class UserService {
     @Autowired
     private HttpServletRequest httpServletRequest;
 
-    public List<User> findAll() {
+    public List<User> findAll(String sign) {
 
-        return userRepository.findAll();
+        return userRepository.findAll(sign);
     }
 
     public User findByUserName(String username) {

@@ -56,7 +56,10 @@
                     pageIteration(page.currPage);
                     isDisabled(page.currPage, storePage.totalPages);
                    // console.log("store----->"+store);
-                    var str="<tr><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店编码</th><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店名称</th>";
+                    var str="<tr>" +
+                        "<th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店编码</th>" +
+                        "<th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店名称</th>" +
+                        "<th rowspan='3' style='vertical-align: middle;text-align: center'>所属品牌</th>";
                     var str1="<tr>";
                     var str2="<tr>";
                     //在前台统计各个设备类型下，设备型号的数量
@@ -107,6 +110,7 @@
                         content+="<tr>";
                         content+="<td>"+store[i].storeCode+"</td>";
                         content+="<td>"+store[i].storeName+"</td>";
+                        content+="<td>"+store[i].band+"</td>";
                         for (var k = 0; k <classData.length; k++) {
                             for (var l = 0; l <classData[k]. equipNames.length ; l++) {
                                 for (var m = 0; m <classData[k]. equipNames[l]. itemSet.length ; m++) {
@@ -155,55 +159,10 @@
                     pageIteration(page.currPage);
                     isDisabled(page.currPage, storePage.totalPages);
 
-                    // console.log("store----->"+store);
-                    // var str="<tr><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店编码</th><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店名称</th>";
-                    // var str1="<tr>";
-                    // var str2="<tr>";
-                    // var colArray = new Array();
-                    // for (var i = 0; i <classData.length ; i++) {
-                    //     var len = 0;
-                    //     for (var j = 0; j <classData[i]. equipNames.length ; j++) {
-                    //         len+=classData[i]. equipNames[j]. itemSet.length;
-                    //     }
-                    //     colArray.push(len);
-                    // }
-                    // for (var i = 0; i <classData.length ; i++) {
-                    //     str+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+colArray[i]+"'>"+classData[i].name+"</th>";
-                    //     for (var j = 0; j <classData[i]. equipNames.length; j++) {
-                    //         str1+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+classData[i]. equipNames[j]. itemSet.length+"'>"+classData[i]. equipNames[j].name+"</th>"
-                    //         for (var k = 0; k <classData[i]. equipNames[j]. itemSet.length ; k++) {
-                    //             str2+="<th style=\"vertical-align: middle;text-align:center;\">"+classData[i]. equipNames[j]. itemSet[k].name+"</th>";
-                    //         }
-                    //     }
-                    // }
-                    // str2+="</tr>";
-                    // str1+="</tr>";
-                    // str+="</tr>";
-                    // str+=str1;
-                    // str+=str2;
-                    // copyHead=str;
-                    // $("thead").html(str);
-                    // <!--填充表格内容-->
-                    // for (var i = 0; i <store.length ; i++) {
-                    //     content+="<tr>";
-                    //     content+="<td>"+store[i].storeCode+"</td>";
-                    //     content+="<td>"+store[i].storeName+"</td>";
-                    //     for (var k = 0; k <classData.length; k++) {
-                    //         for (var l = 0; l <classData[k]. equipNames.length ; l++) {
-                    //             for (var m = 0; m <classData[k]. equipNames[l]. itemSet.length ; m++) {
-                    //                 if(store[i].items[classData[k]. equipNames[l]. itemSet[m].name]!=null){
-                    //                     content+="<td>"+store[i].items[classData[k]. equipNames[l]. itemSet[m].name]+"</td>";
-                    //                 }else {
-                    //                     content+="<td>0</td>";
-                    //                 }
-                    //             }
-                    //         }
-                    //     }
-                    // }
-                    // content+="</tr>";
-                    // copyBody=content;
-                    // $("tbody").html(content);
-                    var str="<tr><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店编码</th><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店名称</th>";
+                    var str="<tr>" +
+                        "<th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店编码</th>" +
+                        "<th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店名称</th>" +
+                        "<th rowspan='3' style='vertical-align: middle;text-align: center'>所属品牌</th>";
                     var str1="<tr>";
                     var str2="<tr>";
                     //在前台统计各个设备类型下，设备型号的数量
@@ -254,6 +213,7 @@
                         content+="<tr>";
                         content+="<td>"+store[i].storeCode+"</td>";
                         content+="<td>"+store[i].storeName+"</td>";
+                        content+="<td>"+store[i].band+"</td>";
                         for (var k = 0; k <classData.length; k++) {
                             for (var l = 0; l <classData[k]. equipNames.length ; l++) {
                                 for (var m = 0; m <classData[k]. equipNames[l]. itemSet.length ; m++) {
@@ -296,55 +256,10 @@
                     //用于分页的数据Page<Store>
                     storePage = data["page"];
                     page.totalPage = storePage.totalPages;
-                    // console.log("store----->"+store);
-                    // var str="<tr><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店编码</th><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店名称</th>";
-                    // var str1="<tr>";
-                    // var str2="<tr>";
-                    // var colArray = new Array();
-                    // for (var i = 0; i <classData.length ; i++) {
-                    //     var len = 0;
-                    //     for (var j = 0; j <classData[i]. equipNames.length ; j++) {
-                    //         len+=classData[i]. equipNames[j]. itemSet.length;
-                    //     }
-                    //     colArray.push(len);
-                    // }
-                    // for (var i = 0; i <classData.length ; i++) {
-                    //     str+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+colArray[i]+"'>"+classData[i].name+"</th>";
-                    //     for (var j = 0; j <classData[i]. equipNames.length; j++) {
-                    //         str1+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+classData[i]. equipNames[j]. itemSet.length+"'>"+classData[i]. equipNames[j].name+"</th>"
-                    //         for (var k = 0; k <classData[i]. equipNames[j]. itemSet.length ; k++) {
-                    //             str2+="<th style=\"vertical-align: middle;text-align:center;\">"+classData[i]. equipNames[j]. itemSet[k].name+"</th>";
-                    //         }
-                    //     }
-                    // }
-                    // str2+="</tr>";
-                    // str1+="</tr>";
-                    // str+="</tr>";
-                    // str+=str1;
-                    // str+=str2;
-                    // copyHead=str;
-                    // $("thead").html(str);
-                    // <!--填充表格内容-->
-                    // for (var i = 0; i <store.length ; i++) {
-                    //     content+="<tr>";
-                    //     content+="<td>"+store[i].storeCode+"</td>";
-                    //     content+="<td>"+store[i].storeName+"</td>";
-                    //     for (var k = 0; k <classData.length; k++) {
-                    //         for (var l = 0; l <classData[k]. equipNames.length ; l++) {
-                    //             for (var m = 0; m <classData[k]. equipNames[l]. itemSet.length ; m++) {
-                    //                 if(store[i].items[classData[k]. equipNames[l]. itemSet[m].name]!=null){
-                    //                     content+="<td>"+store[i].items[classData[k]. equipNames[l]. itemSet[m].name]+"</td>";
-                    //                 }else {
-                    //                     content+="<td>0</td>";
-                    //                 }
-                    //             }
-                    //         }
-                    //     }
-                    // }
-                    // content+="</tr>";
-                    // copyBody=content;
-                    // $("tbody").html(content);
-                    var str="<tr><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店编码</th><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店名称</th>";
+                    var str="<tr>" +
+                        "<th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店编码</th>" +
+                        "<th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店名称</th>" +
+                        "<th rowspan='3' style='vertical-align: middle;text-align: center'>所属品牌</th>";
                     var str1="<tr>";
                     var str2="<tr>";
                     //在前台统计各个设备类型下，设备型号的数量
@@ -395,6 +310,7 @@
                         content+="<tr>";
                         content+="<td>"+store[i].storeCode+"</td>";
                         content+="<td>"+store[i].storeName+"</td>";
+                        content+="<td>"+store[i].band+"</td>";
                         for (var k = 0; k <classData.length; k++) {
                             for (var l = 0; l <classData[k]. equipNames.length ; l++) {
                                 for (var m = 0; m <classData[k]. equipNames[l]. itemSet.length ; m++) {
@@ -437,55 +353,10 @@
                     //用于分页的数据Page<Store>
                     storePage = data["page"];
                     page.totalPage = storePage.totalPages;
-                    // console.log("store----->"+store);
-                    // var str="<tr><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店编码</th><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店名称</th>";
-                    // var str1="<tr>";
-                    // var str2="<tr>";
-                    // var colArray = new Array();
-                    // for (var i = 0; i <classData.length ; i++) {
-                    //     var len = 0;
-                    //     for (var j = 0; j <classData[i]. equipNames.length ; j++) {
-                    //         len+=classData[i]. equipNames[j]. itemSet.length;
-                    //     }
-                    //     colArray.push(len);
-                    // }
-                    // for (var i = 0; i <classData.length ; i++) {
-                    //     str+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+colArray[i]+"'>"+classData[i].name+"</th>";
-                    //     for (var j = 0; j <classData[i]. equipNames.length; j++) {
-                    //         str1+="<th style=\"vertical-align: middle;text-align:center;\" colspan='"+classData[i]. equipNames[j]. itemSet.length+"'>"+classData[i]. equipNames[j].name+"</th>"
-                    //         for (var k = 0; k <classData[i]. equipNames[j]. itemSet.length ; k++) {
-                    //             str2+="<th style=\"vertical-align: middle;text-align:center;\">"+classData[i]. equipNames[j]. itemSet[k].name+"</th>";
-                    //         }
-                    //     }
-                    // }
-                    // str2+="</tr>";
-                    // str1+="</tr>";
-                    // str+="</tr>";
-                    // str+=str1;
-                    // str+=str2;
-                    // copyHead=str;
-                    // $("thead").html(str);
-                    // <!--填充表格内容-->
-                    // for (var i = 0; i <store.length ; i++) {
-                    //     content+="<tr>";
-                    //     content+="<td>"+store[i].storeCode+"</td>";
-                    //     content+="<td>"+store[i].storeName+"</td>";
-                    //     for (var k = 0; k <classData.length; k++) {
-                    //         for (var l = 0; l <classData[k]. equipNames.length ; l++) {
-                    //             for (var m = 0; m <classData[k]. equipNames[l]. itemSet.length ; m++) {
-                    //                 if(store[i].items[classData[k]. equipNames[l]. itemSet[m].name]!=null){
-                    //                     content+="<td>"+store[i].items[classData[k]. equipNames[l]. itemSet[m].name]+"</td>";
-                    //                 }else {
-                    //                     content+="<td>0</td>";
-                    //                 }
-                    //             }
-                    //         }
-                    //     }
-                    // }
-                    // content+="</tr>";
-                    // copyBody=content;
-                    // $("tbody").html(content);
-                    var str="<tr><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店编码</th><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店名称</th>";
+                    var str="<tr>" +
+                        "<th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店编码</th>" +
+                        "<th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店名称</th>" +
+                        "<th rowspan='3' style='vertical-align: middle;text-align: center'>所属品牌</th>";
                     var str1="<tr>";
                     var str2="<tr>";
                     //在前台统计各个设备类型下，设备型号的数量
@@ -536,6 +407,7 @@
                         content+="<tr>";
                         content+="<td>"+store[i].storeCode+"</td>";
                         content+="<td>"+store[i].storeName+"</td>";
+                        content+="<td>"+store[i].band+"</td>";
                         for (var k = 0; k <classData.length; k++) {
                             for (var l = 0; l <classData[k]. equipNames.length ; l++) {
                                 for (var m = 0; m <classData[k]. equipNames[l]. itemSet.length ; m++) {
@@ -625,7 +497,10 @@
                     // content+="</tr>";
                     // copyBody=content;
                     // $("tbody").html(content);
-                    var str="<tr><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店编码</th><th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店名称</th>";
+                    var str="<tr>" +
+                        "<th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店编码</th>" +
+                        "<th rowspan='3' style=\"vertical-align: middle;text-align:center;\">门店名称</th>" +
+                        "<th rowspan='3' style='vertical-align: middle;text-align: center'>所属品牌</th>";
                     var str1="<tr>";
                     var str2="<tr>";
                     //在前台统计各个设备类型下，设备型号的数量
@@ -676,6 +551,7 @@
                         content+="<tr>";
                         content+="<td>"+store[i].storeCode+"</td>";
                         content+="<td>"+store[i].storeName+"</td>";
+                        content+="<td>"+store[i].band+"</td>";
                         for (var k = 0; k <classData.length; k++) {
                             for (var l = 0; l <classData[k]. equipNames.length ; l++) {
                                 for (var m = 0; m <classData[k]. equipNames[l]. itemSet.length ; m++) {
@@ -698,12 +574,22 @@
 
         });
 
+        //分页导出数据
         function outputFun(){
             var searchName = $('#search').val();
             var site="/report/outputExcel?page="+page.currPage+"&pageSize="+page.pageSize+"&searchName="+searchName;
             $("#linkExcel").attr("href",site);
             $("#linkExcel").style.display="none";
         }
+
+        //导出全部数据
+        function allPutDate() {
+            var site = "/report/allputExcel";
+            $("#allExcel").attr("href",site);
+            $("#allExcel").style.display="none";
+
+        }
+
 
         //添加分页插件，根据总页数来添加按钮
         function addButtons(startPage, pageLength) {
@@ -751,7 +637,8 @@
 <body>
   <div class="container">
       <div class="col-md-7 col-xs-12">
-          <a class="btn btn-default" id="linkExcel" href="#" onclick="outputFun()">导出Excel</a>
+          <a class="btn btn-default" id="linkExcel" href="#" onclick="outputFun()">分页导出Excel</a>
+          <a class="btn btn-default" id="allExcel" href="#" onclick="allPutDate()">全部导出Excel</a>
           <div id="dataFile"></div>
       </div>
       <div class="col-md-5 col-xs-12">

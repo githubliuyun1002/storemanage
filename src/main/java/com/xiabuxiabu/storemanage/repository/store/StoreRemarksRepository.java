@@ -4,6 +4,7 @@ import com.xiabuxiabu.storemanage.entity.store.Store;
 import com.xiabuxiabu.storemanage.entity.store.StoreRemarks;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -25,6 +26,8 @@ public interface StoreRemarksRepository extends JpaRepository<StoreRemarks,Integ
     Page<StoreRemarks> findAll(Pageable pageable);
     Page<StoreRemarks> findAll(Specification<StoreRemarks> specification);
     Page<StoreRemarks> findAll(Specification<StoreRemarks> specification,Pageable pageable);
+
+    List<StoreRemarks> findAll(Specification<StoreRemarks> specification,Sort sort);
 
 
 }

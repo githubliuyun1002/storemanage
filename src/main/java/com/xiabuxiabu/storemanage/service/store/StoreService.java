@@ -22,6 +22,7 @@ import javax.persistence.criteria.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class StoreService {
@@ -206,8 +207,36 @@ public class StoreService {
             },pageable);
         }
         return  storeRepository.findAll(pageable);
+    }
+
+    /**
+     * 拿到导出excel门店的所有的信息
+     */
+    public List<Store> findOutPutAll(){
+
+        //Specification.条件查询
+        Sort sort = new Sort(Sort.Direction.ASC,"storeId");
+        return storeRepository.findAll(new Specification<Store>() {
+            @Override
+            public Predicate toPredicate(Root<Store> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                Path<StoreStatus> storeStatus =root.get("storeStatus");  //查询的门店状态
+                Predicate p1 = criteriaBuilder.equal(storeStatus.get("statusName"),"已确认");
+                Join join = root.join(root.getModel().getSet("itemsSet", Items.class),JoinType.LEFT);
+                Path<String> itemsSign =   join.get("sign");
+                Predicate equal = criteriaBuilder.equal(itemsSign,"1");
+                criteriaQuery.where(p1,equal);
+                criteriaQuery.distinct(true);
+                return null;
+            }
+        },sort);
 
     }
+
+
+
+
+
+
 
     //加载相应的门店宽带信息
     /**

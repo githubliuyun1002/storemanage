@@ -15,7 +15,9 @@ import java.util.List;
  */
 public interface UserRepository extends JpaRepository<User,Integer> {
 
-    List<User> findAll();
+    @Query("from User where sign=:sign")
+    List<User> findAll(@Param("sign") String sign);
+
     @Query("from User where username = :username")
     User findByName(@Param("username") String username);
 
