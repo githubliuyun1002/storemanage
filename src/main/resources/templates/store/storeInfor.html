@@ -662,6 +662,35 @@
         function confirmWidth() {
             return confirm("请检查您的宽带明细，是否要提交");
         }
+        function downLoadFile() {
+            var storeId = $("#store_id").val();
+            $.ajax({
+                url:"/store/findById",
+                data:{"storeId":storeId},
+                dataType:"JSON",
+                type:"GET",
+                success:function (data) {
+                    if(data.dbFileSet.length==0){
+                        alert("该门店没有上传任何的附件");
+                    }else{
+                        $("#fileShow").append('' +
+                            '<div class="page_section_container hxcontainer_shadow">' +
+                            '<div class="page_section_title_area" hx_element_type="text">' +
+                            '<span class="hxtxt_nowrap hxtxt_section_title" style=";text-align:left;display:inline-block;width:100%;">附件下载</span>' +
+                            '</div>' +
+                            '<div class="page_section_content_area">' +
+                            '<div id="fileAppend"></div>' +
+                            '</div>' +
+                            '</div>');
+                        for (var i = 0; i <data.dbFileSet.length; i++) {
+                            $("#fileAppend").append('' +
+                                '<a href="/store/downloadFile?fileId='+data.dbFileSet[i].id+'">'+data.dbFileSet[i].fileName+'</a><br/>');
+                        }
+
+                    }
+                }
+            })
+        }
     </script>
 </head>
 <body class="hxbgcolor_webpage">
@@ -688,6 +717,9 @@
                     </button>
                     <button style="float:right" type="button" class="btn btn-default" data-toggle="modal" data-target="#widthModal">
                         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>宽带设置
+                    </button>
+                    <button style="float: right" type="button" class="btn btn-default" onclick="downLoadFile()">
+                        <span class="glyphicon glyphicon-download-alt"></span>下载附件
                     </button>
 
                 </td>
@@ -726,6 +758,8 @@
         <div id="widthShow"></div>
         <!--填充已经通过审核的设备信息，此时的设备状态为已经通过审核的状态-->
         <div id="itemsContent"></div>
+
+        <div id="fileShow"></div>
 
         <div id="hiddenDiv">
             <div id="hiddenItems"></div>

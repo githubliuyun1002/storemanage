@@ -1,0 +1,67 @@
+--餐厅销售流水
+select a.store_code 餐厅编码,a.bizdate 营业日期,substr(a.fromtime,1,2)||':00:00'归属时间段,a.transactionid 流水号，
+to_char(a.shouldcash,'9999990.00') 销售额,a.guestcount 客流量 from rsc_cashorder a
+left join
+(select store_code,bizdate,transactionid,
+sum(case when itemtype= 0 then quantity when itemtype in ('9','10','11') then -quantity else 0 end) quantity
+from rsc_cashtransactionrecord 
+group by store_code,bizdate,transactionid order by bizdate) c
+on a.store_code=c.store_code and a.bizdate=c.bizdate and a.transactionid=c.transactionid
+where a.bizdate between '2019-08-01' and '2019-08-02'
+---------------------------------------------------
+--茶饮金额及数量
+select store_code,bizdate,transactionid,
+sum(case when itemtype= 0 then amount when itemtype in ('9','10','11') then -amount else 0 end) amount,
+sum(case when itemtype= 0 then quantity when itemtype in ('9','10','11') then -quantity else 0 end) quantity
+from rsc_cashtransactionrecord 
+where ((substr(store_code,1,1) in ('7','8') and substr(itemcode,1,5) in ('10406','10407')) or   
+(substr(store_code,1,1) in ('5','6') and (substr(itemcode,1,5) in ('61002','61007','61301') or itemcode in ('93020104','93020105',
+'93020106','93020107','93020108','93020109')))) and bizdate between '2019-08-01' and '2019-08-02'
+group by store_code,bizdate,transactionid 
+
+//sqluldr2.exe USER=suoyasoft/5t6y7u8i.@XIABUBOH  sql=1.sql  head=yes batch=yes rows=30000000 FILE=D:\test%b.csv
+
+STORE|DATE|TIME_GROUP|GLOBALTXNID|SALES|ITEMS
+
+select a.store_code 餐厅编码,a.bizdate 营业日期,substr(a.fromtime,1,2)||':00:00'归属时间段,a.transactionid 流水号，
+to_char(a.shouldcash,'9999990.00') 销售额,c.quantity 数量,a.guestcount 客流量 from rsc_cashorder a
+left join (select store_code,bizdate,transactionid,
+sum(case when itemtype= 0 then quantity when itemtype in ('9','10','11') then -quantity else 0 end) quantity
+from rsc_cashtransactionrecord 
+group by store_code,bizdate,transactionid order by bizdate) c
+on a.store_code=c.store_code and a.bizdate=c.bizdate and a.transactionid=c.transactionid
+where a.bizdate between '2019-08-01' and '2019-08-02'
+
+//客流sql  STORE|DATE|TIME_GROUP|TRAFFIC
+
+select a.store_code 餐厅编码,a.bizdate 营业日期,substr(a.fromtime,1,2)||':00:00'归属时间段,
+a.guestcount 客流量 from rsc_cashorder a
+left join
+(select store_code,bizdate,transactionid,
+sum(case when itemtype= 0 then quantity when itemtype in ('9','10','11') then -quantity else 0 end) quantity
+from rsc_cashtransactionrecord 
+group by store_code,bizdate,transactionid order by bizdate) c
+on a.store_code=c.store_code and a.bizdate=c.bizdate and a.transactionid=c.transactionid
+where a.bizdate between '2019-08-01' and '2019-08-01'
+
+
+//pos
+select a.store_code 餐厅编码,a.bizdate 营业日期,substr(a.fromtime,1,2)||':00:00'归属时间段,a.transactionid 流水号，
+to_char(a.shouldcash,'9999990.00') 销售额,c.quantity 数量 from rsc_cashorder a
+left join (select store_code,bizdate,transactionid,
+sum(case when itemtype= 0 then quantity when itemtype in ('9','10','11') then -quantity else 0 end) quantity
+from rsc_cashtransactionrecord 
+group by store_code,bizdate,transactionid order by bizdate) c
+on a.store_code=c.store_code and a.bizdate=c.bizdate and a.transactionid=c.transactionid
+where a.bizdate between '2019-08-01' and '2019-08-01'
+
+//茶吧  STORE|DATE|TIME_GROUP|GLOBALTXNID|SALES|ITEMS
+
+select store_code 门店编码,bizdate 交易日期,substr(fromtime,1,2)||':00:00'归属时间段,transactionid 流水号,
+to_char(sum(case when itemtype= 0 then amount when itemtype in ('9','10','11') then -amount else 0 end),'9999990.00') amount,
+sum(case when itemtype= 0 then quantity when itemtype in ('9','10','11') then -quantity else 0 end) quantity
+from rsc_cashtransactionrecord 
+where ((substr(store_code,1,1) in ('7','8') and substr(itemcode,1,5) in ('10406','10407')) or   
+(substr(store_code,1,1) in ('5','6') and (substr(itemcode,1,5) in ('61002','61007','61301') or itemcode in ('93020104','93020105',
+'93020106','93020107','93020108','93020109')))) and bizdate between '2019-08-01' and '2019-08-02'
+group by store_code,bizdate,transactionid,fromtime

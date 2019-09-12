@@ -25,6 +25,7 @@ public class User {
     @JoinColumn(name = "type")
     private UserType userType;
 
+
     @ManyToMany(targetEntity = Role.class,fetch = FetchType.EAGER)
     @JoinTable(name = "user_role",joinColumns = @JoinColumn(name = "user_id"),inverseJoinColumns = @JoinColumn(name = "role_id"))
     @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)

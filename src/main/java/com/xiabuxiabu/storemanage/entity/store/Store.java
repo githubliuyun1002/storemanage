@@ -3,6 +3,7 @@ package com.xiabuxiabu.storemanage.entity.store;
 import com.alibaba.fastjson.JSONObject;
 import com.xiabuxiabu.storemanage.entity.equip.Items;
 import com.xiabuxiabu.storemanage.entity.publicutil.MarketEntity;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -55,6 +56,20 @@ public class Store {
     @JoinTable(name = "store_items",joinColumns = @JoinColumn(name = "store_id"),inverseJoinColumns = @JoinColumn(name = "items_id"))
     private Set<Items> itemsSet;
 
+
+    //上传门店的平面图(DBFile)
+    @ManyToMany(targetEntity = DBFile.class,fetch = FetchType.EAGER)
+    @JoinTable(name = "store_file",joinColumns = @JoinColumn(name = "store_id"),inverseJoinColumns = @JoinColumn(name = "file_id"))
+    private Set<DBFile> dbFileSet;
+
+
+    public Set<DBFile> getDbFileSet() {
+        return dbFileSet;
+    }
+
+    public void setDbFileSet(Set<DBFile> dbFileSet) {
+        this.dbFileSet = dbFileSet;
+    }
 
     public Date getCheckDate() {
         return checkDate;

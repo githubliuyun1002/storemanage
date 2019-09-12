@@ -205,12 +205,50 @@
                             }
                         }
                     }
+                    <!--向页面添加附件信息，允许附件的本地下载-->
+                    if(data.dbFileSet!=null){
+                        $("#fileShow").append('' +
+                            '<div class="page_section_container hxcontainer_shadow">' +
+                              '<div class="page_section_title_area" hx_element_type="text">' +
+                              '<span class="hxtxt_nowrap hxtxt_section_title" style=";text-align:left;display:inline-block;width:100%;">附件下载</span>' +
+                              '</div>' +
+                              '<div class="page_section_content_area">' +
+                               '<button class="btn btn-default" onclick="downLoadFile('+storeId+')">下载附件</button><br/>' +
+                               '<div id="fileAppend"></div>' +
+
+                              '</div>' +
+                            '</div>')
+
+
+                    }
+
+
                },
                error:function () {
                    alert("页面数据加载失败");
                }
            });
        });
+
+       function downLoadFile(id){
+           $.ajax({
+               url:"/store/findById",
+               data:{"storeId":id},
+               dataType:"JSON",
+               type:"GET",
+               success:function (data) {
+                   $("#fileAppend").html("");
+                   if(data.dbFileSet!=null){
+                       for (var i = 0; i <data.dbFileSet.length ; i++) {
+                           $("#fileAppend").append('' +
+                               '<a href="/store/downloadFile?fileId='+data.dbFileSet[i].id+'">'+data.dbFileSet[i].fileName+'</a><br/>');
+                       }
+                   }
+               }
+           })
+       }
+
+
 
        <!--填充设备类别信息-->
         $(function () {
@@ -326,6 +364,7 @@
                 }
             });
         });
+
         <!--宽带的接入方式-->
         $(function () {
             $.ajax({
@@ -343,6 +382,7 @@
                 }
             });
         });
+
         <!--付款方式-->
         $(function () {
             $.ajax({
@@ -376,6 +416,7 @@
 
           // history.go(-1);
        }
+
 
        //确认提交的按钮
        function checkSubmit(){
@@ -485,6 +526,7 @@
 
             });
         }
+
     </script>
     <script>
         //确认宽带信息
@@ -576,6 +618,7 @@
             }
             //在门店宽带下选择
             var widthObjects = $("#widthShow .page_section_content_area tbody");
+
             if (widthObjects.length != 0) {
                 widthsSet = "[";
                 for (var i = 0; i < widthObjects.length; i++) {
@@ -631,6 +674,20 @@
             })
             //
         }
+
+
+        //添加附件信息
+        $(function () {
+            $("#addFileDiv").html("");
+            $("#addFile").click(function () {
+               $("#addFileDiv").append('' +
+                   '<p>选择文件：<input type="file" required="required" name="files"></p>')
+
+
+            });
+        })
+
+
     </script>
 </head>
 <body class="hxbgcolor_webpage">
@@ -661,6 +718,10 @@
                    <button style="float:right" type="button" class="btn btn-default" data-toggle="modal" data-target="#widthModal">
                         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>宽带设置
                    </button>
+                    <button style="float: right" type="button" class="btn btn-default" data-toggle="modal" data-target="#fileModal">
+                        <span class="glyphicon glyphicon-plus"></span>上传附件
+                    </button>
+
                 </td>
             </tr>
             </tbody>
@@ -696,6 +757,10 @@
         <div id="widthShow"></div>
         <!--设备分类信息展示-->
         <div id="itemShow"></div>
+        <!--附件的下载-->
+        <div id="fileShow"></div>
+
+
         <!--设置宽带的信息-->
         <div class="modal fade" id="widthModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <form method="post" th:action="@{/store/width}" th:autocomplete="off">
@@ -759,7 +824,35 @@
 
             </form>
         </div>
-        <!--关闭按钮，返回上一级-->
+
+
+        <!--添加附件按钮-->
+        <div class="modal fade" id="fileModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <form method="post" th:action="@{/store/addFiles}" th:autocomplete="off" id="addFileBtn" enctype="multipart/form-data">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">上传附件</h4>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" class="form-control" name="storeId" th:value="${storeId}">
+                            <p>选择文件:<input type="file" required="required" name="files"/></p>
+                            <button type="button" class="btn btn-primary" id="addFile">添加附件</button>
+                            <div id="addFileDiv"></div>
+
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
+                            <button type="submit" class="btn btn-primary">提交</button>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+
+
+        </div>
 
     </div>
 

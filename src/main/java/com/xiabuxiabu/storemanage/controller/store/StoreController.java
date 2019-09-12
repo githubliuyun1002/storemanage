@@ -1,9 +1,6 @@
 package com.xiabuxiabu.storemanage.controller.store;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.xiabuxiabu.storemanage.emailsend.EMailTask;
-import com.xiabuxiabu.storemanage.entity.equip.Item;
 import com.xiabuxiabu.storemanage.entity.equip.Items;
 import com.xiabuxiabu.storemanage.entity.publicutil.MarketEntity;
 import com.xiabuxiabu.storemanage.entity.store.*;
@@ -18,15 +15,30 @@ import com.xiabuxiabu.storemanage.service.store.*;
 import com.xiabuxiabu.storemanage.service.user.UserService;
 import javafx.beans.binding.ObjectExpression;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.core.io.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.rmi.MarshalledObject;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -59,6 +71,15 @@ public class StoreController {
     private MailListSerivice mailListSerivice;
     @Autowired
     private StoreRemarksService storeRemarksService;
+    @Autowired
+    private DBFileService dbFileService;
+
+
+    @Value("${uploadpic.path}")
+    private String uploadFilePath;
+
+    @Value("${download.path}")
+    private String downFilePath;
 
     /**
      * 初始化转换日期类，将输入框中String类型的值，转化为Date类型的值。
@@ -1083,6 +1104,7 @@ public class StoreController {
         map.put("pageTotals",storePage.getTotalPages());
         return map;
     }
+
     @RequestMapping("/storeCloseListTest")
     @ResponseBody
     public Map<String,Object> storeCloseListTest(int page,int pageSize,String searchName){
@@ -1242,6 +1264,183 @@ public class StoreController {
         return  map;
 
     }
+
+    /**
+     *
+     * 为门店添加附件
+     */
+
+//    public ModelAndView addFiles(ModelAndView modelAndView,Store store,HttpServletRequest request){
+//        List<MultipartFile> files = ((MultipartHttpServletRequest)request).getFiles("file");
+//        MultipartFile file = null;
+//        BufferedOutputStream stream = null;
+//        Set<DBFile> dbFileSet = new HashSet<>();
+//        for (int i = 0; i <files.size() ; i++) {
+//            file = files.get(i);
+//            String filePath = uploadFilePath;
+//            if(!file.isEmpty()){
+//                try {
+//                    byte[] bytes = file.getBytes();
+//                    stream = new BufferedOutputStream(new FileOutputStream(new File(filePath+file.getOriginalFilename())));
+//                    stream.write(bytes);
+//                    stream.close();
+//
+//                    //文件名
+//                    DBFile dbFile = new DBFile();
+//                    String fileName = file.getOriginalFilename();
+//                    dbFile.setFileName(fileName);
+//                    //文件后缀
+//                    String[] strArray = fileName.split("\\.");
+//                    int suffixIndex = strArray.length-1;
+//                    dbFile.setFileType(strArray[suffixIndex]);
+//                    //文件字节
+//                    dbFile.setData(bytes);
+//                    dbFileService.save(dbFile);
+//                    dbFileSet.add(dbFile);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//
+//            }
+//        }
+//        Store storeDB = storeService.findById(store.getStoreId());
+//        storeDB.setDbFileSet(dbFileSet);
+//        storeService.save(storeDB);
+//        modelAndView.setViewName("/store/content");
+//        modelAndView.addObject("storeId",store.getStoreId());
+//        return modelAndView;
+//
+//
+//    }
+    @RequestMapping("/addFiles")
+    public ModelAndView addFiles(ModelAndView modelAndView,int storeId,MultipartFile[] files){
+        Store storeDB = storeService.findById(storeId);
+
+        //step1:如果门店之前有添加过附件
+        if(storeDB.getDbFileSet().size()!=0){
+            //step2：拿到之前的附件的集合
+            Set<DBFile> dbFileSet = storeDB.getDbFileSet();
+            if(files!=null && files.length!=0){
+                if(null!=files && files.length>0){
+                    for(MultipartFile multipartFile : files){
+                        String fileName = multipartFile.getOriginalFilename();
+                        try {
+                            InputStream inputStream = multipartFile.getInputStream();
+
+                            Files.copy(inputStream, Paths.get(uploadFilePath + fileName),
+                                    StandardCopyOption.REPLACE_EXISTING);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        DBFile dbFile = new DBFile();
+                        try {
+                            byte[] bytes = multipartFile.getBytes();
+                            dbFile.setData(bytes);
+
+                            String name =  multipartFile.getOriginalFilename();
+                            dbFile.setFileName(name);
+
+                            String[] strArray = fileName.split("\\.");
+                            int suffixIndex = strArray.length-1;
+
+
+                            dbFile.setFileType(strArray[suffixIndex]);
+
+                            dbFileService.save(dbFile);
+
+                            dbFileSet.add(dbFile);
+
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+
+                    }
+                }
+            }
+            storeDB.setDbFileSet(dbFileSet);
+            storeService.save(storeDB);
+        }else{
+            Set<DBFile> dbFileSet = new HashSet<>();
+            if(files!=null && files.length!=0){
+                if(null!=files && files.length>0){
+                    for(MultipartFile multipartFile : files){
+                        String fileName = multipartFile.getOriginalFilename();
+                        try {
+                            InputStream inputStream = multipartFile.getInputStream();
+
+                            Files.copy(inputStream, Paths.get(uploadFilePath + fileName),
+                                    StandardCopyOption.REPLACE_EXISTING);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        DBFile dbFile = new DBFile();
+                        try {
+                            byte[] bytes = multipartFile.getBytes();
+                            dbFile.setData(bytes);
+
+                            String name =  multipartFile.getOriginalFilename();
+                            dbFile.setFileName(name);
+
+                            String[] strArray = fileName.split("\\.");
+                            int suffixIndex = strArray.length-1;
+
+
+                            dbFile.setFileType(strArray[suffixIndex]);
+
+                            dbFileService.save(dbFile);
+
+                            dbFileSet.add(dbFile);
+
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+
+
+
+                    }
+
+                }
+            }
+            storeDB.setDbFileSet(dbFileSet);
+            storeService.save(storeDB);
+
+        }
+        modelAndView.setViewName("/store/content");
+        modelAndView.addObject("storeId",storeId);
+        return modelAndView;
+
+    }
+    /**
+     * 下载文件到本地
+     */
+
+    @RequestMapping("/downloadFile")
+    @ResponseBody
+    public ResponseEntity<Resource> downloadFile(int fileId) throws Exception{
+        DBFile dbFile = dbFileService.findById(fileId);
+
+//        String path = "http://localhost:8090/upload";
+//        UrlResource resource = new UrlResource(path);
+//        System.out.println("resource--------->"+resource.contentLength());
+//        String fileName = dbFile.getFileName();
+//        return ResponseEntity.ok()
+//                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+//                .contentLength(resource.contentLength())
+//                .header(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename="+ URLEncoder.encode(fileName,"UTF-8"))
+//                .body(resource);
+        String fileName = dbFile.getFileName();
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" +URLEncoder.encode(fileName,"UTF-8"))
+                .body(new ByteArrayResource(dbFile.getData()));
+
+
+
+    }
+
+
+
+
 
 
 
